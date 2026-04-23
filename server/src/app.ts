@@ -1,5 +1,7 @@
 import express from "express"
 import cors from "cors"
+import { prisma } from "./lib/prisma"
+import categoryRoutes from "./routes/category.route"
 
 const app = express()
 
@@ -9,5 +11,17 @@ app.use(express.json())
 app.get("/", (_req, res) => {
   res.json({ message: "API is running" })
 })
+
+app.get("/health/db", async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`
+    res.json({ ok: true, message: "Database connected" })
+  } catch (error) {
+    console.error("Database health check failed:", error)
+    res.status(500).json({ ok: false, message: "Database connection failed" })
+  }
+})
+
+app.use("/api/categories", categoryRoutes)
 
 export default app
