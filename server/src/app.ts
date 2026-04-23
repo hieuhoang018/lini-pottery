@@ -3,6 +3,7 @@ import cors from "cors"
 import { prisma } from "./lib/prisma"
 import categoryRoutes from "./routes/category.routes"
 import productRoutes from "./routes/product.routes"
+import productImageRoutes from "./routes/product-image.routes"
 
 const app = express()
 
@@ -25,5 +26,6 @@ app.get("/health/db", async (_req, res) => {
 
 app.use("/api/categories", categoryRoutes)
 app.use("/api/products", productRoutes)
+app.use("/api", productImageRoutes)
 
 export default app
