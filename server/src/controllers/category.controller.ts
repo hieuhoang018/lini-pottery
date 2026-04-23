@@ -5,6 +5,10 @@ import {
   createCategory,
 } from "../services/category.service"
 
+type CategoryParams = {
+  slug: string
+}
+
 export const getCategoriesHandler = async (_req: Request, res: Response) => {
   try {
     const categories = await getAllCategories()
@@ -15,7 +19,10 @@ export const getCategoriesHandler = async (_req: Request, res: Response) => {
   }
 }
 
-export const getCategoryBySlugHandler = async (req: Request, res: Response) => {
+export const getCategoryBySlugHandler = async (
+  req: Request<CategoryParams>,
+  res: Response,
+) => {
   try {
     const { slug } = req.params
 
