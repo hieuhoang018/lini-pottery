@@ -1,5 +1,6 @@
 import { prisma } from "../lib/prisma"
 import { CreateProductInput } from "../types/product"
+import { UpdateProductInput } from "../types/product"
 
 type GetProductsParams = {
   categorySlug?: string
@@ -69,6 +70,48 @@ export const createProduct = async (data: CreateProductInput) => {
     include: {
       category: true,
       images: true,
+    },
+  })
+}
+
+export const getProductById = async (id: string) => {
+  return prisma.product.findUnique({
+    where: { id },
+  })
+}
+
+export const updateProduct = async (id: string, data: UpdateProductInput) => {
+  return prisma.product.update({
+    where: { id },
+    data,
+    include: {
+      category: true,
+      images: {
+        orderBy: {
+          sortOrder: "asc",
+        },
+      },
+    },
+  })
+}
+
+export const updateProductStock = async (id: string, stockQuantity: number) => {
+  return prisma.product.update({
+    where: { id },
+    data: {
+      stockQuantity,
+    },
+  })
+}
+
+export const updateProductActiveStatus = async (
+  id: string,
+  isActive: boolean,
+) => {
+  return prisma.product.update({
+    where: { id },
+    data: {
+      isActive,
     },
   })
 }

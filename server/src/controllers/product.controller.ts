@@ -3,6 +3,10 @@ import {
   createProduct,
   getAllProducts,
   getProductBySlug,
+  getProductById,
+  updateProduct,
+  updateProductStock,
+  updateProductActiveStatus,
 } from "../services/product.service"
 import { prisma } from "../lib/prisma"
 
@@ -13,6 +17,10 @@ type ProductSlugParams = {
 type ProductQuery = {
   category?: string
   active?: string
+}
+
+type ProductIdParams = {
+  id: string
 }
 
 export const getProductsHandler = async (
@@ -117,5 +125,102 @@ export const createProductHandler = async (req: Request, res: Response) => {
     }
 
     res.status(500).json({ message: "Failed to create product" })
+  }
+}
+
+export const updateProductHandler = async (
+  req: Request<ProductIdParams>,
+  res: Response,
+) => {
+  try {
+    const { id } = req.params
+
+    const existingProduct = await getProductById(id)
+
+    if (!existingProduct) {
+      return res.status(404).json({ message: "Product not found" })
+    }
+
+    const updatedProduct = await updateProduct(id, req.body)
+
+    return res.status(200).json(updatedProduct)
+  } catch (error: any) {
+    console.error("Failed to update product:", error)
+
+    if (error.code === "P2002") {
+      return res.status(409).json({
+        message: "Product slug already exists",
+      })
+    }
+
+    return res.status(500).json({ message: "Failed to update product" })
+  }
+}
+
+export const updateProductStockHandler = async (
+  req: Request<ProductIdParams>,
+  res: Response,
+) => {
+  try {
+    const { id } = req.params
+    const { stockQuantity } = req.body
+
+    if (stockQuantity === undefined) {
+      return res.status(400).json({
+        message: "stockQuantity is required",
+      })
+    }
+
+    const numericStock = Number(stockQuantity)
+
+    if (Number.isNaN(numericStock) || numericStock < 0) {
+      return res.status(400).json({
+        message: "stockQuantity must be a valid non-negative number",
+      })
+    }
+
+    const existingProduct = await getProductById(id)
+
+    if (!existingProduct) {
+      return res.status(404).json({ message: "Product not found" })
+    }
+
+    const product = await updateProductStock(id, numericStock)
+
+    return res.status(200).json(product)
+  } catch (error) {
+    console.error("Failed to update product stock:", error)
+    return res.status(500).json({ message: "Failed to update product stock" })
+  }
+}
+
+export const updateProductActiveStatusHandler = async (
+  req: Request<ProductIdParams>,
+  res: Response,
+) => {
+  try {
+    const { id } = req.params
+    const { isActive } = req.body
+
+    if (typeof isActive !== "boolean") {
+      return res.status(400).json({
+        message: "isActive must be a boolean",
+      })
+    }
+
+    const existingProduct = await getProductById(id)
+
+    if (!existingProduct) {
+      return res.status(404).json({ message: "Product not found" })
+    }
+
+    const product = await updateProductActiveStatus(id, isActive)
+
+    return res.status(200).json(product)
+  } catch (error) {
+    console.error("Failed to update product active status:", error)
+    return res
+      .status(500)
+      .json({ message: "Failed to update product active status" })
   }
 }
