@@ -4,6 +4,7 @@ import { prisma } from "./lib/prisma"
 import categoryRoutes from "./routes/category.routes"
 import productRoutes from "./routes/product.routes"
 import productImageRoutes from "./routes/product-image.routes"
+import authRoutes from "./routes/auth.routes"
 
 const app = express()
 
@@ -27,5 +28,6 @@ app.get("/health/db", async (_req, res) => {
 app.use("/api/categories", categoryRoutes)
 app.use("/api/products", productRoutes)
 app.use("/api", productImageRoutes)
+app.use("/api/auth", authRoutes)
 
 export default app
