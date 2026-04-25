@@ -30,6 +30,7 @@ export const getProductsHandler = async (
   try {
     const categorySlug = req.query.category
     const activeOnly = req.query.active === "false" ? false : true
+    console.log("test");
 
     const products = await getAllProducts({
       categorySlug,
