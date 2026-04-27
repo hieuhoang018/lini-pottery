@@ -7,26 +7,26 @@ import {
   removeCartItem,
   updateCartItemQuantity,
 } from "../services/cart.service"
+import { asyncHandler } from "../utils/asyncHandler"
+import { AppError } from "../utils/AppError"
 
-export const getCartHandler = async (req: AuthRequest, res: Response) => {
-  try {
+export const getCartHandler = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
     const userId = req.user!.userId
+
     const cart = await getCart(userId)
 
     return res.status(200).json(cart)
-  } catch (error) {
-    console.error("Failed to fetch cart:", error)
-    return res.status(500).json({ message: "Failed to fetch cart" })
-  }
-}
+  },
+)
 
-export const addCartItemHandler = async (req: AuthRequest, res: Response) => {
-  try {
+export const addCartItemHandler = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
     const userId = req.user!.userId
     const { productId, quantity } = req.body
 
     if (!productId) {
-      return res.status(400).json({ message: "productId is required" })
+      throw new AppError("productId is required", 400, "PRODUCT_ID_REQUIRED")
     }
 
     const numericQuantity = quantity !== undefined ? Number(quantity) : 1
@@ -36,96 +36,62 @@ export const addCartItemHandler = async (req: AuthRequest, res: Response) => {
       numericQuantity <= 0 ||
       !Number.isInteger(numericQuantity)
     ) {
-      return res.status(400).json({
-        message: "quantity must be a positive integer",
-      })
+      throw new AppError(
+        "quantity must be a positive integer",
+        400,
+        "INVALID_CART_QUANTITY",
+      )
     }
 
     const item = await addItemToCart(userId, productId, numericQuantity)
 
     return res.status(201).json(item)
-  } catch (error: any) {
-    if (error.message === "PRODUCT_NOT_AVAILABLE") {
-      return res.status(400).json({ message: "Product is not available" })
-    }
+  },
+)
 
-    if (error.message === "NOT_ENOUGH_STOCK") {
-      return res.status(400).json({ message: "Not enough stock" })
-    }
-
-    console.error("Failed to add cart item:", error)
-    return res.status(500).json({ message: "Failed to add cart item" })
-  }
-}
-
-export const updateCartItemHandler = async (
-  req: AuthRequest,
-  res: Response,
-) => {
-  try {
+export const updateCartItemHandler = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
     const userId = req.user!.userId
     const { itemId } = req.params
     const { quantity } = req.body
 
     if (quantity === undefined) {
-      return res.status(400).json({ message: "quantity is required" })
+      throw new AppError("quantity is required", 400, "QUANTITY_REQUIRED")
     }
 
     const numericQuantity = Number(quantity)
 
     if (Number.isNaN(numericQuantity) || !Number.isInteger(numericQuantity)) {
-      return res.status(400).json({
-        message: "quantity must be an integer",
-      })
+      throw new AppError(
+        "quantity must be an integer",
+        400,
+        "INVALID_CART_QUANTITY",
+      )
     }
 
     const item = await updateCartItemQuantity(itemId, userId, numericQuantity)
 
     return res.status(200).json(item)
-  } catch (error: any) {
-    if (error.message === "CART_ITEM_NOT_FOUND") {
-      return res.status(404).json({ message: "Cart item not found" })
-    }
+  },
+)
 
-    if (error.message === "NOT_ENOUGH_STOCK") {
-      return res.status(400).json({ message: "Not enough stock" })
-    }
-
-    console.error("Failed to update cart item:", error)
-    return res.status(500).json({ message: "Failed to update cart item" })
-  }
-}
-
-export const removeCartItemHandler = async (
-  req: AuthRequest,
-  res: Response,
-) => {
-  try {
+export const removeCartItemHandler = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
     const userId = req.user!.userId
     const { itemId } = req.params
 
     await removeCartItem(itemId, userId)
 
     return res.status(200).json({ message: "Cart item removed" })
-  } catch (error: any) {
-    if (error.message === "CART_ITEM_NOT_FOUND") {
-      return res.status(404).json({ message: "Cart item not found" })
-    }
+  },
+)
 
-    console.error("Failed to remove cart item:", error)
-    return res.status(500).json({ message: "Failed to remove cart item" })
-  }
-}
-
-export const clearCartHandler = async (req: AuthRequest, res: Response) => {
-  try {
+export const clearCartHandler = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
     const userId = req.user!.userId
 
     await clearCart(userId)
 
     return res.status(200).json({ message: "Cart cleared" })
-  } catch (error) {
-    console.error("Failed to clear cart:", error)
-    return res.status(500).json({ message: "Failed to clear cart" })
-  }
-}
+  },
+)

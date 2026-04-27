@@ -1,7 +1,7 @@
 import { prisma } from "../lib/prisma"
 
 const createCart = async (userId: string) => {
-  let cart = await prisma.cart.create({
+  const cart = await prisma.cart.create({
     data: { userId },
     include: {
       items: {
