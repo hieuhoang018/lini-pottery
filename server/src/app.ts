@@ -6,6 +6,7 @@ import productRoutes from "./routes/product.routes"
 import productImageRoutes from "./routes/product-image.routes"
 import authRoutes from "./routes/auth.routes"
 import cartRoutes from "./routes/cart.routes"
+import wishlistRoutes from "./routes/wishlist.routes"
 
 const app = express()
 
@@ -31,5 +32,6 @@ app.use("/api/products", productRoutes)
 app.use("/api", productImageRoutes)
 app.use("/api/auth", authRoutes)
 app.use("/api/cart", cartRoutes)
+app.use("/api/wishlist", wishlistRoutes)
 
 export default app
