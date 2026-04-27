@@ -10,10 +10,18 @@ const router = Router()
 
 router.get("/products/:productId/images", getProductImagesHandler)
 
-router.use(requireAuth)
-router.use(requireAdmin)
+router.post(
+  "/products/:productId/images",
+  requireAuth,
+  requireAdmin,
+  createProductImageHandler,
+)
 
-router.post("/products/:productId/images", createProductImageHandler)
-router.delete("/product-images/:id", deleteProductImageHandler)
+router.delete(
+  "/product-images/:id",
+  requireAuth,
+  requireAdmin,
+  deleteProductImageHandler,
+)
 
 export default router

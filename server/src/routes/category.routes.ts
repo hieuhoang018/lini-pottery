@@ -11,9 +11,6 @@ const router = Router()
 router.get("/", getCategoriesHandler)
 router.get("/:slug", getCategoryBySlugHandler)
 
-router.use(requireAuth)
-router.use(requireAdmin)
-
-router.post("/", createCategoryHandler)
+router.post("/", requireAuth, requireAdmin, createCategoryHandler)
 
 export default router
