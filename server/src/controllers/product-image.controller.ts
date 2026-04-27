@@ -6,6 +6,8 @@ import {
   getImagesByProductId,
   getProductImageById,
 } from "../services/product-image.service"
+import { asyncHandler } from "../utils/asyncHandler"
+import { AppError } from "../utils/AppError"
 
 type ProductIdParams = {
   productId: string
@@ -21,41 +23,35 @@ type CreateProductImageBody = {
   sortOrder?: number | string
 }
 
-export const getProductImagesHandler = async (
-  req: Request<ProductIdParams>,
-  res: Response,
-) => {
-  try {
+export const getProductImagesHandler = asyncHandler(
+  async (req: Request<ProductIdParams>, res: Response) => {
     const { productId } = req.params
 
     const images = await getImagesByProductId(productId)
 
     return res.status(200).json(images)
-  } catch (error) {
-    console.error("Failed to fetch product images:", error)
-    return res.status(500).json({ message: "Failed to fetch product images" })
-  }
-}
+  },
+)
 
-export const createProductImageHandler = async (
-  req: Request<ProductIdParams, {}, CreateProductImageBody>,
-  res: Response,
-) => {
-  try {
+export const createProductImageHandler = asyncHandler(
+  async (
+    req: Request<ProductIdParams, {}, CreateProductImageBody>,
+    res: Response,
+  ) => {
     const { productId } = req.params
 
     if (!req.body || typeof req.body !== "object") {
-      return res.status(400).json({
-        message: "Request body is required and must be valid JSON",
-      })
+      throw new AppError(
+        "Request body is required and must be valid JSON",
+        400,
+        "INVALID_REQUEST_BODY",
+      )
     }
 
     const { imageUrl, altText, sortOrder } = req.body
 
     if (!imageUrl) {
-      return res.status(400).json({
-        message: "imageUrl is required",
-      })
+      throw new AppError("imageUrl is required", 400, "IMAGE_URL_REQUIRED")
     }
 
     const productExists = await prisma.product.findUnique({
@@ -63,18 +59,18 @@ export const createProductImageHandler = async (
     })
 
     if (!productExists) {
-      return res.status(404).json({
-        message: "Product not found",
-      })
+      throw new AppError("Product not found", 404, "PRODUCT_NOT_FOUND")
     }
 
     const numericSortOrder =
       sortOrder !== undefined ? Number(sortOrder) : undefined
 
     if (numericSortOrder !== undefined && Number.isNaN(numericSortOrder)) {
-      return res.status(400).json({
-        message: "sortOrder must be a valid number",
-      })
+      throw new AppError(
+        "sortOrder must be a valid number",
+        400,
+        "INVALID_SORT_ORDER",
+      )
     }
 
     const image = await createProductImage({
@@ -85,25 +81,21 @@ export const createProductImageHandler = async (
     })
 
     return res.status(201).json(image)
-  } catch (error) {
-    console.error("Failed to create product image:", error)
-    return res.status(500).json({ message: "Failed to create product image" })
-  }
-}
+  },
+)
 
-export const deleteProductImageHandler = async (
-  req: Request<ProductImageIdParams>,
-  res: Response,
-) => {
-  try {
+export const deleteProductImageHandler = asyncHandler(
+  async (req: Request<ProductImageIdParams>, res: Response) => {
     const { id } = req.params
 
     const existingImage = await getProductImageById(id)
 
     if (!existingImage) {
-      return res.status(404).json({
-        message: "Product image not found",
-      })
+      throw new AppError(
+        "Product image not found",
+        404,
+        "PRODUCT_IMAGE_NOT_FOUND",
+      )
     }
 
     await deleteProductImage(id)
@@ -111,8 +103,5 @@ export const deleteProductImageHandler = async (
     return res.status(200).json({
       message: "Product image deleted successfully",
     })
-  } catch (error) {
-    console.error("Failed to delete product image:", error)
-    return res.status(500).json({ message: "Failed to delete product image" })
-  }
-}
+  },
+)

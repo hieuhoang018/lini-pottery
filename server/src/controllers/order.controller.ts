@@ -6,9 +6,11 @@ import {
   getOrderByIdForUser,
   guestCheckout,
 } from "../services/order.service"
+import { asyncHandler } from "../utils/asyncHandler"
+import { AppError } from "../utils/AppError"
 
-export const checkoutHandler = async (req: AuthRequest, res: Response) => {
-  try {
+export const checkoutHandler = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
     const userId = req.user!.userId
 
     const {
@@ -30,10 +32,11 @@ export const checkoutHandler = async (req: AuthRequest, res: Response) => {
       !postalCode ||
       !country
     ) {
-      return res.status(400).json({
-        message:
-          "recipientName, phone, streetAddress, city, postalCode, and country are required",
-      })
+      throw new AppError(
+        "recipientName, phone, streetAddress, city, postalCode, and country are required",
+        400,
+        "CHECKOUT_REQUIRED_FIELDS_MISSING",
+      )
     }
 
     const order = await checkoutFromCart({
@@ -56,64 +59,36 @@ export const checkoutHandler = async (req: AuthRequest, res: Response) => {
       },
       order,
     })
-  } catch (error: any) {
-    if (error.message === "CART_EMPTY") {
-      return res.status(400).json({ message: "Cart is empty" })
-    }
+  },
+)
 
-    if (error.message === "PRODUCT_NOT_AVAILABLE") {
-      return res
-        .status(400)
-        .json({ message: "A product is no longer available" })
-    }
-
-    if (error.message === "NOT_ENOUGH_STOCK") {
-      return res
-        .status(400)
-        .json({ message: "Not enough stock for one or more products" })
-    }
-
-    console.error("Checkout failed:", error)
-    return res.status(500).json({ message: "Checkout failed" })
-  }
-}
-
-export const getMyOrdersHandler = async (req: AuthRequest, res: Response) => {
-  try {
+export const getMyOrdersHandler = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
     const userId = req.user!.userId
 
     const orders = await getMyOrders(userId)
 
     return res.status(200).json(orders)
-  } catch (error) {
-    console.error("Failed to fetch orders:", error)
-    return res.status(500).json({ message: "Failed to fetch orders" })
-  }
-}
+  },
+)
 
-export const getMyOrderByIdHandler = async (
-  req: AuthRequest,
-  res: Response,
-) => {
-  try {
+export const getMyOrderByIdHandler = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
     const userId = req.user!.userId
     const { id } = req.params
 
     const order = await getOrderByIdForUser(id, userId)
 
     if (!order) {
-      return res.status(404).json({ message: "Order not found" })
+      throw new AppError("Order not found", 404, "ORDER_NOT_FOUND")
     }
 
     return res.status(200).json(order)
-  } catch (error) {
-    console.error("Failed to fetch order:", error)
-    return res.status(500).json({ message: "Failed to fetch order" })
-  }
-}
+  },
+)
 
-export const guestCheckoutHandler = async (req: Request, res: Response) => {
-  try {
+export const guestCheckoutHandler = asyncHandler(
+  async (req: Request, res: Response) => {
     const {
       items,
       guestName,
@@ -130,13 +105,15 @@ export const guestCheckoutHandler = async (req: Request, res: Response) => {
     } = req.body
 
     if (!Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ message: "items are required" })
+      throw new AppError("items are required", 400, "ITEMS_REQUIRED")
     }
 
     if (!guestName || !guestPhone) {
-      return res.status(400).json({
-        message: "guestName and guestPhone are required",
-      })
+      throw new AppError(
+        "guestName and guestPhone are required",
+        400,
+        "GUEST_REQUIRED_FIELDS_MISSING",
+      )
     }
 
     if (
@@ -147,10 +124,11 @@ export const guestCheckoutHandler = async (req: Request, res: Response) => {
       !postalCode ||
       !country
     ) {
-      return res.status(400).json({
-        message:
-          "recipientName, phone, streetAddress, city, postalCode, and country are required",
-      })
+      throw new AppError(
+        "recipientName, phone, streetAddress, city, postalCode, and country are required",
+        400,
+        "CHECKOUT_REQUIRED_FIELDS_MISSING",
+      )
     }
 
     const normalizedItems = items.map((item) => ({
@@ -167,9 +145,11 @@ export const guestCheckoutHandler = async (req: Request, res: Response) => {
     )
 
     if (hasInvalidProductId) {
-      return res.status(400).json({
-        message: "One or more productId values are invalid",
-      })
+      throw new AppError(
+        "One or more productId values are invalid",
+        400,
+        "INVALID_PRODUCT_ID",
+      )
     }
 
     const order = await guestCheckout({
@@ -195,28 +175,5 @@ export const guestCheckoutHandler = async (req: Request, res: Response) => {
       },
       order,
     })
-  } catch (error: any) {
-    if (error.message === "CART_EMPTY") {
-      return res.status(400).json({ message: "Cart is empty" })
-    }
-
-    if (error.message === "PRODUCT_NOT_AVAILABLE") {
-      return res
-        .status(400)
-        .json({ message: "A product is no longer available" })
-    }
-
-    if (error.message === "INVALID_QUANTITY") {
-      return res.status(400).json({ message: "Invalid quantity" })
-    }
-
-    if (error.message === "NOT_ENOUGH_STOCK") {
-      return res
-        .status(400)
-        .json({ message: "Not enough stock for one or more products" })
-    }
-
-    console.error("Guest checkout failed:", error)
-    return res.status(500).json({ message: "Guest checkout failed" })
-  }
-}
+  },
+)

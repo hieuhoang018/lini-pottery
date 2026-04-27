@@ -4,49 +4,45 @@ import {
   getCategoryBySlug,
   createCategory,
 } from "../services/category.service"
+import { asyncHandler } from "../utils/asyncHandler"
+import { AppError } from "../utils/AppError"
 
 type CategoryParams = {
   slug: string
 }
 
-export const getCategoriesHandler = async (_req: Request, res: Response) => {
-  try {
+export const getCategoriesHandler = asyncHandler(
+  async (_req: Request, res: Response) => {
     const categories = await getAllCategories()
-    res.status(200).json(categories)
-  } catch (error) {
-    console.error("Failed to fetch categories:", error)
-    res.status(500).json({ message: "Failed to fetch categories" })
-  }
-}
 
-export const getCategoryBySlugHandler = async (
-  req: Request<CategoryParams>,
-  res: Response,
-) => {
-  try {
+    return res.status(200).json(categories)
+  },
+)
+
+export const getCategoryBySlugHandler = asyncHandler(
+  async (req: Request<CategoryParams>, res: Response) => {
     const { slug } = req.params
 
     const category = await getCategoryBySlug(slug)
 
     if (!category) {
-      return res.status(404).json({ message: "Category not found" })
+      throw new AppError("Category not found", 404, "CATEGORY_NOT_FOUND")
     }
 
-    res.status(200).json(category)
-  } catch (error) {
-    console.error("Failed to fetch category:", error)
-    res.status(500).json({ message: "Failed to fetch category" })
-  }
-}
+    return res.status(200).json(category)
+  },
+)
 
-export const createCategoryHandler = async (req: Request, res: Response) => {
-  try {
+export const createCategoryHandler = asyncHandler(
+  async (req: Request, res: Response) => {
     const { name, slug } = req.body
 
     if (!name || !slug) {
-      return res.status(400).json({
-        message: "Name and slug are required",
-      })
+      throw new AppError(
+        "Name and slug are required",
+        400,
+        "CATEGORY_REQUIRED_FIELDS_MISSING",
+      )
     }
 
     const category = await createCategory({
@@ -54,16 +50,6 @@ export const createCategoryHandler = async (req: Request, res: Response) => {
       slug,
     })
 
-    res.status(201).json(category)
-  } catch (error: any) {
-    console.error("Failed to create category:", error)
-
-    if (error.code === "P2002") {
-      return res.status(409).json({
-        message: "Category slug already exists",
-      })
-    }
-
-    res.status(500).json({ message: "Failed to create category" })
-  }
-}
+    return res.status(201).json(category)
+  },
+)

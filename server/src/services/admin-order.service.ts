@@ -1,5 +1,14 @@
 import { prisma } from "../lib/prisma"
 
+type OrderStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED"
+
+type PaymentStatus = "PENDING" | "PAID" | "CANCELLED"
+
 export const getAllOrdersForAdmin = async () => {
   return prisma.order.findMany({
     include: {
@@ -42,7 +51,7 @@ export const getOrderByIdForAdmin = async (orderId: string) => {
 
 export const updateOrderStatusForAdmin = async (
   orderId: string,
-  status: "PENDING" | "CONFIRMED" | "SHIPPED" | "DELIVERED" | "CANCELLED",
+  status: OrderStatus,
 ) => {
   return prisma.order.update({
     where: { id: orderId },
@@ -57,15 +66,12 @@ export const updateOrderStatusForAdmin = async (
 
 export const updatePaymentStatusForAdmin = async (
   orderId: string,
-  paymentStatus: "PENDING" | "PAID" | "CANCELLED",
+  paymentStatus: PaymentStatus,
 ) => {
   return prisma.$transaction(async (tx) => {
-    const order = await tx.order.update({
+    await tx.order.update({
       where: { id: orderId },
       data: { paymentStatus },
-      include: {
-        paymentRecords: true,
-      },
     })
 
     if (paymentStatus === "PAID") {
@@ -89,7 +95,14 @@ export const updatePaymentStatusForAdmin = async (
       })
     }
 
-    return order
+    return tx.order.findUnique({
+      where: { id: orderId },
+      include: {
+        items: true,
+        address: true,
+        paymentRecords: true,
+      },
+    })
   })
 }
 

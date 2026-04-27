@@ -20,27 +20,31 @@ export const registerUser = async (data: RegisterInput) => {
 
   const passwordHash = await bcrypt.hash(data.password, 10)
 
-  const user = await prisma.user.create({
-    data: {
-      name: data.name,
-      email: data.email,
-      passwordHash,
-      phone: data.phone,
-    },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      phone: true,
-      createdAt: true,
-    },
-  })
+  const user = await prisma.$transaction(async (tx) => {
+    const createdUser = await tx.user.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        passwordHash,
+        phone: data.phone,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        phone: true,
+        createdAt: true,
+      },
+    })
 
-  await prisma.cart.create({
-    data: {
-      userId: user.id,
-    },
+    await tx.cart.create({
+      data: {
+        userId: createdUser.id,
+      },
+    })
+
+    return createdUser
   })
 
   return user
