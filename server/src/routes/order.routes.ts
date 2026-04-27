@@ -3,10 +3,13 @@ import {
   checkoutHandler,
   getMyOrderByIdHandler,
   getMyOrdersHandler,
+  guestCheckoutHandler,
 } from "../controllers/order.controller"
 import { requireAuth } from "../middlewares/auth.middleware"
 
 const router = Router()
+
+router.post("/guest-checkout", guestCheckoutHandler)
 
 router.use(requireAuth)
 

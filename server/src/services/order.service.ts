@@ -1,16 +1,5 @@
 import { prisma } from "../lib/prisma"
-
-type CheckoutInput = {
-  userId: string
-  recipientName: string
-  phone: string
-  streetAddress: string
-  city: string
-  postalCode: string
-  country: string
-  additionalInfo?: string
-  notes?: string
-}
+import { CheckoutInput, GuestCheckoutInput } from "../types/order"
 
 export const checkoutFromCart = async (data: CheckoutInput) => {
   return prisma.$transaction(async (tx) => {
@@ -149,5 +138,125 @@ export const getOrderByIdForUser = async (orderId: string, userId: string) => {
       address: true,
       paymentRecords: true,
     },
+  })
+}
+
+export const guestCheckout = async (data: GuestCheckoutInput) => {
+  return prisma.$transaction(async (tx) => {
+    if (!data.items.length) {
+      throw new Error("CART_EMPTY")
+    }
+
+    const products = await tx.product.findMany({
+      where: {
+        id: {
+          in: data.items.map((item) => item.productId),
+        },
+      },
+      include: {
+        images: {
+          orderBy: { sortOrder: "asc" },
+        },
+      },
+    })
+
+    if (products.length !== data.items.length) {
+      throw new Error("PRODUCT_NOT_AVAILABLE")
+    }
+
+    const itemsWithProducts = data.items.map((item) => {
+      const product = products.find((p) => p.id === item.productId)
+
+      if (!product || !product.isActive) {
+        throw new Error("PRODUCT_NOT_AVAILABLE")
+      }
+
+      if (item.quantity <= 0 || !Number.isInteger(item.quantity)) {
+        throw new Error("INVALID_QUANTITY")
+      }
+
+      if (product.stockQuantity < item.quantity) {
+        throw new Error("NOT_ENOUGH_STOCK")
+      }
+
+      return {
+        ...item,
+        product,
+      }
+    })
+
+    const subtotal = itemsWithProducts.reduce((sum, item) => {
+      return sum + Number(item.product.price) * item.quantity
+    }, 0)
+
+    const shippingFee = 0
+    const total = subtotal + shippingFee
+
+    const order = await tx.order.create({
+      data: {
+        userId: null,
+        guestName: data.guestName,
+        guestEmail: data.guestEmail,
+        guestPhone: data.guestPhone,
+        status: "PENDING",
+        paymentStatus: "PENDING",
+        paymentMethod: "BANK_QR",
+        subtotalAmount: subtotal,
+        shippingFee,
+        totalAmount: total,
+        notes: data.notes,
+
+        items: {
+          create: itemsWithProducts.map((item) => ({
+            productId: item.productId,
+            productName: item.product.name,
+            productPrice: item.product.price,
+            quantity: item.quantity,
+            lineTotal: Number(item.product.price) * item.quantity,
+            productImageUrl:
+              item.product.featuredImageUrl ||
+              item.product.images[0]?.imageUrl ||
+              null,
+          })),
+        },
+
+        address: {
+          create: {
+            recipientName: data.recipientName,
+            phone: data.phone,
+            streetAddress: data.streetAddress,
+            city: data.city,
+            postalCode: data.postalCode,
+            country: data.country,
+            additionalInfo: data.additionalInfo,
+          },
+        },
+
+        paymentRecords: {
+          create: {
+            method: "BANK_QR",
+            status: "PENDING",
+          },
+        },
+      },
+      include: {
+        items: true,
+        address: true,
+        paymentRecords: true,
+      },
+    })
+
+    for (const item of itemsWithProducts) {
+      await tx.product.update({
+        where: { id: item.productId },
+        data: {
+          stockQuantity: {
+            decrement: item.quantity,
+          },
+        },
+      })
+    }
+
+    return order
   })
 }
