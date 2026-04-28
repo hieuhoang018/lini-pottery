@@ -11,3 +11,10 @@ export type LoginResponse = {
   token: string
   user: User
 }
+
+export type AuthContextType = {
+  user: User | null
+  loading: boolean
+  login: (token: string) => Promise<void>
+  logout: () => void
+}
