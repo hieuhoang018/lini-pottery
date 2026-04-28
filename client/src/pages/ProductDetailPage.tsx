@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { getProductBySlug } from "../api/productApi"
 import type { Product } from "../types/product"
+import { addCartItem } from "../api/cartApi"
+import toast from "react-hot-toast"
 
 export function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -9,6 +11,7 @@ export function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null)
   const [selectedImage, setSelectedImage] = useState("")
   const [loading, setLoading] = useState(true)
+  const [addingToCart, setAddingToCart] = useState(false)
   const [error, setError] = useState("")
 
   useEffect(() => {
@@ -36,6 +39,25 @@ export function ProductDetailPage() {
         <p className="mx-auto max-w-7xl text-stone-600">Loading product...</p>
       </main>
     )
+  }
+
+  const handleAddToCart = async () => {
+    if (!product) return
+
+    try {
+      setAddingToCart(true)
+
+      await addCartItem(product.id, 1)
+
+      toast.success("Product added to cart")
+    } catch (err: any) {
+      toast.error(
+        err.response?.data?.message ||
+          "Please log in before adding products to cart",
+      )
+    } finally {
+      setAddingToCart(false)
+    }
   }
 
   if (error || !product) {
@@ -166,12 +188,12 @@ export function ProductDetailPage() {
 
             <div className="mt-8 flex gap-3">
               <button
-                disabled={isOutOfStock}
+                disabled={isOutOfStock || addingToCart}
+                onClick={handleAddToCart}
                 className="rounded-full bg-amber-800 px-6 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:bg-stone-300"
               >
-                Add to cart
+                {addingToCart ? "Adding..." : "Add to cart"}
               </button>
-
               <button className="rounded-full border border-stone-300 bg-white px-6 py-3 font-semibold text-stone-800 hover:bg-stone-100">
                 Add to wishlist
               </button>
