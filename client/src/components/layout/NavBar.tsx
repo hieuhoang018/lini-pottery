@@ -1,9 +1,10 @@
 import { Link, NavLink, useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
+import { useAuth } from "../../contexts/AuthContext"
 
 export function Navbar() {
   const navigate = useNavigate()
-  const token = localStorage.getItem("token")
+  const { user, logout } = useAuth()
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     isActive
@@ -11,7 +12,7 @@ export function Navbar() {
       : "font-medium text-stone-700 hover:text-amber-800"
 
   const handleLogout = () => {
-    localStorage.removeItem("token")
+    logout()
     toast.success("Logged out")
     navigate("/")
   }
@@ -32,7 +33,7 @@ export function Navbar() {
             Cart
           </NavLink>
 
-          {!token ? (
+          {!user ? (
             <>
               <NavLink to="/login" className={linkClass}>
                 Login

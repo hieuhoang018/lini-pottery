@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { getProductBySlug } from "../api/productApi"
 import type { Product } from "../types/product"
-import { addCartItem } from "../api/cartApi"
+import { useCart } from "../contexts/CartContext"
 import toast from "react-hot-toast"
 
 export function ProductDetailPage() {
@@ -14,6 +14,7 @@ export function ProductDetailPage() {
   const [addingToCart, setAddingToCart] = useState(false)
   const [error, setError] = useState("")
 
+  const { addToCart } = useCart()
   useEffect(() => {
     if (!slug) return
 
@@ -46,14 +47,10 @@ export function ProductDetailPage() {
 
     try {
       setAddingToCart(true)
-
-      await addCartItem(product.id, 1)
-
-      toast.success("Product added to cart")
+      await addToCart(product, 1)
     } catch (err: any) {
       toast.error(
-        err.response?.data?.message ||
-          "Please log in before adding products to cart",
+        err.response?.data?.message || "Failed to add product to cart",
       )
     } finally {
       setAddingToCart(false)
