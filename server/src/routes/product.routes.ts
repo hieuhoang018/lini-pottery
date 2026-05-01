@@ -6,12 +6,14 @@ import {
   updateProductHandler,
   updateProductStockHandler,
   updateProductActiveStatusHandler,
+  getProductByIdHandler,
 } from "../controllers/product.controller"
 import { requireAuth, requireAdmin } from "../middlewares/auth.middleware"
 
 const router = Router()
 
 router.get("/", getProductsHandler)
+router.get("/id/:id", requireAuth, requireAdmin, getProductByIdHandler)
 router.get("/slug/:slug", getProductBySlugHandler)
 
 router.post("/", requireAuth, requireAdmin, createProductHandler)

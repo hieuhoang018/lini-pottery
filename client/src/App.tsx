@@ -8,6 +8,12 @@ import { RegisterPage } from "./pages/RegisterPage"
 import { CheckoutPage } from "./pages/CheckoutPage"
 import { WishlistPage } from "./pages/WishlistPage"
 import { ProtectedRoute } from "./components/auth/ProtectedRoute"
+import { AdminRoute } from "./components/auth/AdminRoute"
+import { AdminLayout } from "./components/admin/AdminLayout"
+import { AdminOrdersPage } from "./pages/admin/AdminOrdersPage"
+import { AdminProductsPage } from "./pages/admin/AdminProductsPage"
+import { AdminProductDetailPage } from "./pages/admin/AdminProductDetailPage"
+import { AdminCreateProductPage } from "./pages/admin/AdminCreateProductPage"
 
 function App() {
   return (
@@ -29,6 +35,19 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminLayout />
+            </AdminRoute>
+          }
+        >
+          <Route path="orders" element={<AdminOrdersPage />} />
+          <Route path="products" element={<AdminProductsPage />} />
+          <Route path="products/new" element={<AdminCreateProductPage />} />
+          <Route path="products/:id" element={<AdminProductDetailPage />} />
+        </Route>
       </Routes>
     </>
   )

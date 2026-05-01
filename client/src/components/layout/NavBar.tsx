@@ -41,6 +41,11 @@ export function Navbar() {
             </>
           ) : (
             <>
+              {user.role === "ADMIN" && (
+                <NavLink to="/admin/orders" className={linkClass}>
+                  Admin
+                </NavLink>
+              )}
               <NavLink to="/wishlist" className={linkClass}>
                 Wishlist
               </NavLink>

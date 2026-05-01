@@ -77,6 +77,14 @@ export const createProduct = async (data: CreateProductInput) => {
 export const getProductById = async (id: string) => {
   return prisma.product.findUnique({
     where: { id },
+    include: {
+      category: true,
+      images: {
+        orderBy: {
+          sortOrder: "asc",
+        },
+      },
+    },
   })
 }
 
