@@ -1,10 +1,13 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
-import { login } from "../api/authApi"
+import { login as loginApi } from "../api/authApi"
+import { useAuth } from "../contexts/AuthContext"
 
 export function LoginPage() {
   const navigate = useNavigate()
+  const { login } = useAuth()
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -13,9 +16,12 @@ export function LoginPage() {
     event.preventDefault()
 
     try {
-      const result = await login({ email, password })
+      const result = await loginApi({ email, password })
 
-      localStorage.setItem("token", result.token)
+      await login(result.token)
+
+      localStorage.removeItem("guest_cart")
+
       toast.success("Logged in successfully")
       navigate("/")
     } catch (err: any) {
