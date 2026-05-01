@@ -40,12 +40,17 @@ export function Navbar() {
               </NavLink>
             </>
           ) : (
-            <button
-              onClick={handleLogout}
-              className="font-medium text-stone-700 hover:text-amber-800"
-            >
-              Logout
-            </button>
+            <>
+              <NavLink to="/wishlist" className={linkClass}>
+                Wishlist
+              </NavLink>
+              <button
+                onClick={handleLogout}
+                className="font-medium text-stone-700 hover:text-amber-800"
+              >
+                Logout
+              </button>
+            </>
           )}
         </div>
       </nav>

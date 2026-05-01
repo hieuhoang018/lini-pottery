@@ -4,9 +4,13 @@ import { getProductBySlug } from "../api/productApi"
 import type { Product } from "../types/product"
 import { useCart } from "../contexts/CartContext"
 import toast from "react-hot-toast"
+import { addWishlistItem } from "../api/wishlistApi"
+import { useAuth } from "../contexts/AuthContext"
 
 export function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>()
+  const { user } = useAuth()
+  const [addingToWishlist, setAddingToWishlist] = useState(false)
 
   const [product, setProduct] = useState<Product | null>(null)
   const [selectedImage, setSelectedImage] = useState("")
@@ -33,6 +37,25 @@ export function ProductDetailPage() {
       .catch((err) => setError(err.response?.data?.message || err.message))
       .finally(() => setLoading(false))
   }, [slug])
+
+  const handleAddToWishlist = async () => {
+    if (!product) return
+
+    if (!user) {
+      toast.error("Please log in to use wishlist")
+      return
+    }
+
+    try {
+      setAddingToWishlist(true)
+      await addWishlistItem(product.id)
+      toast.success("Added to wishlist")
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to add to wishlist")
+    } finally {
+      setAddingToWishlist(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -191,8 +214,12 @@ export function ProductDetailPage() {
               >
                 {addingToCart ? "Adding..." : "Add to cart"}
               </button>
-              <button className="rounded-full border border-stone-300 bg-white px-6 py-3 font-semibold text-stone-800 hover:bg-stone-100">
-                Add to wishlist
+              <button
+                onClick={handleAddToWishlist}
+                disabled={addingToWishlist}
+                className="rounded-full border border-stone-300 bg-white px-6 py-3 font-semibold text-stone-800 hover:bg-stone-100 disabled:cursor-not-allowed disabled:bg-stone-100"
+              >
+                {addingToWishlist ? "Adding..." : "Add to wishlist"}
               </button>
             </div>
           </div>
