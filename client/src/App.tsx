@@ -16,6 +16,7 @@ import { AdminProductDetailPage } from "./pages/admin/AdminProductDetailPage"
 import { AdminCreateProductPage } from "./pages/admin/AdminCreateProductPage"
 import { AdminOrderDetailPage } from "./pages/admin/AdminOrderDetailPage"
 import { MyOrdersPage } from "./pages/MyOrdersPage"
+import { OrderSuccessPage } from "./pages/OrderSuccessPage"
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/order-success" element={<OrderSuccessPage />} />
         <Route
           path="/wishlist"
           element={

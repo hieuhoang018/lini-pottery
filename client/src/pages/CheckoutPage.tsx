@@ -61,8 +61,10 @@ export function CheckoutPage() {
     try {
       setSubmitting(true)
 
+      let response
+
       if (user) {
-        await checkoutLoggedInUser({
+        response = await checkoutLoggedInUser({
           recipientName: form.recipientName,
           phone: form.phone,
           streetAddress: form.streetAddress,
@@ -73,7 +75,7 @@ export function CheckoutPage() {
           notes: form.notes || undefined,
         })
       } else {
-        await checkoutGuest({
+        response = await checkoutGuest({
           items: items.map((item) => ({
             productId: item.product.id,
             quantity: item.quantity,
@@ -94,11 +96,13 @@ export function CheckoutPage() {
 
       await clearCart()
       toast.success("Order placed successfully")
-      if (user) {
-        navigate("/orders")
-      } else {
-        navigate("/")
-      }
+
+      navigate("/order-success", {
+        state: {
+          order: response.order,
+          paymentInstruction: response.paymentInstruction,
+        },
+      })
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Checkout failed")
     } finally {

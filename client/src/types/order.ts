@@ -63,3 +63,31 @@ export type CustomerOrder = {
     updatedAt: string
   }[]
 }
+
+export type OrderSuccessState = {
+  order?: {
+    id: string
+    totalAmount: string
+    paymentStatus: string
+    status: string
+    items?: {
+      id: string
+      productName: string
+      quantity: number
+      lineTotal: string
+      productImageUrl?: string | null
+    }[]
+    address?: {
+      recipientName: string
+      phone: string
+      streetAddress: string
+      city: string
+      postalCode: string
+      country: string
+    } | null
+  }
+  paymentInstruction?: {
+    method: string
+    note: string
+  }
+}
