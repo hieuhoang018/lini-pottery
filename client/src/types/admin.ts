@@ -13,6 +13,14 @@ export type AdminOrder = {
   notes?: string | null
   createdAt: string
   updatedAt: string
+
+  user?: {
+    id: string
+    name: string
+    email: string
+    phone?: string | null
+  } | null
+
   items: {
     id: string
     productName: string
@@ -21,6 +29,7 @@ export type AdminOrder = {
     lineTotal: string
     productImageUrl?: string | null
   }[]
+
   address?: {
     recipientName: string
     phone: string
@@ -30,5 +39,14 @@ export type AdminOrder = {
     country: string
     additionalInfo?: string | null
   } | null
-}
 
+  paymentRecords?: {
+    id: string
+    method: "BANK_QR"
+    status: "PENDING" | "CONFIRMED" | "REJECTED"
+    referenceNote?: string | null
+    paidAt?: string | null
+    createdAt: string
+    updatedAt: string
+  }[]
+}

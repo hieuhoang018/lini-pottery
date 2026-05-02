@@ -6,6 +6,11 @@ export const getAdminOrders = async () => {
   return response.data
 }
 
+export const getAdminOrderById = async (orderId: string) => {
+  const response = await apiClient.get<AdminOrder>(`/admin/orders/${orderId}`)
+  return response.data
+}
+
 export const updateAdminOrderStatus = async (
   orderId: string,
   status: AdminOrder["status"],
