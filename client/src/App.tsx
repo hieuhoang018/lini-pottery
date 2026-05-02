@@ -15,6 +15,7 @@ import { AdminProductsPage } from "./pages/admin/AdminProductsPage"
 import { AdminProductDetailPage } from "./pages/admin/AdminProductDetailPage"
 import { AdminCreateProductPage } from "./pages/admin/AdminCreateProductPage"
 import { AdminOrderDetailPage } from "./pages/admin/AdminOrderDetailPage"
+import { MyOrdersPage } from "./pages/MyOrdersPage"
 
 function App() {
   return (
@@ -33,6 +34,14 @@ function App() {
           element={
             <ProtectedRoute>
               <WishlistPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute>
+              <MyOrdersPage />
             </ProtectedRoute>
           }
         />

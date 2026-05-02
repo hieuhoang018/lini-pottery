@@ -94,7 +94,11 @@ export function CheckoutPage() {
 
       await clearCart()
       toast.success("Order placed successfully")
-      navigate("/")
+      if (user) {
+        navigate("/orders")
+      } else {
+        navigate("/")
+      }
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Checkout failed")
     } finally {

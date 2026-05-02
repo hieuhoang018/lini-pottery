@@ -49,6 +49,9 @@ export function Navbar() {
               <NavLink to="/wishlist" className={linkClass}>
                 Wishlist
               </NavLink>
+              <NavLink to="/orders" className={linkClass}>
+                Orders
+              </NavLink>
               <button
                 onClick={handleLogout}
                 className="font-medium text-stone-700 hover:text-amber-800"
