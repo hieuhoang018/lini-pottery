@@ -8,6 +8,7 @@ import {
 } from "../services/admin-order.service"
 import { asyncHandler } from "../utils/asyncHandler"
 import { AppError } from "../utils/AppError"
+import { OrderStatus, PaymentStatus } from "../types/order"
 
 type OrderIdParams = {
   id: string
@@ -23,9 +24,40 @@ const allowedOrderStatuses = [
 
 const allowedPaymentStatuses = ["PENDING", "PAID", "CANCELLED"]
 
+type AdminOrdersQuery = {
+  search?: string
+  status?: string
+  paymentStatus?: string
+}
+
 export const getAdminOrdersHandler = asyncHandler(
-  async (_req: Request, res: Response) => {
-    const orders = await getAllOrdersForAdmin()
+  async (req: Request<{}, {}, {}, AdminOrdersQuery>, res: Response) => {
+    const search = req.query.search
+    const status = req.query.status?.toUpperCase()
+    const paymentStatus = req.query.paymentStatus?.toUpperCase()
+
+    if (status && !allowedOrderStatuses.includes(status)) {
+      throw new AppError(
+        "Invalid status. Allowed values: PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED",
+        400,
+        "INVALID_ORDER_STATUS",
+      )
+    }
+
+    if (paymentStatus && !allowedPaymentStatuses.includes(paymentStatus)) {
+      throw new AppError(
+        "Invalid paymentStatus. Allowed values: PENDING, PAID, CANCELLED",
+        400,
+        "INVALID_PAYMENT_STATUS",
+      )
+    }
+
+    const orders = await getAllOrdersForAdmin({
+      search,
+      status: status as OrderStatus | undefined,
+      paymentStatus: paymentStatus as PaymentStatus | undefined,
+    })
+
     return res.status(200).json(orders)
   },
 )

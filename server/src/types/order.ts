@@ -29,3 +29,17 @@ export type GuestCheckoutInput = {
   additionalInfo?: string
   notes?: string
 }
+
+export type GetMyOrdersInput = {
+  userId: string
+  search?: string
+}
+
+export type OrderStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED"
+
+export type PaymentStatus = "PENDING" | "PAID" | "CANCELLED"

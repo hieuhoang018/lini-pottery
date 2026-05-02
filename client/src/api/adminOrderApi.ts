@@ -1,44 +1,57 @@
 import type { AdminOrder } from "../types/admin"
 import { apiClient } from "./apiClient"
 
-export const getAdminOrders = async () => {
-  const response = await apiClient.get<AdminOrder[]>("/admin/orders")
-  return response.data
+type GetAdminOrdersParams = {
+  search?: string
+  status?: string
+  paymentStatus?: string
+}
+
+export const getAdminOrders = async (params?: GetAdminOrdersParams) => {
+  const { data } = await apiClient.get<AdminOrder[]>("/admin/orders", {
+    params,
+  })
+
+  return data
 }
 
 export const getAdminOrderById = async (orderId: string) => {
-  const response = await apiClient.get<AdminOrder>(`/admin/orders/${orderId}`)
-  return response.data
+  const { data } = await apiClient.get<AdminOrder>(`/admin/orders/${orderId}`)
+  return data
 }
 
 export const updateAdminOrderStatus = async (
   orderId: string,
   status: AdminOrder["status"],
 ) => {
-  const response = await apiClient.patch<AdminOrder>(
+  const { data } = await apiClient.patch<AdminOrder>(
     `/admin/orders/${orderId}/status`,
-    { status },
+    {
+      status,
+    },
   )
 
-  return response.data
+  return data
 }
 
 export const updateAdminPaymentStatus = async (
   orderId: string,
   paymentStatus: AdminOrder["paymentStatus"],
 ) => {
-  const response = await apiClient.patch<AdminOrder>(
+  const { data } = await apiClient.patch<AdminOrder>(
     `/admin/orders/${orderId}/payment`,
-    { paymentStatus },
+    {
+      paymentStatus,
+    },
   )
 
-  return response.data
+  return data
 }
 
 export const cancelAdminOrder = async (orderId: string) => {
-  const response = await apiClient.patch<AdminOrder>(
+  const { data } = await apiClient.patch<AdminOrder>(
     `/admin/orders/${orderId}/cancel`,
   )
 
-  return response.data
+  return data
 }

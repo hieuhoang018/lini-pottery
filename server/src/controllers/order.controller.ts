@@ -9,6 +9,10 @@ import {
 import { asyncHandler } from "../utils/asyncHandler"
 import { AppError } from "../utils/AppError"
 
+type MyOrdersQuery = {
+  search?: string
+}
+
 export const checkoutHandler = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const userId = req.user!.userId
@@ -63,10 +67,17 @@ export const checkoutHandler = asyncHandler(
 )
 
 export const getMyOrdersHandler = asyncHandler(
-  async (req: AuthRequest, res: Response) => {
+  async (
+    req: AuthRequest & Request<{}, {}, {}, MyOrdersQuery>,
+    res: Response,
+  ) => {
     const userId = req.user!.userId
+    const search = req.query.search
 
-    const orders = await getMyOrders(userId)
+    const orders = await getMyOrders({
+      userId,
+      search,
+    })
 
     return res.status(200).json(orders)
   },

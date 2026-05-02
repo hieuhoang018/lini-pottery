@@ -2,18 +2,29 @@ import { prisma } from "../lib/prisma"
 import { CreateProductInput } from "../types/product"
 import { UpdateProductInput } from "../types/product"
 
+type ProductSortOption = "newest" | "price_asc" | "price_desc"
+
 type GetProductsParams = {
   categorySlug?: string
   activeOnly?: boolean
+  search?: string
+  sort?: ProductSortOption
+  availableOnly?: boolean
 }
 
 export const getAllProducts = async ({
   categorySlug,
   activeOnly = true,
+  search,
+  sort = "newest",
+  availableOnly = false,
 }: GetProductsParams = {}) => {
+  const trimmedSearch = search?.trim()
+
   return prisma.product.findMany({
     where: {
       ...(activeOnly ? { isActive: true } : {}),
+
       ...(categorySlug
         ? {
             category: {
@@ -21,7 +32,55 @@ export const getAllProducts = async ({
             },
           }
         : {}),
+
+      ...(availableOnly
+        ? {
+            stockQuantity: {
+              gt: 0,
+            },
+          }
+        : {}),
+
+      ...(trimmedSearch
+        ? {
+            OR: [
+              {
+                name: {
+                  contains: trimmedSearch,
+                  mode: "insensitive",
+                },
+              },
+              {
+                description: {
+                  contains: trimmedSearch,
+                  mode: "insensitive",
+                },
+              },
+              {
+                material: {
+                  contains: trimmedSearch,
+                  mode: "insensitive",
+                },
+              },
+              {
+                color: {
+                  contains: trimmedSearch,
+                  mode: "insensitive",
+                },
+              },
+              {
+                category: {
+                  name: {
+                    contains: trimmedSearch,
+                    mode: "insensitive",
+                  },
+                },
+              },
+            ],
+          }
+        : {}),
     },
+
     include: {
       category: true,
       images: {
@@ -30,9 +89,13 @@ export const getAllProducts = async ({
         },
       },
     },
-    orderBy: {
-      createdAt: "desc",
-    },
+
+    orderBy:
+      sort === "price_asc"
+        ? { price: "asc" }
+        : sort === "price_desc"
+          ? { price: "desc" }
+          : { createdAt: "desc" },
   })
 }
 
