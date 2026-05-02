@@ -1,5 +1,10 @@
 import { prisma } from "../lib/prisma"
-import { CheckoutInput, GuestCheckoutInput } from "../types/order"
+import { OrderStatus, PaymentStatus } from "@prisma/client"
+import {
+  CheckoutInput,
+  GetMyOrdersInput,
+  GuestCheckoutInput,
+} from "../types/order"
 
 export const checkoutFromCart = async (data: CheckoutInput) => {
   return prisma.$transaction(async (tx) => {
@@ -113,14 +118,105 @@ export const checkoutFromCart = async (data: CheckoutInput) => {
   })
 }
 
-export const getMyOrders = async (userId: string) => {
+export const getMyOrders = async ({ userId, search }: GetMyOrdersInput) => {
+  const trimmedSearch = search?.trim()
+  const orderStatusSearch = getOrderStatusSearch(trimmedSearch)
+  const paymentStatusSearch = getPaymentStatusSearch(trimmedSearch)
+
   return prisma.order.findMany({
-    where: { userId },
+    where: {
+      userId,
+
+      ...(trimmedSearch
+        ? {
+            OR: [
+              {
+                id: {
+                  equals: trimmedSearch,
+                },
+              },
+
+              ...(orderStatusSearch
+                ? [
+                    {
+                      status: {
+                        equals: orderStatusSearch,
+                      },
+                    },
+                  ]
+                : []),
+
+              ...(paymentStatusSearch
+                ? [
+                    {
+                      paymentStatus: {
+                        equals: paymentStatusSearch,
+                      },
+                    },
+                  ]
+                : []),
+
+              {
+                address: {
+                  is: {
+                    recipientName: {
+                      contains: trimmedSearch,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              },
+              {
+                address: {
+                  is: {
+                    phone: {
+                      contains: trimmedSearch,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              },
+              {
+                address: {
+                  is: {
+                    city: {
+                      contains: trimmedSearch,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              },
+              {
+                address: {
+                  is: {
+                    postalCode: {
+                      contains: trimmedSearch,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              },
+              {
+                items: {
+                  some: {
+                    productName: {
+                      contains: trimmedSearch,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              },
+            ],
+          }
+        : {}),
+    },
+
     include: {
       items: true,
       address: true,
       paymentRecords: true,
     },
+
     orderBy: {
       createdAt: "desc",
     },
@@ -259,4 +355,28 @@ export const guestCheckout = async (data: GuestCheckoutInput) => {
 
     return order
   })
+}
+
+const getOrderStatusSearch = (search?: string): OrderStatus | undefined => {
+  if (!search) return undefined
+
+  const value = search.toUpperCase()
+
+  if (Object.values(OrderStatus).includes(value as OrderStatus)) {
+    return value as OrderStatus
+  }
+
+  return undefined
+}
+
+const getPaymentStatusSearch = (search?: string): PaymentStatus | undefined => {
+  if (!search) return undefined
+
+  const value = search.toUpperCase()
+
+  if (Object.values(PaymentStatus).includes(value as PaymentStatus)) {
+    return value as PaymentStatus
+  }
+
+  return undefined
 }

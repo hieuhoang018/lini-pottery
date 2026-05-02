@@ -19,11 +19,15 @@ export type GuestCheckoutInput = CheckoutAddress & {
   }[]
 }
 
-export type CustomerOrder = {
+export type Order = {
   id: string
-  status: "PENDING" | "CONFIRMED" | "SHIPPED" | "DELIVERED" | "CANCELLED"
-  paymentStatus: "PENDING" | "PAID" | "CANCELLED"
-  paymentMethod: "BANK_QR"
+  userId?: string | null
+  guestName?: string | null
+  guestEmail?: string | null
+  guestPhone?: string | null
+  status: OrderStatus
+  paymentStatus: PaymentStatus
+  paymentMethod: PaymentMethod
   subtotalAmount: string
   shippingFee: string
   totalAmount: string
@@ -31,45 +35,90 @@ export type CustomerOrder = {
   createdAt: string
   updatedAt: string
 
-  items: {
-    id: string
-    productId?: string | null
-    productName: string
-    productPrice: string
-    quantity: number
-    lineTotal: string
-    productImageUrl?: string | null
-    createdAt: string
-  }[]
+  items: OrderItem[]
+  address: OrderAddress | null
+  paymentRecords: PaymentRecord[]
+}
 
-  address?: {
-    id: string
-    recipientName: string
-    phone: string
-    streetAddress: string
-    city: string
-    postalCode: string
-    country: string
-    additionalInfo?: string | null
-  } | null
+export type OrderStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED"
 
-  paymentRecords?: {
-    id: string
-    method: "BANK_QR"
-    status: "PENDING" | "CONFIRMED" | "REJECTED"
-    referenceNote?: string | null
-    paidAt?: string | null
-    createdAt: string
-    updatedAt: string
-  }[]
+export type PaymentStatus = "PENDING" | "PAID" | "CANCELLED"
+
+export type PaymentMethod = "BANK_QR"
+
+export type PaymentRecordStatus = "PENDING" | "CONFIRMED" | "REJECTED"
+
+export type OrderItem = {
+  id: string
+  orderId: string
+  productId?: string | null
+  productName: string
+  productPrice: string
+  quantity: number
+  lineTotal: string
+  productImageUrl?: string | null
+  createdAt: string
+}
+
+export type OrderAddress = {
+  id: string
+  orderId: string
+  recipientName: string
+  phone: string
+  streetAddress: string
+  city: string
+  postalCode: string
+  country: string
+  additionalInfo?: string | null
+}
+
+export type PaymentRecord = {
+  id: string
+  orderId: string
+  method: PaymentMethod
+  status: PaymentRecordStatus
+  referenceNote?: string | null
+  paidAt?: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type CustomerOrder = {
+  id: string
+  userId?: string | null
+  user?: OrderUser | null
+  guestName?: string | null
+  guestEmail?: string | null
+  guestPhone?: string | null
+
+  status: OrderStatus
+  paymentStatus: PaymentStatus
+  paymentMethod: PaymentMethod
+
+  subtotalAmount: string
+  shippingFee: string
+  totalAmount: string
+  notes?: string | null
+
+  createdAt: string
+  updatedAt: string
+
+  items: OrderItem[]
+  address: OrderAddress | null
+  paymentRecords: PaymentRecord[]
 }
 
 export type OrderSuccessState = {
   order?: {
     id: string
     totalAmount: string
-    paymentStatus: string
-    status: string
+    paymentStatus: PaymentStatus | string
+    status: OrderStatus | string
     items?: {
       id: string
       productName: string
@@ -87,7 +136,14 @@ export type OrderSuccessState = {
     } | null
   }
   paymentInstruction?: {
-    method: string
+    method: PaymentMethod | string
     note: string
   }
+}
+
+export type OrderUser = {
+  id: string
+  name: string
+  email: string
+  phone?: string | null
 }

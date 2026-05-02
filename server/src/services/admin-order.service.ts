@@ -9,8 +9,125 @@ type OrderStatus =
 
 type PaymentStatus = "PENDING" | "PAID" | "CANCELLED"
 
-export const getAllOrdersForAdmin = async () => {
+type GetAllOrdersForAdminParams = {
+  search?: string
+  status?: OrderStatus
+  paymentStatus?: PaymentStatus
+}
+
+export const getAllOrdersForAdmin = async ({
+  search,
+  status,
+  paymentStatus,
+}: GetAllOrdersForAdminParams = {}) => {
+  const trimmedSearch = search?.trim()
+
   return prisma.order.findMany({
+    where: {
+      ...(status ? { status } : {}),
+      ...(paymentStatus ? { paymentStatus } : {}),
+
+      ...(trimmedSearch
+        ? {
+            OR: [
+              {
+                id: {
+                  equals: trimmedSearch,
+                },
+              },
+              {
+                guestName: {
+                  contains: trimmedSearch,
+                  mode: "insensitive",
+                },
+              },
+              {
+                guestEmail: {
+                  contains: trimmedSearch,
+                  mode: "insensitive",
+                },
+              },
+              {
+                guestPhone: {
+                  contains: trimmedSearch,
+                  mode: "insensitive",
+                },
+              },
+              {
+                user: {
+                  is: {
+                    name: {
+                      contains: trimmedSearch,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              },
+              {
+                user: {
+                  is: {
+                    email: {
+                      contains: trimmedSearch,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              },
+              {
+                address: {
+                  is: {
+                    recipientName: {
+                      contains: trimmedSearch,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              },
+              {
+                address: {
+                  is: {
+                    phone: {
+                      contains: trimmedSearch,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              },
+              {
+                address: {
+                  is: {
+                    city: {
+                      contains: trimmedSearch,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              },
+              {
+                address: {
+                  is: {
+                    postalCode: {
+                      contains: trimmedSearch,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              },
+              {
+                items: {
+                  some: {
+                    productName: {
+                      contains: trimmedSearch,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              },
+            ],
+          }
+        : {}),
+    },
+
     include: {
       user: {
         select: {
@@ -24,6 +141,7 @@ export const getAllOrdersForAdmin = async () => {
       address: true,
       paymentRecords: true,
     },
+
     orderBy: {
       createdAt: "desc",
     },

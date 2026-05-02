@@ -19,6 +19,9 @@ type ProductSlugParams = {
 type ProductQuery = {
   category?: string
   active?: string
+  search?: string
+  sort?: "newest" | "price_asc" | "price_desc"
+  availableOnly?: string
 }
 
 type ProductIdParams = {
@@ -29,10 +32,16 @@ export const getProductsHandler = asyncHandler(
   async (req: Request<{}, {}, {}, ProductQuery>, res: Response) => {
     const categorySlug = req.query.category
     const activeOnly = req.query.active === "false" ? false : true
+    const search = req.query.search
+    const sort = req.query.sort || "newest"
+    const availableOnly = req.query.availableOnly === "true"
 
     const products = await getAllProducts({
       categorySlug,
       activeOnly,
+      search,
+      sort,
+      availableOnly,
     })
 
     return res.status(200).json(products)

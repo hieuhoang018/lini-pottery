@@ -54,3 +54,10 @@ export type CreateProductImageInput = {
 export type UpdateProductInput = Partial<CreateProductInput> & {
   isActive?: boolean
 }
+
+export type GetProductsParams = {
+  search?: string
+  category?: string
+  sort?: "newest" | "price_asc" | "price_desc"
+  availableOnly?: boolean
+}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { Link } from "react-router-dom"
+import { Search } from "lucide-react"
 import { getMyOrders } from "../api/orderApi"
 import type { CustomerOrder } from "../types/order"
 
@@ -24,10 +25,25 @@ export function MyOrdersPage() {
   const [orders, setOrders] = useState<CustomerOrder[]>([])
   const [loading, setLoading] = useState(true)
 
+  const [searchTerm, setSearchTerm] = useState("")
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("")
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm.trim())
+    }, 400)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [searchTerm])
+
   const fetchOrders = async () => {
     try {
       setLoading(true)
-      const data = await getMyOrders()
+
+      const data = await getMyOrders({
+        search: debouncedSearchTerm || undefined,
+      })
+
       setOrders(data)
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Failed to load orders")
@@ -38,26 +54,66 @@ export function MyOrdersPage() {
 
   useEffect(() => {
     fetchOrders()
-  }, [])
-
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-stone-50 px-6 py-10">
-        <div className="mx-auto max-w-5xl text-stone-600">
-          Loading orders...
-        </div>
-      </main>
-    )
-  }
+  }, [debouncedSearchTerm])
 
   return (
     <main className="min-h-screen bg-stone-50 px-6 py-10 text-stone-900">
       <div className="mx-auto max-w-6xl">
-        <h1 className="text-3xl font-bold">Đơn hàng của tôi</h1>
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Đơn hàng của tôi</h1>
+            <p className="mt-2 text-sm text-stone-600">
+              Tìm kiếm đơn hàng theo sản phẩm, thành phố, số điện thoại hoặc
+              trạng thái.
+            </p>
+          </div>
 
-        {orders.length === 0 ? (
+          <button
+            onClick={fetchOrders}
+            className="rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-semibold hover:bg-stone-100"
+          >
+            Refresh
+          </button>
+        </div>
+
+        <section className="mt-6 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
+          <div className="relative">
+            <Search
+              size={18}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"
+            />
+
+            <input
+              type="text"
+              placeholder="Search your orders..."
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              className="w-full rounded-xl border border-stone-300 py-3 pl-11 pr-4 text-sm outline-none focus:border-amber-800 focus:ring-2 focus:ring-amber-100"
+            />
+          </div>
+
+          {searchTerm && (
+            <button
+              onClick={() => {
+                setSearchTerm("")
+                setDebouncedSearchTerm("")
+              }}
+              className="mt-3 rounded-xl border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-700 hover:bg-stone-100"
+            >
+              Clear search
+            </button>
+          )}
+        </section>
+
+        {loading ? (
+          <div className="mt-8 text-stone-600">Loading orders...</div>
+        ) : orders.length === 0 ? (
           <section className="mt-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
-            <p className="text-stone-600">Bạn chưa có đơn hàng nào.</p>
+            <p className="text-stone-600">
+              {debouncedSearchTerm
+                ? "Không tìm thấy đơn hàng phù hợp."
+                : "Bạn chưa có đơn hàng nào."}
+            </p>
 
             <Link
               to="/"
@@ -158,7 +214,7 @@ export function MyOrdersPage() {
                     <p className="mt-2">
                       Vui lòng hoàn tất chuyển khoản ngân hàng bằng mã QR. Quản
                       trị viên sẽ xác nhận khoản thanh toán của bạn sau khi nhận
-                      được
+                      được.
                     </p>
                   </div>
                 )}
