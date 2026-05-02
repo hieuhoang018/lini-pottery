@@ -114,14 +114,14 @@ export function CheckoutPage() {
     return (
       <main className="min-h-screen bg-stone-50 px-6 py-10">
         <div className="mx-auto max-w-5xl">
-          <h1 className="text-3xl font-bold text-stone-900">Checkout</h1>
-          <p className="mt-4 text-stone-600">Your cart is empty.</p>
+          <h1 className="text-3xl font-bold text-stone-900">Thanh toán</h1>
+          <p className="mt-4 text-stone-600">Giỏ hàng của bạn trống.</p>
 
           <Link
             to="/"
             className="mt-6 inline-block rounded-full bg-amber-800 px-6 py-3 font-semibold text-white"
           >
-            Continue shopping
+            Tiếp tục mua sắm
           </Link>
         </div>
       </main>
@@ -132,10 +132,8 @@ export function CheckoutPage() {
     <main className="min-h-screen bg-stone-50 px-6 py-10 text-stone-900">
       <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1fr_380px]">
         <section>
-          <h1 className="text-3xl font-bold">Checkout</h1>
-          <p className="mt-2 text-stone-600">
-            Complete your shipping details. Payment is done by bank QR transfer.
-          </p>
+          <h1 className="text-3xl font-bold">Thanh toán</h1>
+          <p className="mt-2 text-stone-600">Điền thông tin giao hàng.</p>
 
           <form
             onSubmit={handleSubmit}
@@ -181,11 +179,11 @@ export function CheckoutPage() {
             )}
 
             <section>
-              <h2 className="text-xl font-semibold">Shipping address</h2>
+              <h2 className="text-xl font-semibold">Địa chỉ giao hàng</h2>
 
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 <label className="block text-sm font-medium text-stone-700">
-                  Recipient name *
+                  Tên người nhận *
                   <input
                     name="recipientName"
                     value={form.recipientName}
@@ -195,7 +193,7 @@ export function CheckoutPage() {
                 </label>
 
                 <label className="block text-sm font-medium text-stone-700">
-                  Phone *
+                  Số điện thoại *
                   <input
                     name="phone"
                     value={form.phone}
@@ -205,7 +203,7 @@ export function CheckoutPage() {
                 </label>
 
                 <label className="block text-sm font-medium text-stone-700 md:col-span-2">
-                  Street address *
+                  Địa chỉ nhà *
                   <input
                     name="streetAddress"
                     value={form.streetAddress}
@@ -215,7 +213,7 @@ export function CheckoutPage() {
                 </label>
 
                 <label className="block text-sm font-medium text-stone-700">
-                  City *
+                  Thành phố *
                   <input
                     name="city"
                     value={form.city}
@@ -225,7 +223,7 @@ export function CheckoutPage() {
                 </label>
 
                 <label className="block text-sm font-medium text-stone-700">
-                  Postal code *
+                  Mã bưu điện *
                   <input
                     name="postalCode"
                     value={form.postalCode}
@@ -235,7 +233,7 @@ export function CheckoutPage() {
                 </label>
 
                 <label className="block text-sm font-medium text-stone-700">
-                  Country *
+                  Quốc gia *
                   <input
                     name="country"
                     value={form.country}
@@ -245,7 +243,7 @@ export function CheckoutPage() {
                 </label>
 
                 <label className="block text-sm font-medium text-stone-700">
-                  Additional info
+                  Thông tin bổ sung
                   <input
                     name="additionalInfo"
                     value={form.additionalInfo}
@@ -255,7 +253,7 @@ export function CheckoutPage() {
                 </label>
 
                 <label className="block text-sm font-medium text-stone-700 md:col-span-2">
-                  Notes
+                  Ghi chú
                   <textarea
                     name="notes"
                     value={form.notes}
@@ -267,26 +265,26 @@ export function CheckoutPage() {
               </div>
             </section>
 
-            <section className="rounded-2xl bg-amber-50 p-5 text-sm text-amber-900">
+            {/* <section className="rounded-2xl bg-amber-50 p-5 text-sm text-amber-900">
               <h2 className="font-semibold">Payment instruction</h2>
               <p className="mt-2">
                 After placing the order, please scan the bank QR code or
                 transfer to the provided bank account. Admin will confirm your
                 payment manually.
               </p>
-            </section>
+            </section> */}
 
             <button
               disabled={submitting}
               className="w-full rounded-full bg-amber-800 px-6 py-3 font-semibold text-white hover:bg-amber-900 disabled:cursor-not-allowed disabled:bg-stone-300"
             >
-              {submitting ? "Placing order..." : "Place order"}
+              {submitting ? "Đang đặt hàng..." : "Đặt hàng"}
             </button>
           </form>
         </section>
 
         <aside className="h-fit rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
-          <h2 className="text-xl font-semibold">Order summary</h2>
+          <h2 className="text-xl font-semibold">Tóm tắt đơn hàng</h2>
 
           <div className="mt-5 space-y-4">
             {items.map((item) => {
@@ -306,12 +304,12 @@ export function CheckoutPage() {
                   <div className="flex-1">
                     <p className="font-medium">{item.product.name}</p>
                     <p className="text-sm text-stone-500">
-                      Qty: {item.quantity}
+                      Số lượng: {item.quantity}
                     </p>
                   </div>
 
                   <p className="font-medium">
-                    €{(Number(item.product.price) * item.quantity).toFixed(2)}
+                    {(Number(item.product.price) * item.quantity).toFixed()}đ
                   </p>
                 </div>
               )
@@ -320,18 +318,18 @@ export function CheckoutPage() {
 
           <div className="mt-6 border-t border-stone-200 pt-5">
             <div className="flex justify-between text-stone-600">
-              <span>Subtotal</span>
-              <span>€{total.toFixed(2)}</span>
+              <span>Thành tiền</span>
+              <span>{total.toFixed()}đ</span>
             </div>
 
             <div className="mt-2 flex justify-between text-stone-600">
-              <span>Shipping</span>
-              <span>€0.00</span>
+              <span>Giao hàng</span>
+              <span>0đ</span>
             </div>
 
             <div className="mt-4 flex justify-between text-lg font-bold">
-              <span>Total</span>
-              <span>€{total.toFixed(2)}</span>
+              <span>Tổng cộng</span>
+              <span>{total.toFixed()}đ</span>
             </div>
           </div>
         </aside>

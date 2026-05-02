@@ -16,15 +16,15 @@ export function CartPage() {
   if (items.length === 0) {
     return (
       <main className="min-h-screen bg-stone-50 px-6 py-10">
-        <div className="mx-auto max-w-5xl">
-          <h1 className="text-3xl font-bold text-stone-900">Your cart</h1>
-          <p className="mt-4 text-stone-600">Your cart is empty.</p>
+        <div className="mx-auto max-w-6xl">
+          <h1 className="text-3xl font-bold text-stone-900">Giỏ hàng của bạn</h1>
+          <p className="mt-4 text-stone-600">Giỏ hàng của bạn đang trống.</p>
 
           <Link
             to="/"
             className="mt-6 inline-block rounded-full bg-amber-800 px-6 py-3 font-semibold text-white"
           >
-            Continue shopping
+            Tiếp tục mua hàng
           </Link>
         </div>
       </main>
@@ -35,13 +35,13 @@ export function CartPage() {
     <main className="min-h-screen bg-stone-50 px-6 py-10 text-stone-900">
       <div className="mx-auto max-w-5xl">
         <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Your cart</h1>
+          <h1 className="text-3xl font-bold">Giỏ hàng của bạn</h1>
 
           <button
             onClick={clearCart}
             className="rounded-full border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"
           >
-            Clear cart
+            Xóa giỏ hàng
           </button>
         </div>
 
@@ -67,7 +67,7 @@ export function CartPage() {
                   <div>
                     <h2 className="font-semibold">{item.product.name}</h2>
                     <p className="mt-1 text-sm text-stone-500">
-                      €{item.product.price}
+                      {item.product.price}đ
                     </p>
                   </div>
 
@@ -98,7 +98,7 @@ export function CartPage() {
                       onClick={() => removeFromCart(item.product.id)}
                       className="text-sm font-semibold text-red-600 hover:underline"
                     >
-                      Remove
+                      Xóa hàng
                     </button>
                   </div>
                 </div>
@@ -109,15 +109,15 @@ export function CartPage() {
 
         <section className="mt-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
           <div className="flex items-center justify-between text-lg font-semibold">
-            <span>Total</span>
-            <span>€{total.toFixed(2)}</span>
+            <span>Tổng cộng</span>
+            <span>{total.toFixed()}đ</span>
           </div>
 
           <Link
             to="/checkout"
             className="mt-6 block w-full rounded-full bg-amber-800 px-6 py-3 text-center font-semibold text-white hover:bg-amber-900"
           >
-            Proceed to checkout
+            Thanh toán
           </Link>
         </section>
       </div>

@@ -52,23 +52,18 @@ export function MyOrdersPage() {
 
   return (
     <main className="min-h-screen bg-stone-50 px-6 py-10 text-stone-900">
-      <div className="mx-auto max-w-5xl">
-        <h1 className="text-3xl font-bold">My orders</h1>
-        <p className="mt-2 text-stone-600">
-          Track your pottery orders and payment status.
-        </p>
+      <div className="mx-auto max-w-6xl">
+        <h1 className="text-3xl font-bold">Đơn hàng của tôi</h1>
 
         {orders.length === 0 ? (
           <section className="mt-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
-            <p className="text-stone-600">
-              You have not placed any orders yet.
-            </p>
+            <p className="text-stone-600">Bạn chưa có đơn hàng nào.</p>
 
             <Link
               to="/"
               className="mt-6 inline-block rounded-full bg-amber-800 px-6 py-3 font-semibold text-white hover:bg-amber-900"
             >
-              Continue shopping
+              Tiếp tục mua sắm
             </Link>
           </section>
         ) : (
@@ -80,7 +75,7 @@ export function MyOrdersPage() {
               >
                 <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div>
-                    <p className="text-sm text-stone-500">Order ID</p>
+                    <p className="text-sm text-stone-500">ID Đơn hàng</p>
                     <h2 className="font-semibold">{order.id}</h2>
 
                     <p className="mt-2 text-sm text-stone-500">
@@ -94,7 +89,7 @@ export function MyOrdersPage() {
                         order.status,
                       )}`}
                     >
-                      Order: {order.status}
+                      Đơn hàng: {order.status}
                     </span>
 
                     <span
@@ -102,7 +97,7 @@ export function MyOrdersPage() {
                         order.paymentStatus,
                       )}`}
                     >
-                      Payment: {order.paymentStatus}
+                      Thanh toán: {order.paymentStatus}
                     </span>
                   </div>
                 </div>
@@ -122,25 +117,25 @@ export function MyOrdersPage() {
                       <div className="flex-1">
                         <p className="font-medium">{item.productName}</p>
                         <p className="text-sm text-stone-500">
-                          €{item.productPrice} × {item.quantity}
+                          {item.productPrice}đ × {item.quantity}
                         </p>
                       </div>
 
-                      <p className="font-semibold">€{item.lineTotal}</p>
+                      <p className="font-semibold">{item.lineTotal}đ</p>
                     </div>
                   ))}
                 </div>
 
                 <div className="mt-5 flex items-center justify-between border-t border-stone-200 pt-5">
-                  <span className="font-semibold">Total</span>
+                  <span className="font-semibold">Tổng cộng</span>
                   <span className="text-xl font-bold">
-                    €{order.totalAmount}
+                    {order.totalAmount}đ
                   </span>
                 </div>
 
                 {order.address && (
                   <div className="mt-5 rounded-xl bg-stone-50 p-4 text-sm text-stone-700">
-                    <h3 className="font-semibold">Shipping address</h3>
+                    <h3 className="font-semibold">Thông tin đơn hàng</h3>
                     <p className="mt-2">{order.address.recipientName}</p>
                     <p>{order.address.phone}</p>
                     <p>{order.address.streetAddress}</p>
@@ -159,10 +154,11 @@ export function MyOrdersPage() {
 
                 {order.paymentStatus === "PENDING" && (
                   <div className="mt-5 rounded-xl bg-amber-50 p-4 text-sm text-amber-900">
-                    <h3 className="font-semibold">Payment pending</h3>
+                    <h3 className="font-semibold">Đang chờ thanh toán</h3>
                     <p className="mt-2">
-                      Please complete the bank QR transfer. Admin will confirm
-                      your payment manually after receiving it.
+                      Vui lòng hoàn tất chuyển khoản ngân hàng bằng mã QR. Quản
+                      trị viên sẽ xác nhận khoản thanh toán của bạn sau khi nhận
+                      được
                     </p>
                   </div>
                 )}

@@ -66,9 +66,9 @@ export function AdminOrdersPage() {
     <section>
       <div className="mb-5 flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold">Orders</h2>
+          <h2 className="text-xl font-semibold">Đơn hàng</h2>
           <p className="mt-1 text-sm text-stone-600">
-            Review orders and quickly update status.
+            Xem xét đơn hàng và cập nhật trạng thái.
           </p>
         </div>
 
@@ -82,7 +82,7 @@ export function AdminOrdersPage() {
 
       {orders.length === 0 ? (
         <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
-          <p className="text-stone-600">No orders yet.</p>
+          <p className="text-stone-600">Chưa có đơn hàng nào.</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -93,13 +93,13 @@ export function AdminOrdersPage() {
             >
               <div className="grid gap-5 lg:grid-cols-[1.3fr_1fr_1fr_auto] lg:items-center">
                 <div>
-                  <p className="text-sm text-stone-500">Customer</p>
+                  <p className="text-sm text-stone-500">Khách hàng</p>
                   <h3 className="font-semibold text-stone-900">
                     {getCustomerName(order)}
                   </h3>
 
                   <p className="mt-2 text-xs text-stone-500">
-                    Order ID: {order.id}
+                    ID Đơn hàng: {order.id}
                   </p>
 
                   <p className="mt-1 text-xs text-stone-500">
@@ -108,7 +108,7 @@ export function AdminOrdersPage() {
                 </div>
 
                 <label className="block text-sm font-medium text-stone-700">
-                  Order status
+                  Trạng thái đơn hàng
                   <select
                     value={order.status}
                     onChange={(e) =>
@@ -119,16 +119,16 @@ export function AdminOrdersPage() {
                     }
                     className="mt-2 w-full rounded-xl border border-stone-300 px-3 py-2"
                   >
-                    <option value="PENDING">PENDING</option>
-                    <option value="CONFIRMED">CONFIRMED</option>
-                    <option value="SHIPPED">SHIPPED</option>
-                    <option value="DELIVERED">DELIVERED</option>
-                    <option value="CANCELLED">CANCELLED</option>
+                    <option value="PENDING">ĐANG CHỜ</option>
+                    <option value="CONFIRMED">ĐÃ XÁC NHẬN</option>
+                    <option value="SHIPPED">ĐÃ GIAO HÀNG</option>
+                    <option value="DELIVERED">ĐÃ NHẬN HÀNG</option>
+                    <option value="CANCELLED">ĐÃ HỦY</option>
                   </select>
                 </label>
 
                 <label className="block text-sm font-medium text-stone-700">
-                  Payment
+                  Trạng thái thanh toán
                   <select
                     value={order.paymentStatus}
                     onChange={(e) =>
@@ -139,20 +139,20 @@ export function AdminOrdersPage() {
                     }
                     className="mt-2 w-full rounded-xl border border-stone-300 px-3 py-2"
                   >
-                    <option value="PENDING">PENDING</option>
-                    <option value="PAID">PAID</option>
-                    <option value="CANCELLED">CANCELLED</option>
+                    <option value="PENDING">ĐANG CHỜ</option>
+                    <option value="PAID">ĐÃ THANH TOÁN</option>
+                    <option value="CANCELLED">ĐÃ HỦY</option>
                   </select>
                 </label>
 
                 <div className="flex flex-col gap-3 lg:items-end">
-                  <p className="text-xl font-bold">€{order.totalAmount}</p>
+                  <p className="text-xl font-bold">{order.totalAmount}đ</p>
 
                   <Link
                     to={`/admin/orders/${order.id}`}
                     className="rounded-full border border-stone-300 bg-white px-4 py-2 text-center text-sm font-semibold text-stone-700 hover:bg-stone-100"
                   >
-                    Manage
+                    Quản lý
                   </Link>
                 </div>
               </div>

@@ -51,41 +51,41 @@ export function OrderSuccessPage() {
             ✓
           </div>
 
-          <h1 className="mt-6 text-3xl font-bold">Order placed successfully</h1>
+          <h1 className="mt-6 text-3xl font-bold">Đặt hàng thành công</h1>
 
           <p className="mt-3 text-stone-600">
-            Thank you for your order. Your pottery item has been reserved while
-            payment is pending.
+            Cảm ơn bạn đã đặt hàng. Sản phẩm của bạn đã được giữ và đang chờ
+            thanh toán.
           </p>
 
           <div className="mt-6 rounded-2xl bg-stone-50 p-5">
-            <p className="text-sm text-stone-500">Order ID</p>
+            <p className="text-sm text-stone-500">ID Đơn hàng</p>
             <p className="mt-1 break-all font-semibold">{order.id}</p>
 
             <div className="mt-4 grid gap-4 sm:grid-cols-3">
               <div>
-                <p className="text-sm text-stone-500">Order status</p>
+                <p className="text-sm text-stone-500">Trạng thái đơn hàng</p>
                 <p className="mt-1 font-semibold">{order.status}</p>
               </div>
 
               <div>
-                <p className="text-sm text-stone-500">Payment status</p>
+                <p className="text-sm text-stone-500">Trạng thái thanh toán</p>
                 <p className="mt-1 font-semibold">{order.paymentStatus}</p>
               </div>
 
               <div>
-                <p className="text-sm text-stone-500">Total</p>
-                <p className="mt-1 font-semibold">€{order.totalAmount}</p>
+                <p className="text-sm text-stone-500">Tổng cộng</p>
+                <p className="mt-1 font-semibold">{order.totalAmount}đ</p>
               </div>
             </div>
           </div>
 
           <section className="mt-6 rounded-2xl bg-amber-50 p-5 text-amber-950">
-            <h2 className="text-lg font-semibold">Payment instruction</h2>
+            <h2 className="text-lg font-semibold">Hướng dẫn thanh toán</h2>
 
             <p className="mt-2 text-sm">
               {paymentInstruction?.note ||
-                "Please scan the QR code or transfer to the provided bank account. Admin will confirm payment manually."}
+                "Vui lòng quét mã QR hoặc chuyển khoản vào tài khoản ngân hàng được cung cấp. Quản trị viên sẽ xác nhận thanh toán thủ công."}
             </p>
 
             <div className="mt-5 rounded-2xl border border-dashed border-amber-300 bg-white p-6 text-center">
@@ -97,19 +97,19 @@ export function OrderSuccessPage() {
 
             <div className="mt-5 rounded-xl bg-white p-4 text-sm text-stone-700">
               <p>
-                <span className="font-semibold">Payment method:</span>{" "}
+                <span className="font-semibold">Phương thức thanh toán:</span>{" "}
                 {paymentInstruction?.method || "BANK_QR"}
               </p>
-              <p className="mt-2">
+              {/* <p className="mt-2">
                 <span className="font-semibold">Reference:</span> Please include
                 your order ID in the transfer message.
-              </p>
+              </p> */}
             </div>
           </section>
 
           {order.items && order.items.length > 0 && (
             <section className="mt-6">
-              <h2 className="text-lg font-semibold">Order items</h2>
+              <h2 className="text-lg font-semibold">Thông tin đơn hàng</h2>
 
               <div className="mt-4 space-y-3">
                 {order.items.map((item) => (
@@ -126,11 +126,11 @@ export function OrderSuccessPage() {
                     <div className="flex-1">
                       <p className="font-medium">{item.productName}</p>
                       <p className="text-sm text-stone-500">
-                        Qty: {item.quantity}
+                        Số lượng: {item.quantity}
                       </p>
                     </div>
 
-                    <p className="font-semibold">€{item.lineTotal}</p>
+                    <p className="font-semibold">{item.lineTotal}đ</p>
                   </div>
                 ))}
               </div>
@@ -140,7 +140,7 @@ export function OrderSuccessPage() {
           {order.address && (
             <section className="mt-6 rounded-2xl bg-stone-50 p-5 text-sm text-stone-700">
               <h2 className="text-lg font-semibold text-stone-900">
-                Shipping address
+                Thông tin giao hàng
               </h2>
 
               <p className="mt-3 font-medium">{order.address.recipientName}</p>
@@ -158,7 +158,7 @@ export function OrderSuccessPage() {
               to="/"
               className="rounded-full bg-amber-800 px-6 py-3 font-semibold text-white hover:bg-amber-900"
             >
-              Continue shopping
+              Tiếp tục mua sắm
             </Link>
 
             {user && (
@@ -166,7 +166,7 @@ export function OrderSuccessPage() {
                 to="/orders"
                 className="rounded-full border border-stone-300 bg-white px-6 py-3 font-semibold text-stone-800 hover:bg-stone-100"
               >
-                View my orders
+                Xem các đơn hàng của tôi
               </Link>
             )}
           </div>

@@ -88,7 +88,7 @@ export function ProductDetailPage() {
             {error || "Product not found"}
           </p>
           <Link to="/" className="mt-6 inline-block text-amber-800 underline">
-            Back to shop
+            Quay về cửa hàng
           </Link>
         </div>
       </main>
@@ -117,7 +117,7 @@ export function ProductDetailPage() {
           to="/"
           className="mb-8 inline-block text-sm font-medium text-amber-800"
         >
-          ← Back to shop
+          ← Quay về cửa hàng
         </Link>
 
         <section className="grid gap-10 lg:grid-cols-2">
@@ -158,7 +158,7 @@ export function ProductDetailPage() {
 
             <h1 className="mt-3 text-4xl font-bold">{product.name}</h1>
 
-            <p className="mt-4 text-2xl font-semibold">€{product.price}</p>
+            <p className="mt-4 text-2xl font-semibold">{product.price}đ</p>
 
             <p
               className={
@@ -166,8 +166,8 @@ export function ProductDetailPage() {
               }
             >
               {isOutOfStock
-                ? "Out of stock"
-                : `${product.stockQuantity} available`}
+                ? "Hết hàng"
+                : `${product.stockQuantity} món còn lại`}
             </p>
 
             <p className="mt-6 leading-7 text-stone-700">
@@ -177,30 +177,30 @@ export function ProductDetailPage() {
             <div className="mt-8 space-y-3 rounded-2xl bg-white p-5 ring-1 ring-stone-200">
               {product.material && (
                 <p>
-                  <span className="font-semibold">Material:</span>{" "}
+                  <span className="font-semibold">Vật liệu:</span>{" "}
                   {product.material}
                 </p>
               )}
               {product.color && (
                 <p>
-                  <span className="font-semibold">Color:</span> {product.color}
+                  <span className="font-semibold">Màu:</span> {product.color}
                 </p>
               )}
               {product.dimensionsText && (
                 <p>
-                  <span className="font-semibold">Dimensions:</span>{" "}
+                  <span className="font-semibold">Kích thước:</span>{" "}
                   {product.dimensionsText}
                 </p>
               )}
               {product.weightText && (
                 <p>
-                  <span className="font-semibold">Weight:</span>{" "}
+                  <span className="font-semibold">Cân nặng:</span>{" "}
                   {product.weightText}
                 </p>
               )}
               {product.careInstructions && (
                 <p>
-                  <span className="font-semibold">Care:</span>{" "}
+                  <span className="font-semibold">Cách bảo quản:</span>{" "}
                   {product.careInstructions}
                 </p>
               )}
@@ -210,16 +210,20 @@ export function ProductDetailPage() {
               <button
                 disabled={isOutOfStock || addingToCart}
                 onClick={handleAddToCart}
-                className="rounded-full bg-amber-800 px-6 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:bg-stone-300"
+                className="rounded-full bg-amber-800 hover:bg-amber-900 px-6 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:bg-stone-300"
               >
-                {addingToCart ? "Adding..." : "Add to cart"}
+                {addingToCart
+                  ? "Đang thêm vào giỏ hàng..."
+                  : "Thêm vào giỏ hàng"}
               </button>
               <button
                 onClick={handleAddToWishlist}
                 disabled={addingToWishlist}
                 className="rounded-full border border-stone-300 bg-white px-6 py-3 font-semibold text-stone-800 hover:bg-stone-100 disabled:cursor-not-allowed disabled:bg-stone-100"
               >
-                {addingToWishlist ? "Adding..." : "Add to wishlist"}
+                {addingToWishlist
+                  ? "Đang thêm vào danh sách yêu thích..."
+                  : "Thêm vào danh sách yêu thích"}
               </button>
             </div>
           </div>

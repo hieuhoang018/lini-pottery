@@ -67,9 +67,9 @@ export function AdminProductsPage() {
       <section className="h-fit rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
         <div className="mb-5 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold">Products</h2>
+            <h2 className="text-xl font-semibold">Sản phẩm</h2>
             <p className="mt-1 text-sm text-stone-600">
-              Manage stock and product visibility.
+              Quản lý tồn kho và hiển thị sản phẩm.
             </p>
           </div>
 
@@ -85,7 +85,7 @@ export function AdminProductsPage() {
               to="/admin/products/new"
               className="rounded-full bg-amber-800 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-900"
             >
-              Create product
+              Thêm sản phẩm
             </Link>
           </div>
         </div>
@@ -125,7 +125,7 @@ export function AdminProductsPage() {
 
                       {product.stockQuantity <= 0 && (
                         <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700">
-                          Out of stock
+                          Hết hàng
                         </span>
                       )}
                     </div>
@@ -141,7 +141,7 @@ export function AdminProductsPage() {
 
                   <div className="flex flex-col gap-3 md:w-40">
                     <label className="text-sm font-medium text-stone-700">
-                      Stock
+                      Hàng tồn kho
                       <input
                         type="number"
                         min="0"
@@ -168,7 +168,7 @@ export function AdminProductsPage() {
                       to={`/admin/products/${product.id}`}
                       className="rounded-full border border-stone-300 bg-white px-4 py-2 text-center text-sm font-semibold text-stone-700 hover:bg-stone-100"
                     >
-                      Manage
+                      Quản lý
                     </Link>
                   </div>
                 </div>

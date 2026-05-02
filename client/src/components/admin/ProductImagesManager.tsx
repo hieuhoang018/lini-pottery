@@ -88,12 +88,12 @@ export function ProductImagesManager({ productId }: ProductImagesManagerProps) {
 
   return (
     <div className="mt-4 rounded-2xl bg-stone-50 p-4">
-      <h4 className="font-semibold text-stone-900">Gallery images</h4>
+      <h4 className="font-semibold text-stone-900">Thư viện hình ảnh</h4>
 
       {loading ? (
         <p className="mt-3 text-sm text-stone-600">Loading images...</p>
       ) : images.length === 0 ? (
-        <p className="mt-3 text-sm text-stone-600">No gallery images yet.</p>
+        <p className="mt-3 text-sm text-stone-600">Chưa có ảnh.</p>
       ) : (
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {images.map((image) => (
@@ -109,7 +109,7 @@ export function ProductImagesManager({ productId }: ProductImagesManagerProps) {
 
               <div className="p-3">
                 <p className="text-xs text-stone-500">
-                  Sort order: {image.sortOrder}
+                  Thứ tự: {image.sortOrder}
                 </p>
 
                 {image.altText && (
@@ -122,7 +122,7 @@ export function ProductImagesManager({ productId }: ProductImagesManagerProps) {
                   onClick={() => handleDeleteImage(image.id)}
                   className="mt-3 text-xs font-semibold text-red-600 hover:underline"
                 >
-                  Delete
+                  Xóa
                 </button>
               </div>
             </div>
@@ -174,7 +174,7 @@ export function ProductImagesManager({ productId }: ProductImagesManagerProps) {
           disabled={adding}
           className="rounded-full bg-amber-800 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-900 disabled:cursor-not-allowed disabled:bg-stone-300"
         >
-          {adding ? "Adding..." : "Add image"}
+          {adding ? "Đang thêm..." : "Thêm hình ảnh"}
         </button>
       </form>
     </div>

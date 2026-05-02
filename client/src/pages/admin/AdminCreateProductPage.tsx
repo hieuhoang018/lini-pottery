@@ -152,17 +152,17 @@ export function AdminCreateProductPage() {
         to="/admin/products"
         className="mb-6 inline-block text-sm font-semibold text-amber-800"
       >
-        ← Back to products
+        ← Quay về danh sách sản phẩm
       </Link>
 
-      <h2 className="text-2xl font-bold">Create product</h2>
+      <h2 className="text-2xl font-bold">Thêm sản phẩm</h2>
       <p className="mt-2 text-sm text-stone-600">
-        Add a new pottery item to the store.
+        Thêm một sản phẩm vào cửa hàng.
       </p>
 
       <form onSubmit={handleCreateProduct} className="mt-6 space-y-4">
         <label className="block text-sm font-medium text-stone-700">
-          Name *
+          Tên sản phẩm *
           <input
             name="name"
             value={form.name}
@@ -182,7 +182,7 @@ export function AdminCreateProductPage() {
         </label>
 
         <label className="block text-sm font-medium text-stone-700">
-          Category *
+          Loại *
           <select
             name="categoryId"
             value={form.categoryId}
@@ -199,7 +199,7 @@ export function AdminCreateProductPage() {
 
         <div className="grid gap-4 md:grid-cols-2">
           <label className="block text-sm font-medium text-stone-700">
-            Price *
+            Giá tiền *
             <input
               name="price"
               type="number"
@@ -212,7 +212,7 @@ export function AdminCreateProductPage() {
           </label>
 
           <label className="block text-sm font-medium text-stone-700">
-            Stock *
+            Số lượng trong kho *
             <input
               name="stockQuantity"
               type="number"
@@ -225,7 +225,7 @@ export function AdminCreateProductPage() {
         </div>
 
         <label className="block text-sm font-medium text-stone-700">
-          Description *
+          Miêu tả *
           <textarea
             name="description"
             value={form.description}
@@ -247,7 +247,7 @@ export function AdminCreateProductPage() {
 
         <div className="grid gap-4 md:grid-cols-2">
           <label className="block text-sm font-medium text-stone-700">
-            Material
+            Vật liệu
             <input
               name="material"
               value={form.material}
@@ -257,7 +257,7 @@ export function AdminCreateProductPage() {
           </label>
 
           <label className="block text-sm font-medium text-stone-700">
-            Color
+            Màu sắc
             <input
               name="color"
               value={form.color}
@@ -268,7 +268,7 @@ export function AdminCreateProductPage() {
         </div>
 
         <label className="block text-sm font-medium text-stone-700">
-          Dimensions
+          Kích thước
           <input
             name="dimensionsText"
             value={form.dimensionsText}
@@ -278,7 +278,7 @@ export function AdminCreateProductPage() {
         </label>
 
         <label className="block text-sm font-medium text-stone-700">
-          Weight
+          Cân nặng
           <input
             name="weightText"
             value={form.weightText}
@@ -288,7 +288,7 @@ export function AdminCreateProductPage() {
         </label>
 
         <label className="block text-sm font-medium text-stone-700">
-          Care instructions
+          Hướng dẫn bảo quản
           <textarea
             name="careInstructions"
             value={form.careInstructions}
@@ -302,7 +302,7 @@ export function AdminCreateProductPage() {
           disabled={creating}
           className="w-full rounded-full bg-amber-800 px-6 py-3 font-semibold text-white hover:bg-amber-900 disabled:cursor-not-allowed disabled:bg-stone-300"
         >
-          {creating ? "Creating..." : "Create product"}
+          {creating ? "Đang thêm..." : "Thêm sản phẩm"}
         </button>
       </form>
     </section>

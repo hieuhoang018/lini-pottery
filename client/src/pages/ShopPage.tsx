@@ -53,7 +53,7 @@ export function ShopPage() {
             }`}
             onClick={() => setSelectedCategory("")}
           >
-            All
+            Tất cả
           </button>
 
           {categories.map((category) => (

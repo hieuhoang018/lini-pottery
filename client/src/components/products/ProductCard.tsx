@@ -42,7 +42,7 @@ export function ProductCard({ product }: ProductCardProps) {
               isOutOfStock ? "text-sm text-red-600" : "text-sm text-green-700"
             }
           >
-            {isOutOfStock ? "Out of stock" : "Available"}
+            {isOutOfStock ? "Hết hàng" : "Còn hàng"}
           </span>
         </div>
       </div>

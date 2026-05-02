@@ -50,14 +50,18 @@ export function WishlistPage() {
     return (
       <main className="min-h-screen bg-stone-50 px-6 py-10">
         <div className="mx-auto max-w-6xl">
-          <h1 className="text-3xl font-bold text-stone-900">Wishlist</h1>
-          <p className="mt-4 text-stone-600">Your wishlist is empty.</p>
+          <h1 className="text-3xl font-bold text-stone-900">
+            Danh sách yêu thích
+          </h1>
+          <p className="mt-4 text-stone-600">
+            Danh sách yêu thích của bạn trống.
+          </p>
 
           <Link
             to="/"
             className="mt-6 inline-block rounded-full bg-amber-800 px-6 py-3 font-semibold text-white"
           >
-            Continue shopping
+            Tiếp tục mua sắm
           </Link>
         </div>
       </main>
@@ -67,7 +71,7 @@ export function WishlistPage() {
   return (
     <main className="min-h-screen bg-stone-50 px-6 py-10 text-stone-900">
       <div className="mx-auto max-w-6xl">
-        <h1 className="text-3xl font-bold">Wishlist</h1>
+        <h1 className="text-3xl font-bold">Danh sách yêu thích</h1>
 
         <section className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => {
@@ -104,7 +108,7 @@ export function WishlistPage() {
                   </Link>
 
                   <p className="mt-2 text-sm text-stone-600">
-                    €{product.price}
+                    {product.price}đ
                   </p>
 
                   <div className="mt-5 flex gap-3">
@@ -113,14 +117,14 @@ export function WishlistPage() {
                       onClick={() => addToCart(product, 1)}
                       className="flex-1 rounded-full bg-amber-800 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-900 disabled:cursor-not-allowed disabled:bg-stone-300"
                     >
-                      {isOutOfStock ? "Out of stock" : "Add to cart"}
+                      {isOutOfStock ? "Hết hàng" : "Thêm vào giỏ hàng"}
                     </button>
 
                     <button
                       onClick={() => handleRemove(product.id)}
                       className="rounded-full border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"
                     >
-                      Remove
+                      Xóa
                     </button>
                   </div>
                 </div>

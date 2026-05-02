@@ -121,12 +121,12 @@ export function AdminProductDetailPage() {
   if (!product) {
     return (
       <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
-        <p className="text-stone-600">Product not found.</p>
+        <p className="text-stone-600">Không tìm thấy sản phẩm.</p>
         <Link
           to="/admin/products"
           className="mt-4 inline-block text-amber-800 underline"
         >
-          Back to products
+          Quay về danh sách sản phẩm
         </Link>
       </div>
     )
@@ -139,15 +139,15 @@ export function AdminProductDetailPage() {
           to="/admin/products"
           className="mb-6 inline-block text-sm font-semibold text-amber-800"
         >
-          ← Back to products
+          ← Quay về danh sách sản phẩm
         </Link>
 
-        <h2 className="text-2xl font-bold">Edit product</h2>
+        <h2 className="text-2xl font-bold">Chỉnh sửa sản phẩm</h2>
         <p className="mt-2 text-sm text-stone-600">{product.id}</p>
 
         <form onSubmit={handleSave} className="mt-6 space-y-4">
           <label className="block text-sm font-medium text-stone-700">
-            Name *
+            Tên sản phẩm *
             <input
               name="name"
               value={form.name || ""}
@@ -167,7 +167,7 @@ export function AdminProductDetailPage() {
           </label>
 
           <label className="block text-sm font-medium text-stone-700">
-            Category *
+            Loại *
             <select
               name="categoryId"
               value={form.categoryId || ""}
@@ -184,7 +184,7 @@ export function AdminProductDetailPage() {
 
           <div className="grid gap-4 md:grid-cols-2">
             <label className="block text-sm font-medium text-stone-700">
-              Price *
+              Giá tiền *
               <input
                 name="price"
                 type="number"
@@ -197,7 +197,7 @@ export function AdminProductDetailPage() {
             </label>
 
             <label className="block text-sm font-medium text-stone-700">
-              Stock *
+              Hàng tồn kho *
               <input
                 name="stockQuantity"
                 type="number"
@@ -210,7 +210,7 @@ export function AdminProductDetailPage() {
           </div>
 
           <label className="block text-sm font-medium text-stone-700">
-            Description *
+            Miêu tả *
             <textarea
               name="description"
               value={form.description || ""}
@@ -220,7 +220,7 @@ export function AdminProductDetailPage() {
             />
           </label>
 
-          <label className="block text-sm font-medium text-stone-700">
+          {/* <label className="block text-sm font-medium text-stone-700">
             Featured image URL
             <input
               name="featuredImageUrl"
@@ -228,11 +228,11 @@ export function AdminProductDetailPage() {
               onChange={handleChange}
               className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
             />
-          </label>
+          </label> */}
 
           <div className="grid gap-4 md:grid-cols-2">
             <label className="block text-sm font-medium text-stone-700">
-              Material
+              Vật liệu
               <input
                 name="material"
                 value={form.material || ""}
@@ -242,7 +242,7 @@ export function AdminProductDetailPage() {
             </label>
 
             <label className="block text-sm font-medium text-stone-700">
-              Color
+              Màu
               <input
                 name="color"
                 value={form.color || ""}
@@ -253,7 +253,7 @@ export function AdminProductDetailPage() {
           </div>
 
           <label className="block text-sm font-medium text-stone-700">
-            Dimensions
+            Kích thước
             <input
               name="dimensionsText"
               value={form.dimensionsText || ""}
@@ -263,7 +263,7 @@ export function AdminProductDetailPage() {
           </label>
 
           <label className="block text-sm font-medium text-stone-700">
-            Weight
+            Cân nặng
             <input
               name="weightText"
               value={form.weightText || ""}
@@ -273,7 +273,7 @@ export function AdminProductDetailPage() {
           </label>
 
           <label className="block text-sm font-medium text-stone-700">
-            Care instructions
+            Hướng dẫn bảo quản
             <textarea
               name="careInstructions"
               value={form.careInstructions || ""}
@@ -287,14 +287,14 @@ export function AdminProductDetailPage() {
             disabled={saving}
             className="w-full rounded-full bg-amber-800 px-6 py-3 font-semibold text-white hover:bg-amber-900 disabled:cursor-not-allowed disabled:bg-stone-300"
           >
-            {saving ? "Saving..." : "Save changes"}
+            {saving ? "Đang lưu..." : "Lưu thay đổi"}
           </button>
         </form>
       </section>
 
       <aside className="space-y-6">
         <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
-          <h3 className="text-xl font-semibold">Preview</h3>
+          <h3 className="text-xl font-semibold">Xem trước</h3>
 
           <img
             src={
@@ -307,9 +307,9 @@ export function AdminProductDetailPage() {
           />
 
           <p className="mt-4 font-semibold">{product.name}</p>
-          <p className="text-sm text-stone-600">€{product.price}</p>
+          <p className="text-sm text-stone-600">{product.price}đ</p>
           <p className="mt-2 text-sm text-stone-600">
-            {product.isActive ? "Active" : "Inactive"} · Stock:{" "}
+            {product.isActive ? "Active" : "Inactive"} · Hàng tồn kho:{" "}
             {product.stockQuantity}
           </p>
         </section>

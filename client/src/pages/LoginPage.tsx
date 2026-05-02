@@ -35,7 +35,7 @@ export function LoginPage() {
         onSubmit={handleSubmit}
         className="mx-auto max-w-md rounded-2xl bg-white p-8 shadow-sm ring-1 ring-stone-200"
       >
-        <h1 className="text-3xl font-bold text-stone-900">Login</h1>
+        <h1 className="text-3xl font-bold text-stone-900">Đăng nhập</h1>
 
         <label className="mt-6 block text-sm font-medium text-stone-700">
           Email
@@ -49,7 +49,7 @@ export function LoginPage() {
         </label>
 
         <label className="mt-4 block text-sm font-medium text-stone-700">
-          Password
+          Mật khẩu
           <div className="relative">
             <input
               className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
@@ -63,19 +63,19 @@ export function LoginPage() {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-5 text-stone-600 hover:text-stone-900"
             >
-              {showPassword ? "Hide" : "Show"}
+              {showPassword ? "Ẩn" : "Hiện"}
             </button>
           </div>
         </label>
 
         <button className="mt-6 w-full rounded-full bg-amber-800 px-6 py-3 font-semibold text-white">
-          Login
+          Đăng nhập
         </button>
 
         <p className="mt-4 text-sm text-stone-600">
-          No account?{" "}
+          Chưa có tài khoản?{" "}
           <Link to="/register" className="font-semibold text-amber-800">
-            Register
+            Đăng kí
           </Link>
         </p>
       </form>

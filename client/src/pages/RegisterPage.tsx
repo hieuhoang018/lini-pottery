@@ -5,6 +5,7 @@ import { register } from "../api/authApi"
 
 export function RegisterPage() {
   const navigate = useNavigate()
+  const [showPassword, setShowPassword] = useState(false)
 
   const [form, setForm] = useState({
     name: "",
@@ -31,10 +32,10 @@ export function RegisterPage() {
         onSubmit={handleSubmit}
         className="mx-auto max-w-md rounded-2xl bg-white p-8 shadow-sm ring-1 ring-stone-200"
       >
-        <h1 className="text-3xl font-bold text-stone-900">Register</h1>
+        <h1 className="text-3xl font-bold text-stone-900">Đăng kí</h1>
 
         <label className="mt-6 block text-sm font-medium text-stone-700">
-          Name
+          Họ và tên
           <input
             className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
             value={form.name}
@@ -53,7 +54,7 @@ export function RegisterPage() {
         </label>
 
         <label className="mt-4 block text-sm font-medium text-stone-700">
-          Phone
+          Số điện thoại
           <input
             className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
             value={form.phone}
@@ -62,23 +63,32 @@ export function RegisterPage() {
         </label>
 
         <label className="mt-4 block text-sm font-medium text-stone-700">
-          Password
-          <input
-            className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
-            value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
-            type="password"
-          />
+          Mật khẩu
+          <div className="relative">
+            <input
+              className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              type={showPassword ? "text" : "password"}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-5 text-stone-600 hover:text-stone-900"
+            >
+              {showPassword ? "Ẩn" : "Hiện"}
+            </button>
+          </div>
         </label>
 
         <button className="mt-6 w-full rounded-full bg-amber-800 px-6 py-3 font-semibold text-white">
-          Register
+          Đăng kí
         </button>
 
         <p className="mt-4 text-sm text-stone-600">
-          Already have an account?{" "}
+          Đã có tài khoản?{" "}
           <Link to="/login" className="font-semibold text-amber-800">
-            Login
+            Đăng nhập
           </Link>
         </p>
       </form>

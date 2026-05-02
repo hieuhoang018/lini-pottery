@@ -109,12 +109,12 @@ export function AdminOrderDetailPage() {
   if (!order) {
     return (
       <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
-        <p className="text-stone-600">Order not found.</p>
+        <p className="text-stone-600">Không tìm được đơn hàng.</p>
         <Link
           to="/admin/orders"
           className="mt-4 inline-block text-amber-800 underline"
         >
-          Back to orders
+          Quay về danh sách đơn hàng
         </Link>
       </div>
     )
@@ -128,31 +128,31 @@ export function AdminOrderDetailPage() {
             to="/admin/orders"
             className="mb-6 inline-block text-sm font-semibold text-amber-800"
           >
-            ← Back to orders
+            ← Quay về danh sách đơn hàng
           </Link>
 
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
-              <h2 className="text-2xl font-bold">Order detail</h2>
+              <h2 className="text-2xl font-bold">Chi tiết đơn hàng</h2>
               <p className="mt-2 text-sm text-stone-500">{order.id}</p>
               <p className="mt-1 text-sm text-stone-500">
-                Created: {new Date(order.createdAt).toLocaleString()}
+                Thời gian tạo: {new Date(order.createdAt).toLocaleString()}
               </p>
             </div>
 
             <div className="text-left md:text-right">
-              <p className="text-sm text-stone-500">Total</p>
-              <p className="text-2xl font-bold">€{order.totalAmount}</p>
+              <p className="text-sm text-stone-500">Tổng cộng</p>
+              <p className="text-2xl font-bold">{order.totalAmount}đ</p>
             </div>
           </div>
         </div>
 
         <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
-          <h3 className="text-xl font-semibold">Customer</h3>
+          <h3 className="text-xl font-semibold">Khách hàng</h3>
 
           <div className="mt-4 grid gap-3 text-sm md:grid-cols-3">
             <div>
-              <p className="text-stone-500">Name</p>
+              <p className="text-stone-500">Tên</p>
               <p className="font-medium">{getCustomerName(order)}</p>
             </div>
 
@@ -162,14 +162,14 @@ export function AdminOrderDetailPage() {
             </div>
 
             <div>
-              <p className="text-stone-500">Phone</p>
+              <p className="text-stone-500">Số điện thoại</p>
               <p className="font-medium">{getCustomerPhone(order)}</p>
             </div>
           </div>
         </div>
 
         <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
-          <h3 className="text-xl font-semibold">Items</h3>
+          <h3 className="text-xl font-semibold">Đơn hàng</h3>
 
           <div className="mt-5 space-y-4">
             {order.items.map((item) => (
@@ -190,7 +190,7 @@ export function AdminOrderDetailPage() {
                   </p>
                 </div>
 
-                <p className="font-semibold">€{item.lineTotal}</p>
+                <p className="font-semibold">{item.lineTotal}đ</p>
               </div>
             ))}
           </div>
@@ -198,7 +198,7 @@ export function AdminOrderDetailPage() {
 
         {order.address && (
           <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
-            <h3 className="text-xl font-semibold">Shipping address</h3>
+            <h3 className="text-xl font-semibold">Thông tin giao hàng</h3>
 
             <div className="mt-4 text-sm text-stone-700">
               <p className="font-medium">{order.address.recipientName}</p>
@@ -220,18 +220,16 @@ export function AdminOrderDetailPage() {
 
         {order.notes && (
           <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
-            <h3 className="text-xl font-semibold">Customer notes</h3>
+            <h3 className="text-xl font-semibold">Ghi chú khách hàng</h3>
             <p className="mt-4 text-sm text-stone-700">{order.notes}</p>
           </div>
         )}
 
         <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
-          <h3 className="text-xl font-semibold">Payment records</h3>
+          <h3 className="text-xl font-semibold">Ghi chép thanh toán</h3>
 
           {!order.paymentRecords || order.paymentRecords.length === 0 ? (
-            <p className="mt-4 text-sm text-stone-600">
-              No payment records yet.
-            </p>
+            <p className="mt-4 text-sm text-stone-600">Chưa có ghi chép.</p>
           ) : (
             <div className="mt-4 space-y-3">
               {order.paymentRecords.map((record) => (
@@ -278,10 +276,10 @@ export function AdminOrderDetailPage() {
 
       <aside className="h-fit space-y-6">
         <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
-          <h3 className="text-xl font-semibold">Manage order</h3>
+          <h3 className="text-xl font-semibold">Quản lý đơn hàng</h3>
 
           <label className="mt-5 block text-sm font-medium text-stone-700">
-            Order status
+            Trạng thái đơn hàng
             <select
               disabled={updating}
               value={order.status}
@@ -290,16 +288,16 @@ export function AdminOrderDetailPage() {
               }
               className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
             >
-              <option value="PENDING">PENDING</option>
-              <option value="CONFIRMED">CONFIRMED</option>
-              <option value="SHIPPED">SHIPPED</option>
-              <option value="DELIVERED">DELIVERED</option>
-              <option value="CANCELLED">CANCELLED</option>
+              <option value="PENDING">ĐANG CHỜ</option>
+              <option value="CONFIRMED">ĐÃ XÁC NHẬN</option>
+              <option value="SHIPPED">ĐÃ GIAO HÀNG</option>
+              <option value="DELIVERED">ĐÃ NHẬN HÀNG</option>
+              <option value="CANCELLED">ĐÃ HỦY</option>
             </select>
           </label>
 
           <label className="mt-4 block text-sm font-medium text-stone-700">
-            Payment status
+            Trạng thái thanh toán
             <select
               disabled={updating}
               value={order.paymentStatus}
@@ -310,9 +308,9 @@ export function AdminOrderDetailPage() {
               }
               className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
             >
-              <option value="PENDING">PENDING</option>
-              <option value="PAID">PAID</option>
-              <option value="CANCELLED">CANCELLED</option>
+              <option value="PENDING">ĐANG CHỜ</option>
+              <option value="PAID">ĐÃ THANH TOÁN</option>
+              <option value="CANCELLED">ĐÃ HỦY</option>
             </select>
           </label>
 
@@ -322,29 +320,29 @@ export function AdminOrderDetailPage() {
               onClick={handleCancel}
               className="mt-6 w-full rounded-full border border-red-200 bg-white px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:bg-stone-100"
             >
-              Cancel order and restore stock
+              Hủy đơn hàng và khôi phục hàng tồn kho
             </button>
           )}
         </div>
 
         <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
-          <h3 className="text-xl font-semibold">Summary</h3>
+          <h3 className="text-xl font-semibold">Tóm tắt</h3>
 
           <div className="mt-4 space-y-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-stone-600">Subtotal</span>
-              <span>€{order.subtotalAmount}</span>
+              <span className="text-stone-600">Thành tiền</span>
+              <span>{order.subtotalAmount}đ</span>
             </div>
 
             <div className="flex justify-between">
-              <span className="text-stone-600">Shipping</span>
-              <span>€{order.shippingFee}</span>
+              <span className="text-stone-600">Phí giao hàng</span>
+              <span>{order.shippingFee}đ</span>
             </div>
 
             <div className="border-t border-stone-200 pt-3">
               <div className="flex justify-between text-lg font-bold">
-                <span>Total</span>
-                <span>€{order.totalAmount}</span>
+                <span>Tổng cộng</span>
+                <span>{order.totalAmount}đ</span>
               </div>
             </div>
           </div>

@@ -17,6 +17,7 @@ import { AdminCreateProductPage } from "./pages/admin/AdminCreateProductPage"
 import { AdminOrderDetailPage } from "./pages/admin/AdminOrderDetailPage"
 import { MyOrdersPage } from "./pages/MyOrdersPage"
 import { OrderSuccessPage } from "./pages/OrderSuccessPage"
+import { Footer } from "./components/layout/Footer"
 
 function App() {
   return (
@@ -62,6 +63,8 @@ function App() {
           <Route path="products/:id" element={<AdminProductDetailPage />} />
         </Route>
       </Routes>
+
+      <Footer />
     </>
   )
 }

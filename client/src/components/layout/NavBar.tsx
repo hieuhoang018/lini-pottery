@@ -1,6 +1,15 @@
 import { Link, NavLink, useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
 import { useAuth } from "../../contexts/AuthContext"
+import {
+  Heart,
+  LogOut,
+  ReceiptText,
+  ShoppingCart,
+  Store,
+  User,
+  UserStar,
+} from "lucide-react"
 
 export function Navbar() {
   const navigate = useNavigate()
@@ -19,44 +28,44 @@ export function Navbar() {
 
   return (
     <header className="border-b border-stone-200 bg-white">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <Link to="/" className="text-xl font-bold text-stone-900">
-          Lini Pottery
+      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2">
+        <Link to="/" className="inline-flex items-center">
+          <img src="/logo.png" alt="Lini Pottery" className="h-17 w-auto" />
         </Link>
 
         <div className="flex items-center gap-6">
           <NavLink to="/" className={linkClass}>
-            Shop
+            <Store />
           </NavLink>
 
           <NavLink to="/cart" className={linkClass}>
-            Cart
+            <ShoppingCart />
           </NavLink>
 
           {!user ? (
             <>
               <NavLink to="/login" className={linkClass}>
-                Login
+                <User />
               </NavLink>
             </>
           ) : (
             <>
-              {user.role === "ADMIN" && (
-                <NavLink to="/admin/orders" className={linkClass}>
-                  Admin
-                </NavLink>
-              )}
               <NavLink to="/wishlist" className={linkClass}>
-                Wishlist
+                <Heart />
               </NavLink>
               <NavLink to="/orders" className={linkClass}>
-                Orders
+                <ReceiptText />
               </NavLink>
+              {user.role === "ADMIN" && (
+                <NavLink to="/admin/orders" className={linkClass}>
+                  <UserStar />
+                </NavLink>
+              )}
               <button
                 onClick={handleLogout}
                 className="font-medium text-stone-700 hover:text-amber-800"
               >
-                Logout
+                <LogOut />
               </button>
             </>
           )}
