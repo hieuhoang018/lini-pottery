@@ -6,6 +6,12 @@ import {
   GuestCheckoutInput,
 } from "../types/order"
 
+const isValidUuid = (value: string) => {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    value,
+  )
+}
+
 export const checkoutFromCart = async (data: CheckoutInput) => {
   return prisma.$transaction(async (tx) => {
     const cart = await tx.cart.findUnique({
@@ -120,6 +126,7 @@ export const checkoutFromCart = async (data: CheckoutInput) => {
 
 export const getMyOrders = async ({ userId, search }: GetMyOrdersInput) => {
   const trimmedSearch = search?.trim()
+  const searchIsUuid = trimmedSearch ? isValidUuid(trimmedSearch) : false
   const orderStatusSearch = getOrderStatusSearch(trimmedSearch)
   const paymentStatusSearch = getPaymentStatusSearch(trimmedSearch)
 
@@ -130,11 +137,15 @@ export const getMyOrders = async ({ userId, search }: GetMyOrdersInput) => {
       ...(trimmedSearch
         ? {
             OR: [
-              {
-                id: {
-                  equals: trimmedSearch,
-                },
-              },
+              ...(searchIsUuid
+                ? [
+                    {
+                      id: {
+                        equals: trimmedSearch,
+                      },
+                    },
+                  ]
+                : []),
 
               ...(orderStatusSearch
                 ? [

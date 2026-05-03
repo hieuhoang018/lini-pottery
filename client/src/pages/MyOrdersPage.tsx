@@ -182,42 +182,21 @@ export function MyOrdersPage() {
                   ))}
                 </div>
 
-                <div className="mt-5 flex items-center justify-between border-t border-stone-200 pt-5">
-                  <span className="font-semibold">Tổng cộng</span>
-                  <span className="text-xl font-bold">
-                    {order.totalAmount}đ
-                  </span>
+                <div className="mt-5 flex flex-col gap-4 border-t border-stone-200 pt-5 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <span className="font-semibold">Tổng cộng</span>
+                    <span className="ml-3 text-xl font-bold">
+                      {order.totalAmount}đ
+                    </span>
+                  </div>
+
+                  <Link
+                    to={`/orders/${order.id}`}
+                    className="rounded-full border border-stone-300 bg-white px-5 py-2 text-center text-sm font-semibold text-stone-700 hover:bg-stone-100"
+                  >
+                    Xem chi tiết
+                  </Link>
                 </div>
-
-                {order.address && (
-                  <div className="mt-5 rounded-xl bg-stone-50 p-4 text-sm text-stone-700">
-                    <h3 className="font-semibold">Thông tin đơn hàng</h3>
-                    <p className="mt-2">{order.address.recipientName}</p>
-                    <p>{order.address.phone}</p>
-                    <p>{order.address.streetAddress}</p>
-                    <p>
-                      {order.address.postalCode} {order.address.city}
-                    </p>
-                    <p>{order.address.country}</p>
-
-                    {order.address.additionalInfo && (
-                      <p className="mt-2 text-stone-600">
-                        {order.address.additionalInfo}
-                      </p>
-                    )}
-                  </div>
-                )}
-
-                {order.paymentStatus === "PENDING" && (
-                  <div className="mt-5 rounded-xl bg-amber-50 p-4 text-sm text-amber-900">
-                    <h3 className="font-semibold">Đang chờ thanh toán</h3>
-                    <p className="mt-2">
-                      Vui lòng hoàn tất chuyển khoản ngân hàng bằng mã QR. Quản
-                      trị viên sẽ xác nhận khoản thanh toán của bạn sau khi nhận
-                      được.
-                    </p>
-                  </div>
-                )}
               </article>
             ))}
           </section>
