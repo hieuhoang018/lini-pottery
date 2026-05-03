@@ -17,6 +17,7 @@ import { AdminCreateProductPage } from "./pages/admin/AdminCreateProductPage"
 import { AdminOrderDetailPage } from "./pages/admin/AdminOrderDetailPage"
 import { MyOrdersPage } from "./pages/MyOrdersPage"
 import { OrderSuccessPage } from "./pages/OrderSuccessPage"
+import { OrderDetailPage } from "./pages/OrderDetailPage"
 import { Footer } from "./components/layout/Footer"
 
 function App() {
@@ -45,6 +46,14 @@ function App() {
           element={
             <ProtectedRoute>
               <MyOrdersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders/:id"
+          element={
+            <ProtectedRoute>
+              <OrderDetailPage />
             </ProtectedRoute>
           }
         />
