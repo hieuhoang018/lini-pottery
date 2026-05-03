@@ -1,13 +1,7 @@
-import type {
-  CheckoutAddress,
-  CustomerOrder,
-  GuestCheckoutInput,
-} from "../types/order"
+import type { GuestCheckoutInput } from "../types/api-input"
+import type { CheckoutAddress, Order } from "../types/order"
+import type { GetMyOrdersParams } from "../types/params"
 import { apiClient } from "./apiClient"
-
-type GetMyOrdersParams = {
-  search?: string
-}
 
 export const checkoutLoggedInUser = async (input: CheckoutAddress) => {
   const { data } = await apiClient.post("/orders/checkout", input)
@@ -20,7 +14,7 @@ export const checkoutGuest = async (input: GuestCheckoutInput) => {
 }
 
 export const getMyOrders = async (params?: GetMyOrdersParams) => {
-  const { data } = await apiClient.get<CustomerOrder[]>("/orders/my", {
+  const { data } = await apiClient.get<Order[]>("/orders/my", {
     params,
   })
 
@@ -28,6 +22,6 @@ export const getMyOrders = async (params?: GetMyOrdersParams) => {
 }
 
 export const getMyOrderById = async (orderId: string) => {
-  const { data } = await apiClient.get<CustomerOrder>(`/orders/${orderId}`)
+  const { data } = await apiClient.get<Order>(`/orders/${orderId}`)
   return data
 }

@@ -1,45 +1,3 @@
-export type CheckoutAddress = {
-  recipientName: string
-  phone: string
-  streetAddress: string
-  city: string
-  postalCode: string
-  country: string
-  additionalInfo?: string
-  notes?: string
-}
-
-export type GuestCheckoutInput = CheckoutAddress & {
-  guestName: string
-  guestEmail?: string
-  guestPhone: string
-  items: {
-    productId: string
-    quantity: number
-  }[]
-}
-
-export type Order = {
-  id: string
-  userId?: string | null
-  guestName?: string | null
-  guestEmail?: string | null
-  guestPhone?: string | null
-  status: OrderStatus
-  paymentStatus: PaymentStatus
-  paymentMethod: PaymentMethod
-  subtotalAmount: string
-  shippingFee: string
-  totalAmount: string
-  notes?: string | null
-  createdAt: string
-  updatedAt: string
-
-  items: OrderItem[]
-  address: OrderAddress | null
-  paymentRecords: PaymentRecord[]
-}
-
 export type OrderStatus =
   | "PENDING"
   | "CONFIRMED"
@@ -53,42 +11,18 @@ export type PaymentMethod = "BANK_QR"
 
 export type PaymentRecordStatus = "PENDING" | "CONFIRMED" | "REJECTED"
 
-export type OrderItem = {
-  id: string
-  orderId: string
-  productId?: string | null
-  productName: string
-  productPrice: string
-  quantity: number
-  lineTotal: string
-  productImageUrl?: string | null
-  createdAt: string
-}
-
-export type OrderAddress = {
-  id: string
-  orderId: string
+export type CheckoutAddress = {
   recipientName: string
   phone: string
   streetAddress: string
   city: string
   postalCode: string
   country: string
-  additionalInfo?: string | null
+  additionalInfo?: string
+  notes?: string
 }
 
-export type PaymentRecord = {
-  id: string
-  orderId: string
-  method: PaymentMethod
-  status: PaymentRecordStatus
-  referenceNote?: string | null
-  paidAt?: string | null
-  createdAt: string
-  updatedAt: string
-}
-
-export type CustomerOrder = {
+export type Order = {
   id: string
   userId?: string | null
   user?: OrderUser | null
@@ -109,8 +43,31 @@ export type CustomerOrder = {
   updatedAt: string
 
   items: OrderItem[]
-  address: OrderAddress | null
+  address: CheckoutAddress | null
   paymentRecords: PaymentRecord[]
+}
+
+export type OrderItem = {
+  id: string
+  orderId: string
+  productId?: string | null
+  productName: string
+  productPrice: string
+  quantity: number
+  lineTotal: string
+  productImageUrl?: string | null
+  createdAt: string
+}
+
+export type PaymentRecord = {
+  id: string
+  orderId: string
+  method: PaymentMethod
+  status: PaymentRecordStatus
+  referenceNote?: string | null
+  paidAt?: string | null
+  createdAt: string
+  updatedAt: string
 }
 
 export type OrderSuccessState = {

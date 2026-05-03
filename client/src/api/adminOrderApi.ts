@@ -1,11 +1,6 @@
 import type { AdminOrder } from "../types/admin"
+import type { GetAdminOrdersParams } from "../types/params"
 import { apiClient } from "./apiClient"
-
-type GetAdminOrdersParams = {
-  search?: string
-  status?: string
-  paymentStatus?: string
-}
 
 export const getAdminOrders = async (params?: GetAdminOrdersParams) => {
   const { data } = await apiClient.get<AdminOrder[]>("/admin/orders", {

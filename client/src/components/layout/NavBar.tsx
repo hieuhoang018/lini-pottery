@@ -82,6 +82,10 @@ export function Navbar() {
             <span>Đơn hàng</span>
           </NavLink>
 
+          <span className="flex items-center gap-2 rounded-lg px-3 py-2 font-medium text-stone-700">
+            Hi, {user.name}
+          </span>
+
           {user.role === "ADMIN" && (
             <NavLink
               to="/admin/orders"

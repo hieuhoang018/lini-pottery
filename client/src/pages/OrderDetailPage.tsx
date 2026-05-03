@@ -3,7 +3,7 @@ import toast from "react-hot-toast"
 import { Link, useParams } from "react-router-dom"
 import { ArrowLeft } from "lucide-react"
 import { getMyOrderById } from "../api/orderApi"
-import type { CustomerOrder } from "../types/order"
+import type { Order } from "../types/order"
 
 function getStatusBadgeClass(status: string) {
   if (status === "DELIVERED" || status === "PAID") {
@@ -24,7 +24,7 @@ function getStatusBadgeClass(status: string) {
 export function OrderDetailPage() {
   const { id } = useParams<{ id: string }>()
 
-  const [order, setOrder] = useState<CustomerOrder | null>(null)
+  const [order, setOrder] = useState<Order | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

@@ -3,7 +3,7 @@ import toast from "react-hot-toast"
 import { Link } from "react-router-dom"
 import { Search } from "lucide-react"
 import { getMyOrders } from "../api/orderApi"
-import type { CustomerOrder } from "../types/order"
+import type { Order } from "../types/order"
 
 function getStatusBadgeClass(status: string) {
   if (status === "DELIVERED" || status === "PAID") {
@@ -22,7 +22,7 @@ function getStatusBadgeClass(status: string) {
 }
 
 export function MyOrdersPage() {
-  const [orders, setOrders] = useState<CustomerOrder[]>([])
+  const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
 
   const [searchTerm, setSearchTerm] = useState("")

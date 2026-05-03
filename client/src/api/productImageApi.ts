@@ -1,4 +1,5 @@
-import type { CreateProductImageInput, ProductImage } from "../types/product"
+import type { CreateProductImageInput } from "../types/api-input"
+import type { ProductImage } from "../types/product"
 import { apiClient } from "./apiClient"
 
 export const getProductImages = async (productId: string) => {

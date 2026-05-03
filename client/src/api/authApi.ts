@@ -1,19 +1,18 @@
-import type { LoginResponse, User } from "../types/auth"
+import type { User } from "../types/auth"
+import type { LoginParams, RegisterParams } from "../types/params"
+import type { LoginResponse } from "../types/response"
 import { apiClient } from "./apiClient"
 
-export const register = async (data: {
-  name: string
-  email: string
-  password: string
-  phone?: string
-}) => {
-  const response = await apiClient.post<User>("/auth/register", data)
-  return response.data
+export const register = async (params: RegisterParams) => {
+  const { data } = await apiClient.post<User>("/auth/register", {
+    params,
+  })
+  return data
 }
 
-export const login = async (data: { email: string; password: string }) => {
-  const response = await apiClient.post<LoginResponse>("/auth/login", data)
-  return response.data
+export const login = async (params: LoginParams) => {
+  const { data } = await apiClient.post<LoginResponse>("/auth/login", params)
+  return data
 }
 
 export const getCurrentUser = async () => {
