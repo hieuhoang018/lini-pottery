@@ -36,7 +36,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </p>
 
         <div className="mt-5 flex items-center justify-between">
-          <strong className="text-lg text-stone-900">€{product.price}</strong>
+          <strong className="text-lg text-stone-900">{product.price}đ</strong>
           <span
             className={
               isOutOfStock ? "text-sm text-red-600" : "text-sm text-green-700"

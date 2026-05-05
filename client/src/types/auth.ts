@@ -13,3 +13,4 @@ export type AuthContextType = {
   login: (token: string) => Promise<void>
   logout: () => void
 }
+

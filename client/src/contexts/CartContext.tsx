@@ -16,27 +16,13 @@ import {
 } from "../api/cartApi"
 import { useAuth } from "./AuthContext"
 import type { Product } from "../types/product"
-
-type CartItem = {
-  product: Product
-  quantity: number
-}
-
-type CartContextType = {
-  items: CartItem[]
-  loading: boolean
-  total: number
-  addToCart: (product: Product, quantity?: number) => Promise<void>
-  updateQuantity: (productId: string, quantity: number) => Promise<void>
-  removeFromCart: (productId: string) => Promise<void>
-  clearCart: () => Promise<void>
-}
+import type { CartContextType, CartDisplayItem } from "../types/cart"
 
 const CartContext = createContext<CartContextType | null>(null)
 
 const GUEST_CART_KEY = "guest_cart"
 
-function getGuestCartFromStorage(): CartItem[] {
+function getGuestCartFromStorage(): CartDisplayItem[] {
   const raw = localStorage.getItem(GUEST_CART_KEY)
   if (!raw) return []
 
@@ -47,14 +33,14 @@ function getGuestCartFromStorage(): CartItem[] {
   }
 }
 
-function saveGuestCart(items: CartItem[]) {
+function saveGuestCart(items: CartDisplayItem[]) {
   localStorage.setItem(GUEST_CART_KEY, JSON.stringify(items))
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth()
 
-  const [items, setItems] = useState<CartItem[]>([])
+  const [items, setItems] = useState<CartDisplayItem[]>([])
   const [loading, setLoading] = useState(true)
 
   const isLoggedIn = Boolean(user)
@@ -98,14 +84,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addToCart = async (product: Product, quantity = 1) => {
     if (authLoading) {
-      toast.error("Please wait a moment and try again")
+      toast.error("Xin hãy đợi một lúc rồi thử lại")
       return
     }
 
     if (isLoggedIn) {
       await addCartItem(product.id, quantity)
       await loadCart()
-      toast.success("Product added to cart")
+      toast.success("Đã thêm vào giỏ hàng")
       return
     }
 
@@ -124,12 +110,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     saveGuestCart(updatedItems)
     setItems(updatedItems)
-    toast.success("Product added to cart")
+    toast.success("Đã thêm vào giỏ hàng")
   }
 
   const updateQuantity = async (productId: string, quantity: number) => {
     if (authLoading) {
-      toast.error("Please wait a moment and try again")
+      toast.error("Xin hãy đợi một lúc rồi thử lại")
       return
     }
 
@@ -143,13 +129,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const cartItem = cart.items.find((item) => item.productId === productId)
 
       if (!cartItem) {
-        toast.error("Cart item not found")
+        toast.error("Không tìm thấy sản phẩm")
         return
       }
 
       await updateCartItem(cartItem.id, quantity)
       await loadCart()
-      toast.success("Cart updated")
+      toast.success("Đã cập nhật giỏ hàng")
       return
     }
 
@@ -159,12 +145,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     saveGuestCart(updatedItems)
     setItems(updatedItems)
-    toast.success("Cart updated")
+    toast.success("Đã cập nhật giỏ hàng")
   }
 
   const removeFromCart = async (productId: string) => {
     if (authLoading) {
-      toast.error("Please wait a moment and try again")
+      toast.error("Xin hãy đợi một lúc rồi thử lại")
       return
     }
 
@@ -173,13 +159,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const cartItem = cart.items.find((item) => item.productId === productId)
 
       if (!cartItem) {
-        toast.error("Cart item not found")
+        toast.error("Không tìm thấy sản phẩm")
         return
       }
 
       await removeCartItem(cartItem.id)
       await loadCart()
-      toast.success("Item removed")
+      toast.success("Đã xóa sản phẩm")
       return
     }
 
@@ -189,25 +175,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     saveGuestCart(updatedItems)
     setItems(updatedItems)
-    toast.success("Item removed")
+    toast.success("Đã xóa sản phẩm")
   }
 
   const clearCart = async () => {
     if (authLoading) {
-      toast.error("Please wait a moment and try again")
+      toast.error("Xin hãy đợi một lúc rồi thử lại")
       return
     }
 
     if (isLoggedIn) {
       await clearServerCart()
       await loadCart()
-      toast.success("Cart cleared")
+      toast.success("Đã xóa giỏ hàng")
       return
     }
 
     localStorage.removeItem(GUEST_CART_KEY)
     setItems([])
-    toast.success("Cart cleared")
+    toast.success("Đã xóa giỏ hàng")
   }
 
   return (

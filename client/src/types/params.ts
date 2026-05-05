@@ -17,13 +17,15 @@ export type GetMyOrdersParams = {
   search?: string
 }
 
-export type GetAdminProductsParams = GetProductsParams & {
-  active?: boolean
-}
-
 export type GetProductsParams = {
   search?: string
   category?: string
-  sort?: "newest" | "price_asc" | "price_desc"
+  active?: ActiveFilter
+  sort?: SortOption
   availableOnly?: boolean
+  stock?: StockFilter
 }
+
+export type SortOption = "newest" | "price_asc" | "price_desc"
+export type ActiveFilter = "all" | "active" | "inactive"
+export type StockFilter = "all" | "in_stock" | "out_of_stock"

@@ -17,3 +17,18 @@ export type Cart = {
   createdAt: string
   updatedAt: string
 }
+
+export type CartDisplayItem = {
+  product: Product
+  quantity: number
+}
+
+export type CartContextType = {
+  items: CartDisplayItem[]
+  loading: boolean
+  total: number
+  addToCart: (product: Product, quantity?: number) => Promise<void>
+  updateQuantity: (productId: string, quantity: number) => Promise<void>
+  removeFromCart: (productId: string) => Promise<void>
+  clearCart: () => Promise<void>
+}

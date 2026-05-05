@@ -4,9 +4,7 @@ import type { LoginResponse } from "../types/response"
 import { apiClient } from "./apiClient"
 
 export const register = async (params: RegisterParams) => {
-  const { data } = await apiClient.post<User>("/auth/register", {
-    params,
-  })
+  const { data } = await apiClient.post<User>("/auth/register", params)
   return data
 }
 

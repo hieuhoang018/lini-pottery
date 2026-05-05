@@ -1,5 +1,5 @@
 import type { CreateProductInput, UpdateProductInput } from "../types/api-input"
-import type { GetAdminProductsParams, GetProductsParams } from "../types/params"
+import type { GetProductsParams } from "../types/params"
 import type { Product } from "../types/product"
 import { apiClient } from "./apiClient"
 
@@ -16,12 +16,9 @@ export const getProductBySlug = async (slug: string) => {
   return data
 }
 
-export const getAdminProducts = async (params?: GetAdminProductsParams) => {
+export const getAdminProducts = async (params?: GetProductsParams) => {
   const { data } = await apiClient.get<Product[]>("/products", {
-    params: {
-      active: false,
-      ...params,
-    },
+    params,
   })
 
   return data

@@ -104,3 +104,17 @@ export type OrderUser = {
   email: string
   phone?: string | null
 }
+
+export type CheckoutFormData = {
+  guestName: string
+  guestEmail: string
+  guestPhone: string
+  recipientName: string
+  phone: string
+  streetAddress: string
+  city: string
+  postalCode: string
+  country: string
+  additionalInfo: string
+  notes: string
+}

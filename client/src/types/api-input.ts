@@ -34,3 +34,10 @@ export type CreateProductInput = {
   careInstructions?: string
   featuredImageUrl?: string
 }
+
+export type RegisterFormInput = {
+  name: string
+  email: string
+  password: string
+  phone: string
+}

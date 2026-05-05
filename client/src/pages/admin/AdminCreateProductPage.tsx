@@ -1,12 +1,16 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import toast from "react-hot-toast"
 import { Link, useNavigate } from "react-router-dom"
 import { getCategories } from "../../api/categoryApi"
 import { createProduct } from "../../api/productApi"
-import type { CreateProductInput } from "../../types/product"
+import type { CreateProductInput } from "../../types/api-input"
 import type { Category } from "../../types/category"
+import { createSlug } from "../../utils/createSlug"
+import { useForm } from "../../hooks/useForm"
+import { useApiFetch } from "../../hooks/useApiFetch"
+import { InputField } from "../../components/InputField"
 
-const initialForm: CreateProductInput = {
+const initialCreateProductForm: CreateProductInput = {
   name: "",
   slug: "",
   description: "",
@@ -21,129 +25,52 @@ const initialForm: CreateProductInput = {
   featuredImageUrl: "",
 }
 
-function createSlug(value: string) {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-}
-
 export function AdminCreateProductPage() {
   const navigate = useNavigate()
 
-  const [categories, setCategories] = useState<Category[]>([])
-  const [form, setForm] = useState<CreateProductInput>(initialForm)
-  const [loading, setLoading] = useState(true)
-  const [creating, setCreating] = useState(false)
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        setLoading(true)
-
-        const data = await getCategories()
-        setCategories(data)
-
-        if (data[0]) {
-          setForm((prev) => ({
-            ...prev,
-            categoryId: data[0].id,
-          }))
-        }
-      } catch (err: any) {
-        toast.error(err.response?.data?.message || "Failed to load categories")
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchCategories()
-  }, [])
-
-  const handleChange = (
-    event: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
-  ) => {
-    const { name, value } = event.target
-
-    if (name === "name") {
-      setForm((prev) => ({
-        ...prev,
-        name: value,
-        slug: createSlug(value),
-      }))
-      return
-    }
-
-    if (name === "price") {
-      setForm((prev) => ({
-        ...prev,
-        price: Number(value),
-      }))
-      return
-    }
-
-    if (name === "stockQuantity") {
-      setForm((prev) => ({
-        ...prev,
-        stockQuantity: Number(value),
-      }))
-      return
-    }
-
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-  }
-
-  const handleCreateProduct = async (
-    event: React.SyntheticEvent<HTMLFormElement>,
-  ) => {
-    event.preventDefault()
-
-    if (!form.name || !form.slug || !form.description || !form.categoryId) {
-      toast.error("Please fill in name, slug, description, and category")
-      return
-    }
-
-    if (form.price <= 0) {
-      toast.error("Price must be greater than 0")
-      return
-    }
-
-    if ((form.stockQuantity ?? 0) < 0) {
-      toast.error("Stock cannot be negative")
-      return
-    }
-
-    try {
-      setCreating(true)
-
+  const {
+    formData,
+    error,
+    loading: loadingProductCreate,
+    handleChange,
+    handleSubmit,
+  } = useForm<CreateProductInput>({
+    initialData: initialCreateProductForm,
+    onSubmit: async (data) => {
       const product = await createProduct({
-        ...form,
-        material: form.material || undefined,
-        color: form.color || undefined,
-        dimensionsText: form.dimensionsText || undefined,
-        weightText: form.weightText || undefined,
-        careInstructions: form.careInstructions || undefined,
-        featuredImageUrl: form.featuredImageUrl || undefined,
+        ...data,
+        slug: data.slug || createSlug(data.name),
+        material: data.material || undefined,
+        color: data.color || undefined,
+        dimensionsText: data.dimensionsText || undefined,
+        weightText: data.weightText || undefined,
+        careInstructions: data.careInstructions || undefined,
+        featuredImageUrl: data.featuredImageUrl || undefined,
       })
 
-      toast.success("Product created")
+      toast.success("Đã tạo sản phẩm")
       navigate(`/admin/products/${product.id}`)
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to create product")
-    } finally {
-      setCreating(false)
+    },
+  })
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error)
     }
-  }
+  }, [error])
+
+  const { data: categories, loading: loadingCategories } = useApiFetch<
+    Category[]
+  >(() => getCategories(), [])
+
+  const loading = loadingProductCreate || loadingCategories
 
   if (loading) {
-    return <p className="text-stone-600">Loading categories...</p>
+    return <p className="text-stone-600">Đang tải...</p>
+  }
+
+  if (!categories) {
+    return <p>Lỗi khi tải phân loại sản phẩm</p>
   }
 
   return (
@@ -160,35 +87,33 @@ export function AdminCreateProductPage() {
         Thêm một sản phẩm vào cửa hàng.
       </p>
 
-      <form onSubmit={handleCreateProduct} className="mt-6 space-y-4">
-        <label className="block text-sm font-medium text-stone-700">
-          Tên sản phẩm *
-          <input
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
-          />
-        </label>
+      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        <InputField
+          name="name"
+          label="Tên sản phẩm"
+          onChange={handleChange}
+          isCompulsary
+          value={formData.name}
+        />
+        <InputField
+          name="slug"
+          label="Slug"
+          onChange={handleChange}
+          isCompulsary
+          value={formData.slug || createSlug(formData.name)}
+        />
 
         <label className="block text-sm font-medium text-stone-700">
-          Slug *
-          <input
-            name="slug"
-            value={form.slug}
-            onChange={handleChange}
-            className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
-          />
-        </label>
-
-        <label className="block text-sm font-medium text-stone-700">
-          Loại *
+          Phân loại *
           <select
             name="categoryId"
-            value={form.categoryId}
+            value={formData.categoryId}
             onChange={handleChange}
+            required
             className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
           >
+            <option value="">Chọn phân loại</option>
+
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
                 {category.name}
@@ -198,111 +123,81 @@ export function AdminCreateProductPage() {
         </label>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <label className="block text-sm font-medium text-stone-700">
-            Giá tiền *
-            <input
-              name="price"
-              type="number"
-              min="0"
-              step="0.01"
-              value={form.price}
-              onChange={handleChange}
-              className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
-            />
-          </label>
-
-          <label className="block text-sm font-medium text-stone-700">
-            Số lượng trong kho *
-            <input
-              name="stockQuantity"
-              type="number"
-              min="0"
-              value={form.stockQuantity}
-              onChange={handleChange}
-              className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
-            />
-          </label>
+          <InputField
+            name="price"
+            inputType="number"
+            label="Giá tiền"
+            onChange={handleChange}
+            isCompulsary
+            value={formData.price}
+          />
+          <InputField
+            name="stockQuantity"
+            inputType="number"
+            label="Số lượng tồn kho"
+            onChange={handleChange}
+            isCompulsary
+            value={formData.stockQuantity}
+          />
         </div>
-
-        <label className="block text-sm font-medium text-stone-700">
-          Miêu tả *
-          <textarea
-            name="description"
-            value={form.description}
-            onChange={handleChange}
-            rows={5}
-            className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
-          />
-        </label>
-
-        <label className="block text-sm font-medium text-stone-700">
-          Featured image URL
-          <input
-            name="featuredImageUrl"
-            value={form.featuredImageUrl}
-            onChange={handleChange}
-            className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
-          />
-        </label>
+        <InputField
+          name="description"
+          label="Miêu tả"
+          onChange={handleChange}
+          isCompulsary
+          value={formData.description}
+        />
+        <InputField
+          name="featuredImageUrl"
+          label="URL ảnh"
+          onChange={handleChange}
+          isCompulsary
+          value={formData.featuredImageUrl}
+        />
 
         <div className="grid gap-4 md:grid-cols-2">
-          <label className="block text-sm font-medium text-stone-700">
-            Vật liệu
-            <input
-              name="material"
-              value={form.material}
-              onChange={handleChange}
-              className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
-            />
-          </label>
-
-          <label className="block text-sm font-medium text-stone-700">
-            Màu sắc
-            <input
-              name="color"
-              value={form.color}
-              onChange={handleChange}
-              className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
-            />
-          </label>
+          <InputField
+            name="material"
+            label="Vật liệu"
+            onChange={handleChange}
+            isCompulsary={false}
+            value={formData.material}
+          />
+          <InputField
+            name="color"
+            label="Màu sắc"
+            onChange={handleChange}
+            isCompulsary={false}
+            value={formData.color}
+          />
         </div>
-
-        <label className="block text-sm font-medium text-stone-700">
-          Kích thước
-          <input
-            name="dimensionsText"
-            value={form.dimensionsText}
-            onChange={handleChange}
-            className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
-          />
-        </label>
-
-        <label className="block text-sm font-medium text-stone-700">
-          Cân nặng
-          <input
-            name="weightText"
-            value={form.weightText}
-            onChange={handleChange}
-            className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
-          />
-        </label>
-
-        <label className="block text-sm font-medium text-stone-700">
-          Hướng dẫn bảo quản
-          <textarea
-            name="careInstructions"
-            value={form.careInstructions}
-            onChange={handleChange}
-            rows={3}
-            className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
-          />
-        </label>
+        <InputField
+          name="dimensionsText"
+          label="Kích thước"
+          onChange={handleChange}
+          isCompulsary={false}
+          value={formData.dimensionsText}
+        />
+        <InputField
+          name="weightText"
+          label="Cân nặng"
+          onChange={handleChange}
+          isCompulsary={false}
+          value={formData.weightText}
+        />
+        <InputField
+          name="careInstructions"
+          label="Hướng dẫn bảo quản"
+          onChange={handleChange}
+          isCompulsary={false}
+          value={formData.careInstructions}
+        />
 
         <button
-          disabled={creating}
+          disabled={loading}
           className="w-full rounded-full bg-amber-800 px-6 py-3 font-semibold text-white hover:bg-amber-900 disabled:cursor-not-allowed disabled:bg-stone-300"
         >
-          {creating ? "Đang thêm..." : "Thêm sản phẩm"}
+          {loading ? "Đang thêm..." : "Thêm sản phẩm"}
         </button>
       </form>
     </section>
