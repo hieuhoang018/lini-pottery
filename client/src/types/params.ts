@@ -20,10 +20,13 @@ export type GetMyOrdersParams = {
 export type GetProductsParams = {
   search?: string
   category?: string
-  active?: ActiveFilter
   sort?: SortOption
   availableOnly?: boolean
   stock?: StockFilter
+}
+
+export type getAdminProductsParams = GetProductsParams & {
+  active?: ActiveFilter
 }
 
 export type SortOption = "newest" | "price_asc" | "price_desc"

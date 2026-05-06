@@ -10,6 +10,7 @@ import cartRoutes from "./routes/cart.routes"
 import wishlistRoutes from "./routes/wishlist.routes"
 import orderRoutes from "./routes/order.routes"
 import adminOrderRoutes from "./routes/admin-order.routes"
+import adminProductRoutes from "./routes/admin-product.routes"
 import { errorMiddleware } from "./middlewares/error.middleware"
 
 const app = express()
@@ -41,6 +42,7 @@ app.use("/api/cart", cartRoutes)
 app.use("/api/wishlist", wishlistRoutes)
 app.use("/api/orders", orderRoutes)
 app.use("/api/admin/orders", adminOrderRoutes)
+app.use("/api/admin/products", adminProductRoutes)
 
 app.use(errorMiddleware)
 

@@ -8,8 +8,7 @@ import { SkeletonLoading } from "../components/ShopPage/SkeletonLoading"
 import { ShopActionPanel } from "../components/ShopPage/ActionPanel"
 import { useApiFetch } from "../hooks/useApiFetch"
 import { ProductList } from "../components/ShopPage/ProductList"
-
-type SortOption = "newest" | "price_asc" | "price_desc"
+import type { SortOption } from "../types/params"
 
 export function ShopPage() {
   const [selectedCategory, setSelectedCategory] = useState("")
@@ -36,7 +35,6 @@ export function ShopPage() {
         category: selectedCategory || undefined,
         sort: sortOption,
         availableOnly,
-        active: "active",
       }),
     [debouncedSearchTerm, selectedCategory, sortOption, availableOnly],
   )

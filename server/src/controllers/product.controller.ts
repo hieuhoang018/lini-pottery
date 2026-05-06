@@ -21,11 +21,10 @@ export const getProductsHandler = asyncHandler(
     const sort = req.query.sort || "newest"
     const availableOnly = req.query.availableOnly === "true"
     const stock = req.query.stock || "all"
-    const active = req.query.active || "active"
 
     const products = await getAllProducts({
       categorySlug,
-      active,
+      active: "active",
       search,
       sort,
       availableOnly,
@@ -198,5 +197,27 @@ export const updateProductActiveStatusHandler = asyncHandler(
     const product = await updateProductActiveStatus(id, isActive)
 
     return res.status(200).json(product)
+  },
+)
+
+export const getAdminProductsHandler = asyncHandler(
+  async (req: Request<{}, {}, {}, ProductQuery>, res: Response) => {
+    const categorySlug = req.query.category
+    const search = req.query.search
+    const sort = req.query.sort || "newest"
+    const availableOnly = req.query.availableOnly === "true"
+    const stock = req.query.stock || "all"
+    const active = req.query.active || "all"
+
+    const products = await getAllProducts({
+      categorySlug,
+      active,
+      search,
+      sort,
+      availableOnly,
+      stock,
+    })
+
+    return res.status(200).json(products)
   },
 )
