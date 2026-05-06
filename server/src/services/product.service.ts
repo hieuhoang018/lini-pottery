@@ -1,29 +1,43 @@
 import { prisma } from "../lib/prisma"
+import { GetProductsParams } from "../types/params"
 import { CreateProductInput } from "../types/product"
 import { UpdateProductInput } from "../types/product"
 
-type ProductSortOption = "newest" | "price_asc" | "price_desc"
-
-type GetProductsParams = {
-  categorySlug?: string
-  activeOnly?: boolean
-  search?: string
-  sort?: ProductSortOption
-  availableOnly?: boolean
-}
-
 export const getAllProducts = async ({
   categorySlug,
-  activeOnly = true,
+  active = "active",
   search,
   sort = "newest",
   availableOnly = false,
+  stock = "all",
 }: GetProductsParams = {}) => {
   const trimmedSearch = search?.trim()
 
+  const activeWhere =
+    active === "active"
+      ? { isActive: true }
+      : active === "inactive"
+        ? { isActive: false }
+        : {}
+
+  const stockWhere =
+    stock === "out_of_stock"
+      ? {
+          stockQuantity: {
+            equals: 0,
+          },
+        }
+      : stock === "in_stock" || availableOnly
+        ? {
+            stockQuantity: {
+              gt: 0,
+            },
+          }
+        : {}
+
   return prisma.product.findMany({
     where: {
-      ...(activeOnly ? { isActive: true } : {}),
+      ...activeWhere,
 
       ...(categorySlug
         ? {
@@ -33,13 +47,7 @@ export const getAllProducts = async ({
           }
         : {}),
 
-      ...(availableOnly
-        ? {
-            stockQuantity: {
-              gt: 0,
-            },
-          }
-        : {}),
+      ...stockWhere,
 
       ...(trimmedSearch
         ? {

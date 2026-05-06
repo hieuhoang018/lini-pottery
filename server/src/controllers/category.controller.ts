@@ -6,10 +6,7 @@ import {
 } from "../services/category.service"
 import { asyncHandler } from "../utils/asyncHandler"
 import { AppError } from "../utils/AppError"
-
-type CategoryParams = {
-  slug: string
-}
+import { CategoryParams } from "../types/params"
 
 export const getCategoriesHandler = asyncHandler(
   async (_req: Request, res: Response) => {

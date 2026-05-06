@@ -50,3 +50,13 @@ export type AdminOrder = {
     updatedAt: string
   }[]
 }
+
+export type OrderStatusFilter =
+  | ""
+  | "PENDING"
+  | "CONFIRMED"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED"
+
+export type PaymentStatusFilter = "" | "PENDING" | "PAID" | "CANCELLED"

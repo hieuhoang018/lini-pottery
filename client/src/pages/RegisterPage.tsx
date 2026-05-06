@@ -1,97 +1,93 @@
-import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
 import { register } from "../api/authApi"
+import { useForm } from "../hooks/useForm"
+import { InputField } from "../components/InputField"
+import { useEffect } from "react"
+import type { RegisterFormInput } from "../types/api-input"
+
+const initialRegisterForm: RegisterFormInput = {
+  name: "",
+  email: "",
+  password: "",
+  phone: "",
+}
 
 export function RegisterPage() {
   const navigate = useNavigate()
-  const [showPassword, setShowPassword] = useState(false)
 
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    phone: "",
-  })
+  const { formData, loading, error, handleChange, handleSubmit } =
+    useForm<RegisterFormInput>({
+      initialData: initialRegisterForm,
 
-  const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
-    event.preventDefault()
+      onSubmit: async (data) => {
+        await register(data)
+        toast.success("Đăng kí tài khoản thành công. Vui lòng đăng nhập.")
+        navigate("/login")
+      },
+    })
 
-    try {
-      await register(form)
-      toast.success("Account created. Please login.")
-      navigate("/login")
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Register failed")
+  useEffect(() => {
+    if (error) {
+      toast.error(error)
     }
-  }
+  }, [error])
 
   return (
-    <main className="min-h-screen bg-stone-50 px-6 py-10">
-      <form
-        onSubmit={handleSubmit}
-        className="mx-auto max-w-md rounded-2xl bg-white p-8 shadow-sm ring-1 ring-stone-200"
+    <form
+      onSubmit={handleSubmit}
+      className="mx-auto max-w-md rounded-2xl bg-white p-8 shadow-sm ring-1 ring-stone-200"
+    >
+      <h1 className="text-3xl font-bold text-stone-900">Đăng kí</h1>
+
+      <div className="mt-4 flex flex-col gap-4">
+        <InputField
+          name="name"
+          label="Họ và tên"
+          value={formData.name}
+          onChange={handleChange}
+          isCompulsary
+        />
+
+        <InputField
+          name="email"
+          label="Email"
+          value={formData.email}
+          onChange={handleChange}
+          isCompulsary
+        />
+
+        <InputField
+          name="phone"
+          label="Số điện thoại"
+          value={formData.phone}
+          onChange={handleChange}
+          isCompulsary={false}
+        />
+
+        <InputField
+          name="password"
+          inputType="password"
+          label="Mật khẩu"
+          value={formData.password}
+          onChange={handleChange}
+          isCompulsary
+        />
+      </div>
+
+      <button
+        disabled={loading}
+        className="mt-6 w-full rounded-full bg-amber-800 px-6 py-3 font-semibold text-white"
       >
-        <h1 className="text-3xl font-bold text-stone-900">Đăng kí</h1>
+        Đăng kí
+      </button>
 
-        <label className="mt-6 block text-sm font-medium text-stone-700">
-          Họ và tên
-          <input
-            className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-          />
-        </label>
-
-        <label className="mt-4 block text-sm font-medium text-stone-700">
-          Email
-          <input
-            className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-            type="email"
-          />
-        </label>
-
-        <label className="mt-4 block text-sm font-medium text-stone-700">
-          Số điện thoại
-          <input
-            className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
-            value={form.phone}
-            onChange={(e) => setForm({ ...form, phone: e.target.value })}
-          />
-        </label>
-
-        <label className="mt-4 block text-sm font-medium text-stone-700">
-          Mật khẩu
-          <div className="relative">
-            <input
-              className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              type={showPassword ? "text" : "password"}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-5 text-stone-600 hover:text-stone-900"
-            >
-              {showPassword ? "Ẩn" : "Hiện"}
-            </button>
-          </div>
-        </label>
-
-        <button className="mt-6 w-full rounded-full bg-amber-800 px-6 py-3 font-semibold text-white">
-          Đăng kí
-        </button>
-
-        <p className="mt-4 text-sm text-stone-600">
-          Đã có tài khoản?{" "}
-          <Link to="/login" className="font-semibold text-amber-800">
-            Đăng nhập
-          </Link>
-        </p>
-      </form>
-    </main>
+      <p className="mt-4 text-sm text-stone-600">
+        Đã có tài khoản?{" "}
+        <Link to="/login" className="font-semibold text-amber-800">
+          Đăng nhập
+        </Link>
+      </p>
+    </form>
   )
 }
