@@ -6,7 +6,7 @@ export type OrderIdParams = {
 }
 
 export type ProductIdParams = {
-  productId: string
+  id: string
 }
 
 export type ProductImageIdParams = {
@@ -25,6 +25,8 @@ export type GetAllOrdersForAdminParams = {
   search?: string
   status?: OrderStatus
   paymentStatus?: PaymentStatus
+  page?: number
+  limit?: number
 }
 
 export type GetProductsParams = {
@@ -34,4 +36,6 @@ export type GetProductsParams = {
   sort?: ProductSortOption
   availableOnly?: boolean
   stock?: StockFilter
+  page?: number
+  limit?: number
 }

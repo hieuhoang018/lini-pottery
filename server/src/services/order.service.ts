@@ -6,6 +6,7 @@ import {
   GuestCheckoutInput,
 } from "../types/order"
 import { isValidUuid } from "../utils/isValidUuid"
+import { buildPaginationMeta } from "../utils/pagination"
 
 export const checkoutFromCart = async (data: CheckoutInput) => {
   return prisma.$transaction(async (tx) => {
@@ -119,114 +120,138 @@ export const checkoutFromCart = async (data: CheckoutInput) => {
   })
 }
 
-export const getMyOrders = async ({ userId, search }: GetMyOrdersInput) => {
+export const getMyOrders = async ({
+  userId,
+  search,
+  page = 1,
+  limit = 10,
+}: GetMyOrdersInput) => {
   const trimmedSearch = search?.trim()
   const searchIsUuid = trimmedSearch ? isValidUuid(trimmedSearch) : false
   const orderStatusSearch = getOrderStatusSearch(trimmedSearch)
   const paymentStatusSearch = getPaymentStatusSearch(trimmedSearch)
 
-  return prisma.order.findMany({
-    where: {
-      userId,
+  const skip = (page - 1) * limit
 
-      ...(trimmedSearch
-        ? {
-            OR: [
-              ...(searchIsUuid
-                ? [
-                    {
-                      id: {
-                        equals: trimmedSearch,
-                      },
-                    },
-                  ]
-                : []),
+  const where = {
+    userId,
 
-              ...(orderStatusSearch
-                ? [
-                    {
-                      status: {
-                        equals: orderStatusSearch,
-                      },
+    ...(trimmedSearch
+      ? {
+          OR: [
+            ...(searchIsUuid
+              ? [
+                  {
+                    id: {
+                      equals: trimmedSearch,
                     },
-                  ]
-                : []),
+                  },
+                ]
+              : []),
 
-              ...(paymentStatusSearch
-                ? [
-                    {
-                      paymentStatus: {
-                        equals: paymentStatusSearch,
-                      },
+            ...(orderStatusSearch
+              ? [
+                  {
+                    status: {
+                      equals: orderStatusSearch,
                     },
-                  ]
-                : []),
+                  },
+                ]
+              : []),
 
-              {
-                address: {
-                  is: {
-                    recipientName: {
-                      contains: trimmedSearch,
-                      mode: "insensitive",
+            ...(paymentStatusSearch
+              ? [
+                  {
+                    paymentStatus: {
+                      equals: paymentStatusSearch,
                     },
+                  },
+                ]
+              : []),
+
+            {
+              address: {
+                is: {
+                  recipientName: {
+                    contains: trimmedSearch,
+                    mode: "insensitive" as const,
                   },
                 },
               },
-              {
-                address: {
-                  is: {
-                    phone: {
-                      contains: trimmedSearch,
-                      mode: "insensitive",
-                    },
+            },
+            {
+              address: {
+                is: {
+                  phone: {
+                    contains: trimmedSearch,
+                    mode: "insensitive" as const,
                   },
                 },
               },
-              {
-                address: {
-                  is: {
-                    city: {
-                      contains: trimmedSearch,
-                      mode: "insensitive",
-                    },
+            },
+            {
+              address: {
+                is: {
+                  city: {
+                    contains: trimmedSearch,
+                    mode: "insensitive" as const,
                   },
                 },
               },
-              {
-                address: {
-                  is: {
-                    postalCode: {
-                      contains: trimmedSearch,
-                      mode: "insensitive",
-                    },
+            },
+            {
+              address: {
+                is: {
+                  postalCode: {
+                    contains: trimmedSearch,
+                    mode: "insensitive" as const,
                   },
                 },
               },
-              {
-                items: {
-                  some: {
-                    productName: {
-                      contains: trimmedSearch,
-                      mode: "insensitive",
-                    },
+            },
+            {
+              items: {
+                some: {
+                  productName: {
+                    contains: trimmedSearch,
+                    mode: "insensitive" as const,
                   },
                 },
               },
-            ],
-          }
-        : {}),
-    },
+            },
+          ],
+        }
+      : {}),
+  }
 
-    include: {
-      items: true,
-      address: true,
-      paymentRecords: true,
-    },
+  const [orders, totalItems] = await prisma.$transaction([
+    prisma.order.findMany({
+      where,
+      include: {
+        items: true,
+        address: true,
+        paymentRecords: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      skip,
+      take: limit,
+    }),
 
-    orderBy: {
-      createdAt: "desc",
-    },
-  })
+    prisma.order.count({
+      where,
+    }),
+  ])
+
+  return {
+    data: orders,
+    pagination: buildPaginationMeta({
+      page,
+      limit,
+      totalItems,
+    }),
+  }
 }
 
 export const getOrderByIdForUser = async (orderId: string, userId: string) => {

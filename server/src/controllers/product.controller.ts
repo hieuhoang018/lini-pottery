@@ -13,6 +13,7 @@ import { asyncHandler } from "../utils/asyncHandler"
 import { AppError } from "../utils/AppError"
 import { ProductIdParams, ProductSlugParams } from "../types/params"
 import { ProductQuery } from "../types/query"
+import { getPaginationParams } from "../utils/pagination"
 
 export const getProductsHandler = asyncHandler(
   async (req: Request<{}, {}, {}, ProductQuery>, res: Response) => {
@@ -22,16 +23,20 @@ export const getProductsHandler = asyncHandler(
     const availableOnly = req.query.availableOnly === "true"
     const stock = req.query.stock || "all"
 
-    const products = await getAllProducts({
+    const { page, limit } = getPaginationParams(req.query)
+
+    const result = await getAllProducts({
       categorySlug,
       active: "active",
       search,
       sort,
       availableOnly,
       stock,
+      page,
+      limit,
     })
 
-    return res.status(200).json(products)
+    return res.status(200).json(result)
   },
 )
 
@@ -209,15 +214,19 @@ export const getAdminProductsHandler = asyncHandler(
     const stock = req.query.stock || "all"
     const active = req.query.active || "all"
 
-    const products = await getAllProducts({
+    const { page, limit } = getPaginationParams(req.query)
+
+    const result = await getAllProducts({
       categorySlug,
       active,
       search,
       sort,
       availableOnly,
       stock,
+      page,
+      limit,
     })
 
-    return res.status(200).json(products)
+    return res.status(200).json(result)
   },
 )

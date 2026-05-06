@@ -9,6 +9,7 @@ import {
 import { asyncHandler } from "../utils/asyncHandler"
 import { AppError } from "../utils/AppError"
 import { MyOrdersQuery } from "../types/query"
+import { getPaginationParams } from "../utils/pagination"
 
 export const checkoutHandler = asyncHandler(
   async (req: AuthRequest, res: Response) => {
@@ -71,12 +72,16 @@ export const getMyOrdersHandler = asyncHandler(
     const userId = req.user!.userId
     const search = req.query.search
 
-    const orders = await getMyOrders({
+    const { page, limit } = getPaginationParams(req.query)
+
+    const result = await getMyOrders({
       userId,
       search,
+      page,
+      limit,
     })
 
-    return res.status(200).json(orders)
+    return res.status(200).json(result)
   },
 )
 

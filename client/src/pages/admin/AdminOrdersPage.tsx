@@ -14,17 +14,21 @@ import type {
 import { useDebounce } from "../../hooks/useDebounce"
 import { useApiFetch } from "../../hooks/useApiFetch"
 import { OrderList } from "../../components/AdminPage/OrderPage/OrderList"
+import { PaginationButtons } from "../../components/PaginationButtons"
 
 export function AdminOrdersPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<OrderStatusFilter>("")
   const [paymentStatusFilter, setPaymentStatusFilter] =
     useState<PaymentStatusFilter>("")
+  const [page, setPage] = useState(1)
+  const limit = 20
 
   const debouncedSearchTerm = useDebounce(searchTerm.trim(), 400)
 
   const {
     data: orders,
+    pagination,
     loading,
     refetch,
   } = useApiFetch<AdminOrder[]>(
@@ -33,8 +37,10 @@ export function AdminOrdersPage() {
         search: debouncedSearchTerm || undefined,
         status: statusFilter || undefined,
         paymentStatus: paymentStatusFilter || undefined,
+        page,
+        limit,
       }),
-    [debouncedSearchTerm, statusFilter, paymentStatusFilter],
+    [debouncedSearchTerm, statusFilter, paymentStatusFilter, page],
   )
 
   const handleStatusChange = async (
@@ -157,6 +163,10 @@ export function AdminOrdersPage() {
           handlePaymentChange={handlePaymentChange}
           handleStatusChange={handleStatusChange}
         />
+      )}
+
+      {pagination && (
+        <PaginationButtons pagination={pagination} onPageChange={setPage} />
       )}
     </section>
   )

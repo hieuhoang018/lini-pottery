@@ -1,4 +1,4 @@
-export type ProductQuery = {
+export type ProductQuery = PaginationQuery & {
   category?: string
   active?: "all" | "active" | "inactive"
   search?: string
@@ -8,12 +8,17 @@ export type ProductQuery = {
   stock?: "all" | "in_stock" | "out_of_stock"
 }
 
-export type MyOrdersQuery = {
+export type MyOrdersQuery = PaginationQuery & {
   search?: string
 }
 
-export type AdminOrdersQuery = {
+export type AdminOrdersQuery = PaginationQuery & {
   search?: string
   status?: string
   paymentStatus?: string
+}
+
+export type PaginationQuery = {
+  page?: string
+  limit?: string
 }

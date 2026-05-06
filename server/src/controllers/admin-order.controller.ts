@@ -11,6 +11,7 @@ import { AppError } from "../utils/AppError"
 import { OrderStatus, PaymentStatus } from "../types/order"
 import { OrderIdParams } from "../types/params"
 import { AdminOrdersQuery } from "../types/query"
+import { getPaginationParams } from "../utils/pagination"
 
 const allowedOrderStatuses = [
   "PENDING",
@@ -28,6 +29,8 @@ export const getAdminOrdersHandler = asyncHandler(
     const status = req.query.status?.toUpperCase()
     const paymentStatus = req.query.paymentStatus?.toUpperCase()
 
+    const { page, limit } = getPaginationParams(req.query)
+
     if (status && !allowedOrderStatuses.includes(status)) {
       throw new AppError(
         "Invalid status. Allowed values: PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED",
@@ -44,13 +47,15 @@ export const getAdminOrdersHandler = asyncHandler(
       )
     }
 
-    const orders = await getAllOrdersForAdmin({
+    const result = await getAllOrdersForAdmin({
       search,
       status: status as OrderStatus | undefined,
       paymentStatus: paymentStatus as PaymentStatus | undefined,
+      page,
+      limit,
     })
 
-    return res.status(200).json(orders)
+    return res.status(200).json(result)
   },
 )
 
