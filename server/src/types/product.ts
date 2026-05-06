@@ -15,3 +15,7 @@ export type CreateProductInput = {
 }
 
 export type UpdateProductInput = Partial<CreateProductInput>
+
+export type ProductSortOption = "newest" | "price_asc" | "price_desc"
+
+export type StockFilter = "all" | "in_stock" | "out_of_stock"

@@ -8,10 +8,7 @@ import {
 } from "../services/order.service"
 import { asyncHandler } from "../utils/asyncHandler"
 import { AppError } from "../utils/AppError"
-
-type MyOrdersQuery = {
-  search?: string
-}
+import { MyOrdersQuery } from "../types/query"
 
 export const checkoutHandler = asyncHandler(
   async (req: AuthRequest, res: Response) => {

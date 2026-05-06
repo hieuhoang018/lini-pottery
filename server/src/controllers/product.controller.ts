@@ -11,37 +11,25 @@ import {
 import { prisma } from "../lib/prisma"
 import { asyncHandler } from "../utils/asyncHandler"
 import { AppError } from "../utils/AppError"
-
-type ProductSlugParams = {
-  slug: string
-}
-
-type ProductQuery = {
-  category?: string
-  active?: string
-  search?: string
-  sort?: "newest" | "price_asc" | "price_desc"
-  availableOnly?: string
-}
-
-type ProductIdParams = {
-  id: string
-}
+import { ProductIdParams, ProductSlugParams } from "../types/params"
+import { ProductQuery } from "../types/query"
 
 export const getProductsHandler = asyncHandler(
   async (req: Request<{}, {}, {}, ProductQuery>, res: Response) => {
     const categorySlug = req.query.category
-    const activeOnly = req.query.active === "false" ? false : true
     const search = req.query.search
     const sort = req.query.sort || "newest"
     const availableOnly = req.query.availableOnly === "true"
+    const stock = req.query.stock || "all"
+    const active = req.query.active || "active"
 
     const products = await getAllProducts({
       categorySlug,
-      activeOnly,
+      active,
       search,
       sort,
       availableOnly,
+      stock,
     })
 
     return res.status(200).json(products)

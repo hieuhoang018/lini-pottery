@@ -1,5 +1,6 @@
 import express from "express"
 import cors from "cors"
+import morgan from "morgan"
 import { prisma } from "./lib/prisma"
 import categoryRoutes from "./routes/category.routes"
 import productRoutes from "./routes/product.routes"
@@ -12,6 +13,8 @@ import adminOrderRoutes from "./routes/admin-order.routes"
 import { errorMiddleware } from "./middlewares/error.middleware"
 
 const app = express()
+
+app.use(morgan("dev"))
 
 app.use(cors())
 app.use(express.json())

@@ -9,10 +9,8 @@ import {
 import { asyncHandler } from "../utils/asyncHandler"
 import { AppError } from "../utils/AppError"
 import { OrderStatus, PaymentStatus } from "../types/order"
-
-type OrderIdParams = {
-  id: string
-}
+import { OrderIdParams } from "../types/params"
+import { AdminOrdersQuery } from "../types/query"
 
 const allowedOrderStatuses = [
   "PENDING",
@@ -23,12 +21,6 @@ const allowedOrderStatuses = [
 ]
 
 const allowedPaymentStatuses = ["PENDING", "PAID", "CANCELLED"]
-
-type AdminOrdersQuery = {
-  search?: string
-  status?: string
-  paymentStatus?: string
-}
 
 export const getAdminOrdersHandler = asyncHandler(
   async (req: Request<{}, {}, {}, AdminOrdersQuery>, res: Response) => {

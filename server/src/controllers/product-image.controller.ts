@@ -8,14 +8,7 @@ import {
 } from "../services/product-image.service"
 import { asyncHandler } from "../utils/asyncHandler"
 import { AppError } from "../utils/AppError"
-
-type ProductIdParams = {
-  productId: string
-}
-
-type ProductImageIdParams = {
-  id: string
-}
+import { ProductIdParams, ProductImageIdParams } from "../types/params"
 
 type CreateProductImageBody = {
   imageUrl?: string

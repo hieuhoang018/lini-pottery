@@ -1,19 +1,6 @@
 import { prisma } from "../lib/prisma"
-
-type OrderStatus =
-  | "PENDING"
-  | "CONFIRMED"
-  | "SHIPPED"
-  | "DELIVERED"
-  | "CANCELLED"
-
-type PaymentStatus = "PENDING" | "PAID" | "CANCELLED"
-
-type GetAllOrdersForAdminParams = {
-  search?: string
-  status?: OrderStatus
-  paymentStatus?: PaymentStatus
-}
+import { OrderStatus, PaymentStatus } from "../types/order"
+import { GetAllOrdersForAdminParams } from "../types/params"
 
 export const getAllOrdersForAdmin = async ({
   search,
