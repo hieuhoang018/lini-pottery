@@ -1,6 +1,8 @@
+import { Prisma } from "@prisma/client"
 import { prisma } from "../lib/prisma"
 import { GetWishlistParams } from "../types/params"
 import { buildPaginationMeta } from "../utils/pagination"
+import { normalizeSearchText } from "../utils/search"
 
 export const getWishlist = async ({
   userId,
@@ -8,52 +10,21 @@ export const getWishlist = async ({
   page = 1,
   limit = 10,
 }: GetWishlistParams) => {
-  const trimmedSearch = search?.trim()
+  const normalizedSearch = search?.trim()
+    ? normalizeSearchText(search.trim())
+    : undefined
+
   const skip = (page - 1) * limit
 
-  const where = {
+  const where: Prisma.WishlistItemWhereInput = {
     userId,
 
-    ...(trimmedSearch
+    ...(normalizedSearch
       ? {
           product: {
-            is: {
-              OR: [
-                {
-                  name: {
-                    contains: trimmedSearch,
-                    mode: "insensitive" as const,
-                  },
-                },
-                {
-                  description: {
-                    contains: trimmedSearch,
-                    mode: "insensitive" as const,
-                  },
-                },
-                {
-                  material: {
-                    contains: trimmedSearch,
-                    mode: "insensitive" as const,
-                  },
-                },
-                {
-                  color: {
-                    contains: trimmedSearch,
-                    mode: "insensitive" as const,
-                  },
-                },
-                {
-                  category: {
-                    is: {
-                      name: {
-                        contains: trimmedSearch,
-                        mode: "insensitive" as const,
-                      },
-                    },
-                  },
-                },
-              ],
+            searchText: {
+              contains: normalizedSearch,
+              mode: "insensitive",
             },
           },
         }

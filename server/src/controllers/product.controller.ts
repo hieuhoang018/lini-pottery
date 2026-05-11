@@ -141,6 +141,10 @@ export const updateProductHandler = asyncHandler(
 
     const updatedProduct = await updateProduct(id, req.body)
 
+    if (!updatedProduct) {
+      throw new AppError("Product not found", 404, "PRODUCT_NOT_FOUND")
+    }
+
     return res.status(200).json(updatedProduct)
   },
 )
