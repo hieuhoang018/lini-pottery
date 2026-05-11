@@ -1,22 +1,98 @@
 import { prisma } from "../lib/prisma"
+import { GetWishlistParams } from "../types/params"
+import { buildPaginationMeta } from "../utils/pagination"
 
-export const getWishlist = async (userId: string) => {
-  return prisma.wishlistItem.findMany({
-    where: { userId },
-    include: {
-      product: {
-        include: {
-          category: true,
-          images: {
-            orderBy: { sortOrder: "asc" },
+export const getWishlist = async ({
+  userId,
+  search,
+  page = 1,
+  limit = 10,
+}: GetWishlistParams) => {
+  const trimmedSearch = search?.trim()
+  const skip = (page - 1) * limit
+
+  const where = {
+    userId,
+
+    ...(trimmedSearch
+      ? {
+          product: {
+            is: {
+              OR: [
+                {
+                  name: {
+                    contains: trimmedSearch,
+                    mode: "insensitive" as const,
+                  },
+                },
+                {
+                  description: {
+                    contains: trimmedSearch,
+                    mode: "insensitive" as const,
+                  },
+                },
+                {
+                  material: {
+                    contains: trimmedSearch,
+                    mode: "insensitive" as const,
+                  },
+                },
+                {
+                  color: {
+                    contains: trimmedSearch,
+                    mode: "insensitive" as const,
+                  },
+                },
+                {
+                  category: {
+                    is: {
+                      name: {
+                        contains: trimmedSearch,
+                        mode: "insensitive" as const,
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        }
+      : {}),
+  }
+
+  const [wishlistItems, totalItems] = await prisma.$transaction([
+    prisma.wishlistItem.findMany({
+      where,
+      include: {
+        product: {
+          include: {
+            category: true,
+            images: {
+              orderBy: { sortOrder: "asc" },
+            },
           },
         },
       },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  })
+      orderBy: {
+        createdAt: "desc",
+      },
+      skip,
+      take: limit,
+    }),
+
+    prisma.wishlistItem.count({
+      where,
+    }),
+  ])
+
+  return {
+    data: wishlistItems,
+    pagination: buildPaginationMeta({
+      page,
+      limit,
+      totalItems,
+    }),
+  }
 }
 
 export const addWishlistItem = async (userId: string, productId: string) => {

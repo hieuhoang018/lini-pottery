@@ -22,3 +22,9 @@ export type PaginationQuery = {
   page?: string
   limit?: string
 }
+
+export type WishlistQuery = {
+  search?: string
+  page?: string
+  limit?: string
+}

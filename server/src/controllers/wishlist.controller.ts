@@ -1,4 +1,4 @@
-import { Response } from "express"
+import { Request, Response } from "express"
 import { AuthRequest } from "../middlewares/auth.middleware"
 import {
   addWishlistItem,
@@ -7,12 +7,25 @@ import {
 } from "../services/wishlist.service"
 import { asyncHandler } from "../utils/asyncHandler"
 import { AppError } from "../utils/AppError"
+import { WishlistQuery } from "../types/query"
+import { getPaginationParams } from "../utils/pagination"
 
 export const getWishlistHandler = asyncHandler(
-  async (req: AuthRequest, res: Response) => {
+  async (
+    req: AuthRequest & Request<{}, {}, {}, WishlistQuery>,
+    res: Response,
+  ) => {
     const userId = req.user!.userId
+    const search = req.query.search
 
-    const wishlist = await getWishlist(userId)
+    const { page, limit } = getPaginationParams(req.query)
+
+    const wishlist = await getWishlist({
+      userId,
+      search,
+      page,
+      limit,
+    })
 
     return res.status(200).json(wishlist)
   },

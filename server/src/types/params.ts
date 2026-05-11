@@ -39,3 +39,10 @@ export type GetProductsParams = {
   page?: number
   limit?: number
 }
+
+export type GetWishlistParams = {
+  userId: string
+  search?: string
+  page?: number
+  limit?: number
+}
