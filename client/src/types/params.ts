@@ -38,3 +38,9 @@ export type getAdminProductsParams = GetProductsParams & {
 export type SortOption = "newest" | "price_asc" | "price_desc"
 export type ActiveFilter = "all" | "active" | "inactive"
 export type StockFilter = "all" | "in_stock" | "out_of_stock"
+
+export type GetWishlistParams = {
+  search?: string
+  page?: number
+  limit?: number
+}
