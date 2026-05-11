@@ -3,6 +3,7 @@ import { GetProductsParams } from "../types/params"
 import { CreateProductInput } from "../types/product"
 import { UpdateProductInput } from "../types/product"
 import { buildPaginationMeta } from "../utils/pagination"
+import { buildProductSearchText, normalizeSearchText } from "../utils/search"
 
 export const getAllProducts = async ({
   categorySlug,
@@ -14,7 +15,9 @@ export const getAllProducts = async ({
   page = 1,
   limit = 12,
 }: GetProductsParams = {}) => {
-  const trimmedSearch = search?.trim()
+  const normalizedSearch = search?.trim()
+    ? normalizeSearchText(search.trim())
+    : undefined
   const skip = (page - 1) * limit
 
   const activeWhere =
@@ -52,42 +55,12 @@ export const getAllProducts = async ({
 
     ...stockWhere,
 
-    ...(trimmedSearch
+    ...(normalizedSearch
       ? {
-          OR: [
-            {
-              name: {
-                contains: trimmedSearch,
-                mode: "insensitive" as const,
-              },
-            },
-            {
-              description: {
-                contains: trimmedSearch,
-                mode: "insensitive" as const,
-              },
-            },
-            {
-              material: {
-                contains: trimmedSearch,
-                mode: "insensitive" as const,
-              },
-            },
-            {
-              color: {
-                contains: trimmedSearch,
-                mode: "insensitive" as const,
-              },
-            },
-            {
-              category: {
-                name: {
-                  contains: trimmedSearch,
-                  mode: "insensitive" as const,
-                },
-              },
-            },
-          ],
+          searchText: {
+            contains: normalizedSearch,
+            mode: "insensitive" as const,
+          },
         }
       : {}),
   }
@@ -145,6 +118,24 @@ export const getProductBySlug = async (slug: string) => {
 }
 
 export const createProduct = async (data: CreateProductInput) => {
+  const category = await prisma.category.findUnique({
+    where: {
+      id: data.categoryId,
+    },
+  })
+
+  const searchText = buildProductSearchText({
+    name: data.name,
+    slug: data.slug,
+    description: data.description,
+    material: data.material,
+    color: data.color,
+    dimensionsText: data.dimensionsText,
+    weightText: data.weightText,
+    careInstructions: data.careInstructions,
+    categoryName: category?.name,
+  })
+
   return prisma.product.create({
     data: {
       name: data.name,
@@ -160,6 +151,7 @@ export const createProduct = async (data: CreateProductInput) => {
       weightText: data.weightText,
       careInstructions: data.careInstructions,
       featuredImageUrl: data.featuredImageUrl,
+      searchText,
     },
     include: {
       category: true,
@@ -183,9 +175,46 @@ export const getProductById = async (id: string) => {
 }
 
 export const updateProduct = async (id: string, data: UpdateProductInput) => {
+  const existingProduct = await prisma.product.findUnique({
+    where: { id },
+    include: {
+      category: true,
+    },
+  })
+
+  if (!existingProduct) {
+    return null
+  }
+
+  const nextCategoryId = data.categoryId ?? existingProduct.categoryId
+
+  const nextCategory =
+    nextCategoryId !== existingProduct.categoryId
+      ? await prisma.category.findUnique({
+          where: {
+            id: nextCategoryId,
+          },
+        })
+      : existingProduct.category
+
+  const searchText = buildProductSearchText({
+    name: data.name ?? existingProduct.name,
+    slug: data.slug ?? existingProduct.slug,
+    description: data.description ?? existingProduct.description,
+    material: data.material ?? existingProduct.material,
+    color: data.color ?? existingProduct.color,
+    dimensionsText: data.dimensionsText ?? existingProduct.dimensionsText,
+    weightText: data.weightText ?? existingProduct.weightText,
+    careInstructions: data.careInstructions ?? existingProduct.careInstructions,
+    categoryName: nextCategory?.name,
+  })
+
   return prisma.product.update({
     where: { id },
-    data,
+    data: {
+      ...data,
+      searchText,
+    },
     include: {
       category: true,
       images: {
