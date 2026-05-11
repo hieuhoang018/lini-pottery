@@ -10,7 +10,6 @@ export type User = {
 export type AuthContextType = {
   user: User | null
   loading: boolean
-  login: (token: string) => Promise<void>
-  logout: () => void
+  login: (accessToken: string, user?: User) => Promise<void>
+  logout: () => Promise<void>
 }
-

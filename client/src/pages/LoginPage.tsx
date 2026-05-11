@@ -19,7 +19,7 @@ export function LoginPage() {
     onSubmit: async (data) => {
       const result = await loginApi(data)
 
-      await login(result.token)
+      await login(result.accessToken, result.user)
 
       localStorage.removeItem("guest_cart")
 

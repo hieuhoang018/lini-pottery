@@ -1,13 +1,16 @@
 import bcrypt from "bcrypt"
-import jwt from "jsonwebtoken"
 import { prisma } from "../lib/prisma"
 import { LoginInput, RegisterInput } from "../types/auth"
+import { AppError } from "../utils/AppError"
 
-const JWT_SECRET = process.env.JWT_SECRET
-
-if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET is not set")
-}
+const safeUserSelect = {
+  id: true,
+  name: true,
+  email: true,
+  role: true,
+  phone: true,
+  createdAt: true,
+} as const
 
 export const registerUser = async (data: RegisterInput) => {
   const existingUser = await prisma.user.findUnique({
@@ -15,7 +18,7 @@ export const registerUser = async (data: RegisterInput) => {
   })
 
   if (existingUser) {
-    throw new Error("EMAIL_ALREADY_EXISTS")
+    throw new AppError("Email already exists", 409, "EMAIL_ALREADY_EXISTS")
   }
 
   const passwordHash = await bcrypt.hash(data.password, 10)
@@ -28,14 +31,7 @@ export const registerUser = async (data: RegisterInput) => {
         passwordHash,
         phone: data.phone,
       },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        phone: true,
-        createdAt: true,
-      },
+      select: safeUserSelect,
     })
 
     await tx.cart.create({
@@ -47,7 +43,9 @@ export const registerUser = async (data: RegisterInput) => {
     return createdUser
   })
 
-  return user
+  return {
+    user,
+  }
 }
 
 export const loginUser = async (data: LoginInput) => {
@@ -56,26 +54,16 @@ export const loginUser = async (data: LoginInput) => {
   })
 
   if (!user) {
-    throw new Error("INVALID_CREDENTIALS")
+    throw new AppError("Invalid email or password", 401, "INVALID_CREDENTIALS")
   }
 
   const isPasswordValid = await bcrypt.compare(data.password, user.passwordHash)
 
   if (!isPasswordValid) {
-    throw new Error("INVALID_CREDENTIALS")
+    throw new AppError("Invalid email or password", 401, "INVALID_CREDENTIALS")
   }
 
-  const token = jwt.sign(
-    {
-      userId: user.id,
-      role: user.role,
-    },
-    JWT_SECRET,
-    { expiresIn: "7d" },
-  )
-
   return {
-    token,
     user: {
       id: user.id,
       name: user.name,
@@ -90,13 +78,6 @@ export const loginUser = async (data: LoginInput) => {
 export const getUserById = async (userId: string) => {
   return prisma.user.findUnique({
     where: { id: userId },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      phone: true,
-      createdAt: true,
-    },
+    select: safeUserSelect,
   })
 }
