@@ -8,6 +8,7 @@ import { OrderAddressSection } from "../components/OrderDetailPage/OrderAddressS
 import { OrderSummarySection } from "../components/OrderDetailPage/OrderSummarySection"
 import { OrderPaymentRecords } from "../components/OrderDetailPage/OrderPaymentRecords"
 import { useApiFetch } from "../hooks/useApiFetch"
+import { OrderDetailSkeleton } from "../components/skeletons/OrderDetailSkeleton"
 
 export function OrderDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -20,13 +21,13 @@ export function OrderDetailPage() {
     return getMyOrderById(id)
   }, [id])
 
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-stone-50 px-6 py-10">
-        <div className="mx-auto max-w-5xl text-stone-600">Loading order...</div>
-      </main>
-    )
-  }
+if (loading) {
+  return (
+    <main className="min-h-screen bg-stone-50 px-6 py-10">
+      <OrderDetailSkeleton />
+    </main>
+  )
+}
 
   if (!order) {
     return (

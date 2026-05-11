@@ -16,6 +16,7 @@ import { ShippingAddressCard } from "../../components/AdminPage/OrderPage/Shippi
 import { PaymentRecords } from "../../components/AdminPage/OrderPage/PaymentRecords"
 import { ActionPanel } from "../../components/AdminPage/OrderPage/ActionPanel"
 import { SummarySection } from "../../components/AdminPage/OrderPage/SummarySection"
+import { AdminOrderDetailSkeleton } from "../../components/skeletons/AdminOrderDetailSkeletonLoading"
 
 export function AdminOrderDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -88,7 +89,7 @@ export function AdminOrderDetailPage() {
   }
 
   if (loading) {
-    return <p className="text-stone-600">Đang tải đơn hàng...</p>
+    return <AdminOrderDetailSkeleton />
   }
 
   if (!order) {

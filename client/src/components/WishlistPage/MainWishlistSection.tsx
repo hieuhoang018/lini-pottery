@@ -8,6 +8,7 @@ import { Emptylist } from "../layout/EmptyList"
 import { useApiFetch } from "../../hooks/useApiFetch"
 import { useDebounce } from "../../hooks/useDebounce"
 import { PaginationButtons } from "../PaginationButtons"
+import { WishlistSkeletonLoading } from "../skeletons/WishlistSkeletonLoading"
 
 export function MainWishlistSection() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -52,13 +53,7 @@ export function MainWishlistSection() {
   }
 
   if (loading && !items) {
-    return (
-      <main className="min-h-screen bg-stone-50 px-6 py-10">
-        <div className="mx-auto max-w-6xl text-stone-600">
-          Loading wishlist...
-        </div>
-      </main>
-    )
+    return <WishlistSkeletonLoading />
   }
 
   return (
@@ -81,11 +76,9 @@ export function MainWishlistSection() {
         <p className="mb-6 rounded-xl bg-red-50 p-4 text-red-700">{error}</p>
       )}
 
-      {loading && (
-        <p className="mb-6 text-sm text-stone-500">Loading wishlist...</p>
-      )}
-
-      {!loading && (!items || items.length === 0) ? (
+      {loading ? (
+        <WishlistSkeletonLoading />
+      ) : !items || items.length === 0 ? (
         searchTerm ? (
           <div className="rounded-2xl border border-dashed border-stone-300 bg-white p-10 text-center">
             <h2 className="text-xl font-semibold text-stone-800">
@@ -109,15 +102,13 @@ export function MainWishlistSection() {
       ) : (
         <>
           <section className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {items?.map((item) => {
-              return (
-                <WishlistItemCard
-                  key={item.id}
-                  item={item}
-                  onRemove={handleRemove}
-                />
-              )
-            })}
+            {items.map((item) => (
+              <WishlistItemCard
+                key={item.id}
+                item={item}
+                onRemove={handleRemove}
+              />
+            ))}
           </section>
 
           {pagination && (

@@ -9,6 +9,7 @@ import { createSlug } from "../../utils/createSlug"
 import { useForm } from "../../hooks/useForm"
 import { useApiFetch } from "../../hooks/useApiFetch"
 import { InputField } from "../../components/InputField"
+import { AdminCreateProductSkeleton } from "../../components/skeletons/AdminCreateProductSkeleton"
 
 const initialCreateProductForm: CreateProductInput = {
   name: "",
@@ -63,10 +64,8 @@ export function AdminCreateProductPage() {
     Category[]
   >(() => getCategories(), [])
 
-  const loading = loadingProductCreate || loadingCategories
-
-  if (loading) {
-    return <p className="text-stone-600">Đang tải...</p>
+  if (loadingCategories) {
+    return <AdminCreateProductSkeleton />
   }
 
   if (!categories) {
@@ -194,10 +193,10 @@ export function AdminCreateProductPage() {
         />
 
         <button
-          disabled={loading}
+          disabled={loadingProductCreate}
           className="w-full rounded-full bg-amber-800 px-6 py-3 font-semibold text-white hover:bg-amber-900 disabled:cursor-not-allowed disabled:bg-stone-300"
         >
-          {loading ? "Đang thêm..." : "Thêm sản phẩm"}
+          {loadingProductCreate ? "Đang thêm..." : "Thêm sản phẩm"}
         </button>
       </form>
     </section>

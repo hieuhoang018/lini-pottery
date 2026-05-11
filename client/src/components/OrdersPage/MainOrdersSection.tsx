@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { getMyOrders } from "../../api/orderApi"
 import { useApiFetch } from "../../hooks/useApiFetch"
 import type { Order } from "../../types/order"
@@ -7,6 +7,7 @@ import { RefreshCw, Search } from "lucide-react"
 import { OrdersList } from "./OrdersList"
 import { useDebounce } from "../../hooks/useDebounce"
 import { PaginationButtons } from "../PaginationButtons"
+import { OrdersSkeletonLoading } from "../skeletons/OrdersSkeletonLoading"
 
 export function MainOrdersSection() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -24,6 +25,10 @@ export function MainOrdersSection() {
     () => getMyOrders({ search: debouncedSearchTerm, page, limit }),
     [debouncedSearchTerm, page],
   )
+
+  useEffect(() => {
+    setPage(1)
+  }, [debouncedSearchTerm])
 
   return (
     <>
@@ -67,11 +72,9 @@ export function MainOrdersSection() {
           </button>
         </div>
 
-        {loading && (
-          <div className="mt-8 text-stone-600">Loading orders...</div>
-        )}
-
-        {!orders || orders.length === 0 ? (
+        {loading ? (
+          <OrdersSkeletonLoading />
+        ) : !orders || orders.length === 0 ? (
           <section className="mt-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
             <p className="text-stone-600">
               {debouncedSearchTerm
@@ -91,7 +94,7 @@ export function MainOrdersSection() {
         )}
       </div>
 
-      {pagination && (
+      {!loading && pagination && (
         <PaginationButtons pagination={pagination} onPageChange={setPage} />
       )}
     </>

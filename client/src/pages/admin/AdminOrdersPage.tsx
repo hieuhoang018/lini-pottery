@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { Search } from "lucide-react"
 import {
@@ -15,6 +15,7 @@ import { useDebounce } from "../../hooks/useDebounce"
 import { useApiFetch } from "../../hooks/useApiFetch"
 import { OrderList } from "../../components/AdminPage/OrderPage/OrderList"
 import { PaginationButtons } from "../../components/PaginationButtons"
+import { AdminOrdersSkeletonLoading } from "../../components/skeletons/AdminOrdersSkeletonLoading"
 
 export function AdminOrdersPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -42,6 +43,10 @@ export function AdminOrdersPage() {
       }),
     [debouncedSearchTerm, statusFilter, paymentStatusFilter, page],
   )
+
+  useEffect(() => {
+    setPage(1)
+  }, [debouncedSearchTerm, statusFilter, paymentStatusFilter])
 
   const handleStatusChange = async (
     orderId: string,
@@ -75,9 +80,7 @@ export function AdminOrdersPage() {
     setPaymentStatusFilter("")
   }
 
-  if (!orders) {
-    return
-  }
+  const safeOrders = orders ?? []
 
   return (
     <section>
@@ -151,21 +154,21 @@ export function AdminOrdersPage() {
         </div>
       </section>
 
-      {loading && <p className="text-stone-600">Đang tải đơn hàng...</p>}
-
-      {!loading && orders.length === 0 ? (
+      {loading ? (
+        <AdminOrdersSkeletonLoading />
+      ) : safeOrders.length === 0 ? (
         <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
           <p className="text-stone-600">Không tìm thấy đơn hàng nào.</p>
         </div>
       ) : (
         <OrderList
-          orders={orders}
+          orders={safeOrders}
           handlePaymentChange={handlePaymentChange}
           handleStatusChange={handleStatusChange}
         />
       )}
 
-      {pagination && (
+      {!loading && pagination && (
         <PaginationButtons pagination={pagination} onPageChange={setPage} />
       )}
     </section>

@@ -15,6 +15,7 @@ import { ProductList } from "../../components/AdminPage/ProductPage/ProductList"
 import type { ActiveFilter, SortOption, StockFilter } from "../../types/params"
 import { ActionPanel } from "../../components/AdminPage/ProductPage/ActionPanel"
 import { PaginationButtons } from "../../components/PaginationButtons"
+import { AdminProductsSkeletonLoading } from "../../components/skeletons/AdminProductsSkeletonLoading"
 
 export function AdminProductsPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -105,15 +106,10 @@ export function AdminProductsPage() {
     }
   }
 
-  if (!categories) {
-    return
-  }
-
-  if (!products) {
-    return
-  }
-
   const loading = loadingCategories || loadingProducts
+
+  const safeCategories = categories ?? []
+  const safeProducts = products ?? []
 
   return (
     <section className="h-fit rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
@@ -148,7 +144,7 @@ export function AdminProductsPage() {
         sortOption={sortOption}
         activeFilter={activeFilter}
         stockFilter={stockFilter}
-        categories={categories}
+        categories={safeCategories}
         onSearchChange={setSearchTerm}
         onCategoryChange={setSelectedCategory}
         onSortChange={setSortOption}
@@ -157,9 +153,9 @@ export function AdminProductsPage() {
         onClearFilters={clearFilters}
       />
 
-      {loading && <p className="text-stone-600">Loading products...</p>}
-
-      {!loading && products.length === 0 ? (
+      {loading ? (
+        <AdminProductsSkeletonLoading />
+      ) : safeProducts.length === 0 ? (
         <div className="rounded-2xl bg-white p-6 text-center shadow-sm ring-1 ring-stone-200">
           <p className="text-stone-600">No products found.</p>
 
@@ -172,13 +168,12 @@ export function AdminProductsPage() {
         </div>
       ) : (
         <ProductList
-          products={products}
+          products={safeProducts}
           handleStockChange={handleStockChange}
           handleToggleActive={handleToggleActive}
         />
       )}
-
-      {pagination && (
+      {!loading && pagination && (
         <PaginationButtons pagination={pagination} onPageChange={setPage} />
       )}
     </section>

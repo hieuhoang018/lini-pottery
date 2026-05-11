@@ -1,20 +1,26 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import type { Product } from "../../types/product"
 
 export function ImageGallery({ product }: { product: Product }) {
-  const [selectedImage, setSelectedImage] = useState("")
-  const images = [
-    ...(product.featuredImageUrl
-      ? [
-          {
-            id: "featured",
-            imageUrl: product.featuredImageUrl,
-            altText: product.name,
-          },
-        ]
-      : []),
-    ...product.images,
-  ]
+  const images = useMemo(
+    () => [
+      ...(product.featuredImageUrl
+        ? [
+            {
+              id: "featured",
+              imageUrl: product.featuredImageUrl,
+              altText: product.name,
+            },
+          ]
+        : []),
+      ...product.images,
+    ],
+    [product],
+  )
+
+  const [selectedImage, setSelectedImage] = useState(
+    images[0]?.imageUrl || "/placeholder.png",
+  )
 
   return (
     <div>

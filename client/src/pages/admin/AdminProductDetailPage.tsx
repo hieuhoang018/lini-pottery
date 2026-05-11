@@ -1,11 +1,12 @@
 import { Link, useParams } from "react-router-dom"
 import { getCategories } from "../../api/categoryApi"
 import { getProductById } from "../../api/productApi"
-import { ProductImagesManager } from "../../components/AdminPage/ProductImagesManager"
 import type { Product } from "../../types/product"
 import type { Category } from "../../types/category"
 import { useApiFetch } from "../../hooks/useApiFetch"
 import { ProductEditForm } from "../../components/AdminPage/ProductPage/ProductEditForm"
+import { ProductImagesManager } from "../../components/AdminPage/ProductPage/ProductImagesManager"
+import { AdminProductDetailSkeleton } from "../../components/skeletons/AdminProductDetailSkeleton"
 
 export function AdminProductDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -28,7 +29,7 @@ export function AdminProductDetailPage() {
   const loading = loadingProducts || loadingCategories
 
   if (loading) {
-    return <p className="text-stone-600">Đang tải sản phẩm...</p>
+    return <AdminProductDetailSkeleton />
   }
 
   if (!categories || !id) {

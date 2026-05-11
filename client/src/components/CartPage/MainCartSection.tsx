@@ -2,16 +2,13 @@ import { Link } from "react-router-dom"
 import { useCart } from "../../contexts/CartContext"
 import { Emptylist } from "../layout/EmptyList"
 import { CartItemCard } from "./CartItemCard"
+import { CartSkeletonLoading } from "../skeletons/CartSkeletonLoading"
 
 export function MainCartSection() {
   const { items, loading, total, clearCart } = useCart()
 
   if (loading) {
-    return (
-      <main className="min-h-screen bg-stone-50 px-6 py-10">
-        <div className="mx-auto max-w-5xl text-stone-600">Loading cart...</div>
-      </main>
-    )
+    return <CartSkeletonLoading />
   }
 
   if (items.length === 0) {

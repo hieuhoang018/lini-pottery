@@ -4,8 +4,9 @@ import {
   createProductImage,
   deleteProductImage,
   getProductImages,
-} from "../../api/productImageApi"
-import type { ProductImage } from "../../types/product"
+} from "../../../api/productImageApi"
+import type { ProductImage } from "../../../types/product"
+import { ProductImagesSkeleton } from "../../skeletons/AdminProductDetailSkeleton"
 
 type ProductImagesManagerProps = {
   productId: string
@@ -91,7 +92,7 @@ export function ProductImagesManager({ productId }: ProductImagesManagerProps) {
       <h4 className="font-semibold text-stone-900">Thư viện hình ảnh</h4>
 
       {loading ? (
-        <p className="mt-3 text-sm text-stone-600">Loading images...</p>
+        <ProductImagesSkeleton />
       ) : images.length === 0 ? (
         <p className="mt-3 text-sm text-stone-600">Chưa có ảnh.</p>
       ) : (

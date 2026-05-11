@@ -5,6 +5,7 @@ import { ImageGallery } from "../components/ProductDetailPage/ImageGallery"
 import { ProductDetail } from "../components/ProductDetailPage/ProductDetail"
 import { ActionPanel } from "../components/ProductDetailPage/ActionPanel"
 import { useApiFetch } from "../hooks/useApiFetch"
+import { ProductDetailSkeleton } from "../components/skeletons/ProductDetailSkeletonLoading.tsx"
 
 export function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -21,13 +22,7 @@ export function ProductDetailPage() {
   }, [slug])
 
   if (loading) {
-    return (
-      <main className="min-h-screen bg-stone-50 px-6 py-10">
-        <div className="mx-auto max-w-5xl text-stone-600">
-          Đang tải sản phẩm
-        </div>
-      </main>
-    )
+    return <ProductDetailSkeleton />
   }
 
   if (error || !product) {
