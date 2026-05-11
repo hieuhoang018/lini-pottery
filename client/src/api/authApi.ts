@@ -1,15 +1,29 @@
 import type { User } from "../types/auth"
 import type { LoginParams, RegisterParams } from "../types/params"
-import type { LoginResponse } from "../types/response"
 import { apiClient } from "./apiClient"
 
+export type AuthResponse = {
+  user: User
+  accessToken: string
+}
+
 export const register = async (params: RegisterParams) => {
-  const { data } = await apiClient.post<User>("/auth/register", params)
+  const { data } = await apiClient.post<AuthResponse>("/auth/register", params)
   return data
 }
 
 export const login = async (params: LoginParams) => {
-  const { data } = await apiClient.post<LoginResponse>("/auth/login", params)
+  const { data } = await apiClient.post<AuthResponse>("/auth/login", params)
+  return data
+}
+
+export const refreshToken = async () => {
+  const { data } = await apiClient.post<AuthResponse>("/auth/refresh")
+  return data
+}
+
+export const logoutApi = async () => {
+  const { data } = await apiClient.post<{ message: string }>("/auth/logout")
   return data
 }
 

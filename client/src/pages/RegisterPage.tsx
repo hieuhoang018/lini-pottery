@@ -4,6 +4,7 @@ import { register } from "../api/authApi"
 import { useForm } from "../hooks/useForm"
 import { InputField } from "../components/InputField"
 import { useEffect } from "react"
+import { useAuth } from "../contexts/AuthContext"
 import type { RegisterFormInput } from "../types/api-input"
 
 const initialRegisterForm: RegisterFormInput = {
@@ -15,15 +16,21 @@ const initialRegisterForm: RegisterFormInput = {
 
 export function RegisterPage() {
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   const { formData, loading, error, handleChange, handleSubmit } =
     useForm<RegisterFormInput>({
       initialData: initialRegisterForm,
 
       onSubmit: async (data) => {
-        await register(data)
-        toast.success("Đăng kí tài khoản thành công. Vui lòng đăng nhập.")
-        navigate("/login")
+        const result = await register(data)
+
+        await login(result.accessToken, result.user)
+
+        localStorage.removeItem("guest_cart")
+
+        toast.success("Đăng kí tài khoản thành công")
+        navigate("/")
       },
     })
 

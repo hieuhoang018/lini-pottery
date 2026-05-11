@@ -28,8 +28,8 @@ export function NavLinks({ setMobileMenuOpen }: NavLinksProps) {
       ? "flex items-center gap-2 rounded-lg px-3 py-2 font-semibold text-amber-800"
       : "flex items-center gap-2 rounded-lg px-3 py-2 font-medium text-stone-700 hover:bg-stone-100 hover:text-amber-800"
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()
     toast.success("Đã đăng xuất")
     setMobileMenuOpen(false)
     navigate("/")

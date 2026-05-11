@@ -46,7 +46,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const isLoggedIn = Boolean(user)
 
   const loadCart = async () => {
-    if (authLoading) return
+    if (authLoading) {
+      setLoading(true)
+      return
+    }
 
     try {
       setLoading(true)
@@ -88,29 +91,33 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return
     }
 
-    if (isLoggedIn) {
-      await addCartItem(product.id, quantity)
-      await loadCart()
+    try {
+      if (isLoggedIn) {
+        await addCartItem(product.id, quantity)
+        await loadCart()
+        toast.success("Đã thêm vào giỏ hàng")
+        return
+      }
+
+      const currentItems = getGuestCartFromStorage()
+      const existingItem = currentItems.find(
+        (item) => item.product.id === product.id,
+      )
+
+      const updatedItems = existingItem
+        ? currentItems.map((item) =>
+            item.product.id === product.id
+              ? { ...item, quantity: item.quantity + quantity }
+              : item,
+          )
+        : [...currentItems, { product, quantity }]
+
+      saveGuestCart(updatedItems)
+      setItems(updatedItems)
       toast.success("Đã thêm vào giỏ hàng")
-      return
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Không thể thêm vào giỏ hàng")
     }
-
-    const currentItems = getGuestCartFromStorage()
-    const existingItem = currentItems.find(
-      (item) => item.product.id === product.id,
-    )
-
-    const updatedItems = existingItem
-      ? currentItems.map((item) =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item,
-        )
-      : [...currentItems, { product, quantity }]
-
-    saveGuestCart(updatedItems)
-    setItems(updatedItems)
-    toast.success("Đã thêm vào giỏ hàng")
   }
 
   const updateQuantity = async (productId: string, quantity: number) => {
@@ -119,33 +126,37 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return
     }
 
-    if (quantity <= 0) {
-      await removeFromCart(productId)
-      return
-    }
-
-    if (isLoggedIn) {
-      const cart = await getCart()
-      const cartItem = cart.items.find((item) => item.productId === productId)
-
-      if (!cartItem) {
-        toast.error("Không tìm thấy sản phẩm")
+    try {
+      if (quantity <= 0) {
+        await removeFromCart(productId)
         return
       }
 
-      await updateCartItem(cartItem.id, quantity)
-      await loadCart()
+      if (isLoggedIn) {
+        const cart = await getCart()
+        const cartItem = cart.items.find((item) => item.productId === productId)
+
+        if (!cartItem) {
+          toast.error("Không tìm thấy sản phẩm")
+          return
+        }
+
+        await updateCartItem(cartItem.id, quantity)
+        await loadCart()
+        toast.success("Đã cập nhật giỏ hàng")
+        return
+      }
+
+      const updatedItems = getGuestCartFromStorage().map((item) =>
+        item.product.id === productId ? { ...item, quantity } : item,
+      )
+
+      saveGuestCart(updatedItems)
+      setItems(updatedItems)
       toast.success("Đã cập nhật giỏ hàng")
-      return
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Không thể cập nhật giỏ hàng")
     }
-
-    const updatedItems = getGuestCartFromStorage().map((item) =>
-      item.product.id === productId ? { ...item, quantity } : item,
-    )
-
-    saveGuestCart(updatedItems)
-    setItems(updatedItems)
-    toast.success("Đã cập nhật giỏ hàng")
   }
 
   const removeFromCart = async (productId: string) => {
@@ -154,28 +165,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return
     }
 
-    if (isLoggedIn) {
-      const cart = await getCart()
-      const cartItem = cart.items.find((item) => item.productId === productId)
+    try {
+      if (isLoggedIn) {
+        const cart = await getCart()
+        const cartItem = cart.items.find((item) => item.productId === productId)
 
-      if (!cartItem) {
-        toast.error("Không tìm thấy sản phẩm")
+        if (!cartItem) {
+          toast.error("Không tìm thấy sản phẩm")
+          return
+        }
+
+        await removeCartItem(cartItem.id)
+        await loadCart()
+        toast.success("Đã xóa sản phẩm")
         return
       }
 
-      await removeCartItem(cartItem.id)
-      await loadCart()
+      const updatedItems = getGuestCartFromStorage().filter(
+        (item) => item.product.id !== productId,
+      )
+
+      saveGuestCart(updatedItems)
+      setItems(updatedItems)
       toast.success("Đã xóa sản phẩm")
-      return
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Không thể xóa sản phẩm")
     }
-
-    const updatedItems = getGuestCartFromStorage().filter(
-      (item) => item.product.id !== productId,
-    )
-
-    saveGuestCart(updatedItems)
-    setItems(updatedItems)
-    toast.success("Đã xóa sản phẩm")
   }
 
   const clearCart = async () => {
@@ -184,16 +199,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return
     }
 
-    if (isLoggedIn) {
-      await clearServerCart()
-      await loadCart()
-      toast.success("Đã xóa giỏ hàng")
-      return
-    }
+    try {
+      if (isLoggedIn) {
+        await clearServerCart()
+        await loadCart()
+        toast.success("Đã xóa giỏ hàng")
+        return
+      }
 
-    localStorage.removeItem(GUEST_CART_KEY)
-    setItems([])
-    toast.success("Đã xóa giỏ hàng")
+      localStorage.removeItem(GUEST_CART_KEY)
+      setItems([])
+      toast.success("Đã xóa giỏ hàng")
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Không thể xóa giỏ hàng")
+    }
   }
 
   return (
