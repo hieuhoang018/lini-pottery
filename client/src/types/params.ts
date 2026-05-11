@@ -11,10 +11,14 @@ export type GetAdminOrdersParams = {
   search?: string
   status?: string
   paymentStatus?: string
+  page?: number
+  limit?: number
 }
 
 export type GetMyOrdersParams = {
   search?: string
+  page?: number
+  limit?: number
 }
 
 export type GetProductsParams = {
@@ -23,6 +27,8 @@ export type GetProductsParams = {
   sort?: SortOption
   availableOnly?: boolean
   stock?: StockFilter
+  page?: number
+  limit?: number
 }
 
 export type getAdminProductsParams = GetProductsParams & {

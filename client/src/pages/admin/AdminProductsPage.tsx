@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { Link } from "react-router-dom"
 import { getCategories } from "../../api/categoryApi"
@@ -14,6 +14,7 @@ import { useApiFetch } from "../../hooks/useApiFetch"
 import { ProductList } from "../../components/AdminPage/ProductPage/ProductList"
 import type { ActiveFilter, SortOption, StockFilter } from "../../types/params"
 import { ActionPanel } from "../../components/AdminPage/ProductPage/ActionPanel"
+import { PaginationButtons } from "../../components/PaginationButtons"
 
 export function AdminProductsPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -21,6 +22,9 @@ export function AdminProductsPage() {
   const [sortOption, setSortOption] = useState<SortOption>("newest")
   const [activeFilter, setActiveFilter] = useState<ActiveFilter>("all")
   const [stockFilter, setStockFilter] = useState<StockFilter>("all")
+
+  const [page, setPage] = useState(1)
+  const limit = 10
 
   const debouncedSearchTerm = useDebounce(searchTerm, 400)
 
@@ -30,9 +34,20 @@ export function AdminProductsPage() {
     return getCategories()
   }, [])
 
+  useEffect(() => {
+    setPage(1)
+  }, [
+    debouncedSearchTerm,
+    selectedCategory,
+    sortOption,
+    stockFilter,
+    activeFilter,
+  ])
+
   const {
     data: products,
     loading: loadingProducts,
+    pagination,
     refetch: refetchProducts,
   } = useApiFetch<Product[]>(async () => {
     return getAdminProducts({
@@ -41,6 +56,8 @@ export function AdminProductsPage() {
       sort: sortOption,
       stock: stockFilter,
       active: activeFilter,
+      page,
+      limit,
     })
   }, [
     debouncedSearchTerm,
@@ -48,6 +65,7 @@ export function AdminProductsPage() {
     sortOption,
     activeFilter,
     stockFilter,
+    page,
   ])
 
   const clearFilters = () => {
@@ -158,6 +176,10 @@ export function AdminProductsPage() {
           handleStockChange={handleStockChange}
           handleToggleActive={handleToggleActive}
         />
+      )}
+
+      {pagination && (
+        <PaginationButtons pagination={pagination} onPageChange={setPage} />
       )}
     </section>
   )

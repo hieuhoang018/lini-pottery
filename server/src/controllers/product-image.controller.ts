@@ -18,9 +18,9 @@ type CreateProductImageBody = {
 
 export const getProductImagesHandler = asyncHandler(
   async (req: Request<ProductIdParams>, res: Response) => {
-    const { productId } = req.params
+    const { id } = req.params
 
-    const images = await getImagesByProductId(productId)
+    const images = await getImagesByProductId(id)
 
     return res.status(200).json(images)
   },
@@ -31,7 +31,7 @@ export const createProductImageHandler = asyncHandler(
     req: Request<ProductIdParams, {}, CreateProductImageBody>,
     res: Response,
   ) => {
-    const { productId } = req.params
+    const { id } = req.params
 
     if (!req.body || typeof req.body !== "object") {
       throw new AppError(
@@ -48,7 +48,7 @@ export const createProductImageHandler = asyncHandler(
     }
 
     const productExists = await prisma.product.findUnique({
-      where: { id: productId },
+      where: { id: id },
     })
 
     if (!productExists) {
@@ -67,7 +67,7 @@ export const createProductImageHandler = asyncHandler(
     }
 
     const image = await createProductImage({
-      productId,
+      id,
       imageUrl,
       altText,
       sortOrder: numericSortOrder,

@@ -33,6 +33,8 @@ export type GuestCheckoutInput = {
 export type GetMyOrdersInput = {
   userId: string
   search?: string
+  page?: number
+  limit?: number
 }
 
 export type OrderStatus =

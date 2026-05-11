@@ -2,6 +2,7 @@ import { prisma } from "../lib/prisma"
 import { GetProductsParams } from "../types/params"
 import { CreateProductInput } from "../types/product"
 import { UpdateProductInput } from "../types/product"
+import { buildPaginationMeta } from "../utils/pagination"
 
 export const getAllProducts = async ({
   categorySlug,
@@ -10,8 +11,11 @@ export const getAllProducts = async ({
   sort = "newest",
   availableOnly = false,
   stock = "all",
+  page = 1,
+  limit = 12,
 }: GetProductsParams = {}) => {
   const trimmedSearch = search?.trim()
+  const skip = (page - 1) * limit
 
   const activeWhere =
     active === "active"
@@ -35,76 +39,95 @@ export const getAllProducts = async ({
           }
         : {}
 
-  return prisma.product.findMany({
-    where: {
-      ...activeWhere,
+  const where = {
+    ...activeWhere,
 
-      ...(categorySlug
-        ? {
-            category: {
-              slug: categorySlug,
+    ...(categorySlug
+      ? {
+          category: {
+            slug: categorySlug,
+          },
+        }
+      : {}),
+
+    ...stockWhere,
+
+    ...(trimmedSearch
+      ? {
+          OR: [
+            {
+              name: {
+                contains: trimmedSearch,
+                mode: "insensitive" as const,
+              },
             },
-          }
-        : {}),
-
-      ...stockWhere,
-
-      ...(trimmedSearch
-        ? {
-            OR: [
-              {
+            {
+              description: {
+                contains: trimmedSearch,
+                mode: "insensitive" as const,
+              },
+            },
+            {
+              material: {
+                contains: trimmedSearch,
+                mode: "insensitive" as const,
+              },
+            },
+            {
+              color: {
+                contains: trimmedSearch,
+                mode: "insensitive" as const,
+              },
+            },
+            {
+              category: {
                 name: {
                   contains: trimmedSearch,
-                  mode: "insensitive",
+                  mode: "insensitive" as const,
                 },
               },
-              {
-                description: {
-                  contains: trimmedSearch,
-                  mode: "insensitive",
-                },
-              },
-              {
-                material: {
-                  contains: trimmedSearch,
-                  mode: "insensitive",
-                },
-              },
-              {
-                color: {
-                  contains: trimmedSearch,
-                  mode: "insensitive",
-                },
-              },
-              {
-                category: {
-                  name: {
-                    contains: trimmedSearch,
-                    mode: "insensitive",
-                  },
-                },
-              },
-            ],
-          }
-        : {}),
-    },
+            },
+          ],
+        }
+      : {}),
+  }
 
-    include: {
-      category: true,
-      images: {
-        orderBy: {
-          sortOrder: "asc",
+  const orderBy =
+    sort === "price_asc"
+      ? { price: "asc" as const }
+      : sort === "price_desc"
+        ? { price: "desc" as const }
+        : { createdAt: "desc" as const }
+
+  const [products, totalItems] = await prisma.$transaction([
+    prisma.product.findMany({
+      where,
+      include: {
+        category: true,
+        images: {
+          orderBy: {
+            sortOrder: "asc",
+          },
         },
       },
-    },
+      orderBy,
+      skip,
+      take: limit,
+    }),
 
-    orderBy:
-      sort === "price_asc"
-        ? { price: "asc" }
-        : sort === "price_desc"
-          ? { price: "desc" }
-          : { createdAt: "desc" },
-  })
+    prisma.product.count({
+      where,
+    }),
+  ])
+
+  return {
+    data: products,
+    pagination: buildPaginationMeta({
+      page,
+      limit,
+      totalItems,
+    }),
+  }
 }
 
 export const getProductBySlug = async (slug: string) => {

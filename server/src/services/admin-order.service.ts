@@ -1,138 +1,159 @@
 import { prisma } from "../lib/prisma"
 import { OrderStatus, PaymentStatus } from "../types/order"
 import { GetAllOrdersForAdminParams } from "../types/params"
+import { buildPaginationMeta } from "../utils/pagination"
 
 export const getAllOrdersForAdmin = async ({
   search,
   status,
   paymentStatus,
+  page = 1,
+  limit = 20,
 }: GetAllOrdersForAdminParams = {}) => {
   const trimmedSearch = search?.trim()
+  const skip = (page - 1) * limit
 
-  return prisma.order.findMany({
-    where: {
-      ...(status ? { status } : {}),
-      ...(paymentStatus ? { paymentStatus } : {}),
+  const where = {
+    ...(status ? { status } : {}),
+    ...(paymentStatus ? { paymentStatus } : {}),
 
-      ...(trimmedSearch
-        ? {
-            OR: [
-              {
-                id: {
-                  equals: trimmedSearch,
-                },
+    ...(trimmedSearch
+      ? {
+          OR: [
+            {
+              id: {
+                equals: trimmedSearch,
               },
-              {
-                guestName: {
-                  contains: trimmedSearch,
-                  mode: "insensitive",
-                },
+            },
+            {
+              guestName: {
+                contains: trimmedSearch,
+                mode: "insensitive" as const,
               },
-              {
-                guestEmail: {
-                  contains: trimmedSearch,
-                  mode: "insensitive",
-                },
+            },
+            {
+              guestEmail: {
+                contains: trimmedSearch,
+                mode: "insensitive" as const,
               },
-              {
-                guestPhone: {
-                  contains: trimmedSearch,
-                  mode: "insensitive",
-                },
+            },
+            {
+              guestPhone: {
+                contains: trimmedSearch,
+                mode: "insensitive" as const,
               },
-              {
-                user: {
-                  is: {
-                    name: {
-                      contains: trimmedSearch,
-                      mode: "insensitive",
-                    },
+            },
+            {
+              user: {
+                is: {
+                  name: {
+                    contains: trimmedSearch,
+                    mode: "insensitive" as const,
                   },
                 },
               },
-              {
-                user: {
-                  is: {
-                    email: {
-                      contains: trimmedSearch,
-                      mode: "insensitive",
-                    },
+            },
+            {
+              user: {
+                is: {
+                  email: {
+                    contains: trimmedSearch,
+                    mode: "insensitive" as const,
                   },
                 },
               },
-              {
-                address: {
-                  is: {
-                    recipientName: {
-                      contains: trimmedSearch,
-                      mode: "insensitive",
-                    },
+            },
+            {
+              address: {
+                is: {
+                  recipientName: {
+                    contains: trimmedSearch,
+                    mode: "insensitive" as const,
                   },
                 },
               },
-              {
-                address: {
-                  is: {
-                    phone: {
-                      contains: trimmedSearch,
-                      mode: "insensitive",
-                    },
+            },
+            {
+              address: {
+                is: {
+                  phone: {
+                    contains: trimmedSearch,
+                    mode: "insensitive" as const,
                   },
                 },
               },
-              {
-                address: {
-                  is: {
-                    city: {
-                      contains: trimmedSearch,
-                      mode: "insensitive",
-                    },
+            },
+            {
+              address: {
+                is: {
+                  city: {
+                    contains: trimmedSearch,
+                    mode: "insensitive" as const,
                   },
                 },
               },
-              {
-                address: {
-                  is: {
-                    postalCode: {
-                      contains: trimmedSearch,
-                      mode: "insensitive",
-                    },
+            },
+            {
+              address: {
+                is: {
+                  postalCode: {
+                    contains: trimmedSearch,
+                    mode: "insensitive" as const,
                   },
                 },
               },
-              {
-                items: {
-                  some: {
-                    productName: {
-                      contains: trimmedSearch,
-                      mode: "insensitive",
-                    },
+            },
+            {
+              items: {
+                some: {
+                  productName: {
+                    contains: trimmedSearch,
+                    mode: "insensitive" as const,
                   },
                 },
               },
-            ],
-          }
-        : {}),
-    },
+            },
+          ],
+        }
+      : {}),
+  }
 
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          phone: true,
+  const [orders, totalItems] = await prisma.$transaction([
+    prisma.order.findMany({
+      where,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+          },
         },
+        items: true,
+        address: true,
+        paymentRecords: true,
       },
-      items: true,
-      address: true,
-      paymentRecords: true,
-    },
+      orderBy: {
+        createdAt: "desc",
+      },
+      skip,
+      take: limit,
+    }),
 
-    orderBy: {
-      createdAt: "desc",
-    },
-  })
+    prisma.order.count({
+      where,
+    }),
+  ])
+
+  return {
+    data: orders,
+    pagination: buildPaginationMeta({
+      page,
+      limit,
+      totalItems,
+    }),
+  }
 }
 
 export const getOrderByIdForAdmin = async (orderId: string) => {
