@@ -13,6 +13,7 @@ import wishlistRoutes from "./routes/wishlist.routes"
 import orderRoutes from "./routes/order.routes"
 import adminOrderRoutes from "./routes/admin-order.routes"
 import adminProductRoutes from "./routes/admin-product.routes"
+import uploadRoutes from "./routes/upload.routes"
 import { errorMiddleware } from "./middlewares/error.middleware"
 
 const app = express()
@@ -45,6 +46,7 @@ app.get("/health/db", async (_req, res) => {
 
 app.use("/api/categories", categoryRoutes)
 app.use("/api/products", productRoutes)
+app.use("/api/uploads", uploadRoutes)
 app.use("/api", productImageRoutes)
 app.use("/api/auth", authRoutes)
 app.use("/api/cart", cartRoutes)

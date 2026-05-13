@@ -33,6 +33,7 @@ export type CreateProductInput = {
   weightText?: string
   careInstructions?: string
   featuredImageUrl?: string
+  featuredImagePublicId?: string
 }
 
 export type RegisterFormInput = {

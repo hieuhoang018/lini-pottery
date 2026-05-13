@@ -24,11 +24,9 @@ export type Product = {
   weightText?: string | null
   careInstructions?: string | null
   featuredImageUrl?: string | null
+  featuredImagePublicId?: string | null
   createdAt: string
   updatedAt: string
   category: Category
   images: ProductImage[]
 }
-
-
-

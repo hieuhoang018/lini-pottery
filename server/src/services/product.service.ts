@@ -151,6 +151,7 @@ export const createProduct = async (data: CreateProductInput) => {
       weightText: data.weightText,
       careInstructions: data.careInstructions,
       featuredImageUrl: data.featuredImageUrl,
+      featuredImagePublicId: data.featuredImagePublicId,
       searchText,
     },
     include: {
