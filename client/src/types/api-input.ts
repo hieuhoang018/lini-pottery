@@ -12,6 +12,7 @@ export type GuestCheckoutInput = CheckoutAddress & {
 
 export type CreateProductImageInput = {
   imageUrl: string
+  publicId?: string
   altText?: string
   sortOrder?: number
 }

@@ -4,6 +4,7 @@ export type ProductImage = {
   id: string
   productId: string
   imageUrl: string
+  publicId?: string | null
   altText?: string | null
   sortOrder: number
   createdAt: string
