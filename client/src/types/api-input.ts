@@ -49,3 +49,9 @@ export type CreateCategoryInput = {
   slug?: string
   description?: string
 }
+
+export type UpdateCategoryInput = {
+  name?: string
+  slug?: string
+  description?: string
+}

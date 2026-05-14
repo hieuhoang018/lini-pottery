@@ -3,16 +3,26 @@ import {
   getAllCategories,
   getCategoryBySlug,
   createCategory,
+  updateCategory,
+  deleteCategory,
 } from "../services/category.service"
 import { asyncHandler } from "../utils/asyncHandler"
 import { AppError } from "../utils/AppError"
-import { CategoryParams } from "../types/params"
+import { CategoryIdParams, CategoryParams } from "../types/params"
 
 type CreateCategoryBody = {
   name?: string
   slug?: string
   description?: string
 }
+
+type UpdateCategoryBody = {
+  name?: string
+  slug?: string
+  description?: string
+}
+
+
 
 export const getCategoriesHandler = asyncHandler(
   async (_req: Request, res: Response) => {
@@ -55,5 +65,42 @@ export const createCategoryHandler = asyncHandler(
     })
 
     return res.status(201).json(category)
+  },
+)
+
+export const updateCategoryHandler = asyncHandler(
+  async (
+    req: Request<CategoryIdParams, {}, UpdateCategoryBody>,
+    res: Response,
+  ) => {
+    const { id } = req.params
+    const { name, slug, description } = req.body
+
+    if (name === undefined && slug === undefined && description === undefined) {
+      throw new AppError(
+        "At least one field is required",
+        400,
+        "CATEGORY_UPDATE_FIELDS_MISSING",
+      )
+    }
+
+    const category = await updateCategory({
+      id,
+      name,
+      slug,
+      description,
+    })
+
+    return res.status(200).json(category)
+  },
+)
+
+export const deleteCategoryHandler = asyncHandler(
+  async (req: Request<CategoryIdParams>, res: Response) => {
+    const { id } = req.params
+
+    await deleteCategory(id)
+
+    return res.status(204).send()
   },
 )

@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client"
 import { prisma } from "../lib/prisma"
 import { AppError } from "../utils/AppError"
 import { createSlug } from "../utils/createSlug"
+import { CreateCategoryInput, UpdateCategoryInput } from "../types/category"
 
 export const getAllCategories = async () => {
   return prisma.category.findMany({
@@ -75,4 +76,112 @@ export const createCategory = async ({
 
     throw error
   }
+}
+
+export const updateCategory = async ({
+  id,
+  name,
+  slug,
+  description,
+}: UpdateCategoryInput) => {
+  const category = await prisma.category.findUnique({
+    where: { id },
+  })
+
+  if (!category) {
+    throw new AppError("Category not found", 404, "CATEGORY_NOT_FOUND")
+  }
+
+  const trimmedName = name?.trim()
+  const finalName = trimmedName || category.name
+
+  const finalSlug = slug?.trim()
+    ? createSlug(slug)
+    : trimmedName
+      ? createSlug(trimmedName)
+      : category.slug
+
+  if (!finalSlug) {
+    throw new AppError("Category slug is invalid", 400, "CATEGORY_SLUG_INVALID")
+  }
+
+  const existingCategory = await prisma.category.findFirst({
+    where: {
+      id: {
+        not: id,
+      },
+      OR: [
+        {
+          name: {
+            equals: finalName,
+            mode: "insensitive",
+          },
+        },
+        {
+          slug: finalSlug,
+        },
+      ],
+    },
+  })
+
+  if (existingCategory) {
+    throw new AppError(
+      "Another category with this name or slug already exists",
+      409,
+      "CATEGORY_ALREADY_EXISTS",
+    )
+  }
+
+  try {
+    return await prisma.category.update({
+      where: { id },
+      data: {
+        name: finalName,
+        slug: finalSlug,
+        description:
+          description !== undefined ? description.trim() || null : undefined,
+      },
+    })
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      throw new AppError(
+        "Another category with this name or slug already exists",
+        409,
+        "CATEGORY_ALREADY_EXISTS",
+      )
+    }
+
+    throw error
+  }
+}
+
+export const deleteCategory = async (id: string) => {
+  const category = await prisma.category.findUnique({
+    where: { id },
+  })
+
+  if (!category) {
+    throw new AppError("Category not found", 404, "CATEGORY_NOT_FOUND")
+  }
+
+  const productCount = await prisma.product.count({
+    where: {
+      categoryId: id,
+    },
+  })
+
+  if (productCount > 0) {
+    throw new AppError(
+      "Cannot delete category because it still has products",
+      400,
+      "CATEGORY_HAS_PRODUCTS",
+    )
+  }
+
+  return prisma.category.delete({
+    where: { id },
+  })
 }

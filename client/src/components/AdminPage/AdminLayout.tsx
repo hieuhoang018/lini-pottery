@@ -26,6 +26,10 @@ export function AdminLayout() {
           <NavLink to="/admin/products" className={linkClass}>
             Sản phẩm
           </NavLink>
+
+          <NavLink to="/admin/categories" className={linkClass}>
+            Phân loại
+          </NavLink>
         </div>
 
         <Outlet />

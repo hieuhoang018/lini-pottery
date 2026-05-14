@@ -46,3 +46,7 @@ export type GetWishlistParams = {
   page?: number
   limit?: number
 }
+
+export type CategoryIdParams = {
+  id: string
+}
