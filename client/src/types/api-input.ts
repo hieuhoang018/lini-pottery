@@ -43,3 +43,9 @@ export type RegisterFormInput = {
   password: string
   phone: string
 }
+
+export type CreateCategoryInput = {
+  name: string
+  slug?: string
+  description?: string
+}

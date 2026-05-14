@@ -38,7 +38,7 @@ export function NavLinks({ setMobileMenuOpen }: NavLinksProps) {
   return (
     <>
       <NavLink
-        to="/"
+        to="/shop"
         className={linkClass}
         onClick={() => setMobileMenuOpen(false)}
       >

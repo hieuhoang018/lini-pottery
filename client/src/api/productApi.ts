@@ -25,7 +25,6 @@ export const getAdminProducts = async (params?: getAdminProductsParams) => {
 }
 
 export const getProductById = async (productId: string) => {
-  await new Promise(resolve => setTimeout(resolve, 5000))
   const { data } = await apiClient.get<Product>(`/products/id/${productId}`)
   return data
 }

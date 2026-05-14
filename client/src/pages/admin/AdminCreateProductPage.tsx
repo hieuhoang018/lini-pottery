@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { Link, useNavigate } from "react-router-dom"
-import { getCategories } from "../../api/categoryApi"
+import { createCategory, getCategories } from "../../api/categoryApi"
 import { createProduct } from "../../api/productApi"
 import { uploadProductImage } from "../../api/uploadApi"
 import type { CreateProductInput } from "../../types/api-input"
@@ -31,6 +31,8 @@ const initialCreateProductForm: CreateProductInput = {
 export function AdminCreateProductPage() {
   const navigate = useNavigate()
   const [imageUploading, setImageUploading] = useState(false)
+  const [newCategoryName, setNewCategoryName] = useState("")
+  const [creatingCategory, setCreatingCategory] = useState(false)
 
   const {
     formData,
@@ -64,9 +66,11 @@ export function AdminCreateProductPage() {
     }
   }, [error])
 
-  const { data: categories, loading: loadingCategories } = useApiFetch<
-    Category[]
-  >(() => getCategories(), [])
+  const {
+    data: categories,
+    loading: loadingCategories,
+    refetch: refetchCategories,
+  } = useApiFetch<Category[]>(() => getCategories(), [])
 
   const setProductImageFields = (imageUrl: string, publicId: string) => {
     handleChange({
@@ -82,6 +86,42 @@ export function AdminCreateProductPage() {
         value: publicId,
       },
     } as React.ChangeEvent<HTMLInputElement>)
+  }
+
+  const setCategoryField = (categoryId: string) => {
+    handleChange({
+      target: {
+        name: "categoryId",
+        value: categoryId,
+      },
+    } as React.ChangeEvent<HTMLSelectElement>)
+  }
+
+  const handleCreateCategory = async () => {
+    const trimmedName = newCategoryName.trim()
+
+    if (!trimmedName) {
+      toast.error("Vui lòng nhập tên phân loại")
+      return
+    }
+
+    try {
+      setCreatingCategory(true)
+
+      const category = await createCategory({
+        name: trimmedName,
+      })
+
+      toast.success("Đã thêm phân loại")
+      setNewCategoryName("")
+
+      await refetchCategories()
+      setCategoryField(category.id)
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Không thể thêm phân loại")
+    } finally {
+      setCreatingCategory(false)
+    }
   }
 
   const handleProductImageUpload = async (
@@ -145,24 +185,55 @@ export function AdminCreateProductPage() {
           value={formData.slug || createSlug(formData.name)}
         />
 
-        <label className="block text-sm font-medium text-stone-700">
-          Phân loại *
-          <select
-            name="categoryId"
-            value={formData.categoryId}
-            onChange={handleChange}
-            required
-            className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
-          >
-            <option value="">Chọn phân loại</option>
+        <div>
+          <label className="block text-sm font-medium text-stone-700">
+            Phân loại *
+            <select
+              name="categoryId"
+              value={formData.categoryId}
+              onChange={handleChange}
+              required
+              className="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3"
+            >
+              <option value="">Chọn phân loại</option>
 
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-        </label>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <div className="mt-3 rounded-xl border border-stone-200 bg-stone-50 p-4">
+            <p className="text-sm font-medium text-stone-700">
+              Chưa có phân loại phù hợp?
+            </p>
+
+            <div className="mt-3 flex gap-2">
+              <input
+                type="text"
+                value={newCategoryName}
+                onChange={(event) => setNewCategoryName(event.target.value)}
+                placeholder="Nhập tên phân loại mới"
+                className="flex-1 rounded-xl border border-stone-300 px-4 py-3 text-sm"
+              />
+
+              <button
+                type="button"
+                onClick={handleCreateCategory}
+                disabled={creatingCategory}
+                className="rounded-xl bg-stone-900 px-4 py-3 text-sm font-semibold text-white hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-300"
+              >
+                {creatingCategory ? "Đang thêm..." : "Thêm"}
+              </button>
+            </div>
+
+            <p className="mt-2 text-xs text-stone-500">
+              Sau khi thêm, phân loại mới sẽ tự động được chọn cho sản phẩm này.
+            </p>
+          </div>
+        </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           <InputField
@@ -266,14 +337,16 @@ export function AdminCreateProductPage() {
         />
 
         <button
-          disabled={loadingProductCreate || imageUploading}
+          disabled={loadingProductCreate || imageUploading || creatingCategory}
           className="w-full rounded-full bg-amber-800 px-6 py-3 font-semibold text-white hover:bg-amber-900 disabled:cursor-not-allowed disabled:bg-stone-300"
         >
           {loadingProductCreate
             ? "Đang thêm..."
             : imageUploading
               ? "Đang tải ảnh..."
-              : "Thêm sản phẩm"}
+              : creatingCategory
+                ? "Đang thêm phân loại..."
+                : "Thêm sản phẩm"}
         </button>
       </form>
     </section>

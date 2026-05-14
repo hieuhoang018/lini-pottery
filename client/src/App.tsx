@@ -26,7 +26,7 @@ function App() {
       <Navbar />
       <main className="min-h-screen bg-stone-50 px-6 py-10 text-stone-900">
         <Routes>
-          <Route path="/" element={<ShopPage />} />
+          <Route path="/shop" element={<ShopPage />} />
           <Route path="/products/:slug" element={<ProductDetailPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/login" element={<LoginPage />} />

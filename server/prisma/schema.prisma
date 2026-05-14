@@ -63,6 +63,7 @@ model Category {
   products    Product[]
 
   @@map("categories")
+  @@index([name])
 }
 
 model Product {

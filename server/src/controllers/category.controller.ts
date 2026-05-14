@@ -8,6 +8,12 @@ import { asyncHandler } from "../utils/asyncHandler"
 import { AppError } from "../utils/AppError"
 import { CategoryParams } from "../types/params"
 
+type CreateCategoryBody = {
+  name?: string
+  slug?: string
+  description?: string
+}
+
 export const getCategoriesHandler = asyncHandler(
   async (_req: Request, res: Response) => {
     const categories = await getAllCategories()
@@ -31,20 +37,21 @@ export const getCategoryBySlugHandler = asyncHandler(
 )
 
 export const createCategoryHandler = asyncHandler(
-  async (req: Request, res: Response) => {
-    const { name, slug } = req.body
+  async (req: Request<{}, {}, CreateCategoryBody>, res: Response) => {
+    const { name, slug, description } = req.body
 
-    if (!name || !slug) {
+    if (!name?.trim()) {
       throw new AppError(
-        "Name and slug are required",
+        "Category name is required",
         400,
-        "CATEGORY_REQUIRED_FIELDS_MISSING",
+        "CATEGORY_NAME_REQUIRED",
       )
     }
 
     const category = await createCategory({
       name,
       slug,
+      description,
     })
 
     return res.status(201).json(category)
