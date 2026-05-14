@@ -1,7 +1,9 @@
+import { Prisma } from "@prisma/client"
 import { prisma } from "../lib/prisma"
 import { OrderStatus, PaymentStatus } from "../types/order"
 import { GetAllOrdersForAdminParams } from "../types/params"
 import { buildPaginationMeta } from "../utils/pagination"
+import { isValidUuid } from "../utils/isValidUuid"
 
 export const getAllOrdersForAdmin = async ({
   search,
@@ -11,6 +13,7 @@ export const getAllOrdersForAdmin = async ({
   limit = 20,
 }: GetAllOrdersForAdminParams = {}) => {
   const trimmedSearch = search?.trim()
+  const searchIsUuid = trimmedSearch ? isValidUuid(trimmedSearch) : false
   const skip = (page - 1) * limit
 
   const where = {
@@ -20,27 +23,39 @@ export const getAllOrdersForAdmin = async ({
     ...(trimmedSearch
       ? {
           OR: [
+            ...(searchIsUuid
+              ? [
+                  {
+                    id: {
+                      equals: trimmedSearch,
+                    },
+                  },
+                ]
+              : []),
+
             {
-              id: {
-                equals: trimmedSearch,
+              orderCode: {
+                contains: trimmedSearch,
+                mode: "insensitive",
               },
             },
+
             {
               guestName: {
                 contains: trimmedSearch,
-                mode: "insensitive" as const,
+                mode: "insensitive",
               },
             },
             {
               guestEmail: {
                 contains: trimmedSearch,
-                mode: "insensitive" as const,
+                mode: "insensitive",
               },
             },
             {
               guestPhone: {
                 contains: trimmedSearch,
-                mode: "insensitive" as const,
+                mode: "insensitive",
               },
             },
             {
@@ -48,7 +63,7 @@ export const getAllOrdersForAdmin = async ({
                 is: {
                   name: {
                     contains: trimmedSearch,
-                    mode: "insensitive" as const,
+                    mode: "insensitive",
                   },
                 },
               },
@@ -58,7 +73,7 @@ export const getAllOrdersForAdmin = async ({
                 is: {
                   email: {
                     contains: trimmedSearch,
-                    mode: "insensitive" as const,
+                    mode: "insensitive",
                   },
                 },
               },
@@ -68,7 +83,7 @@ export const getAllOrdersForAdmin = async ({
                 is: {
                   recipientName: {
                     contains: trimmedSearch,
-                    mode: "insensitive" as const,
+                    mode: "insensitive",
                   },
                 },
               },
@@ -78,7 +93,7 @@ export const getAllOrdersForAdmin = async ({
                 is: {
                   phone: {
                     contains: trimmedSearch,
-                    mode: "insensitive" as const,
+                    mode: "insensitive",
                   },
                 },
               },
@@ -88,7 +103,7 @@ export const getAllOrdersForAdmin = async ({
                 is: {
                   city: {
                     contains: trimmedSearch,
-                    mode: "insensitive" as const,
+                    mode: "insensitive",
                   },
                 },
               },
@@ -98,7 +113,7 @@ export const getAllOrdersForAdmin = async ({
                 is: {
                   postalCode: {
                     contains: trimmedSearch,
-                    mode: "insensitive" as const,
+                    mode: "insensitive",
                   },
                 },
               },
@@ -108,7 +123,7 @@ export const getAllOrdersForAdmin = async ({
                 some: {
                   productName: {
                     contains: trimmedSearch,
-                    mode: "insensitive" as const,
+                    mode: "insensitive",
                   },
                 },
               },

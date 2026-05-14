@@ -7,7 +7,7 @@ export function OrderTitleCard({ order }: { order: Order }) {
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <p className="text-sm text-stone-500">ID Đơn hàng</p>
-          <h1 className="mt-1 break-all text-2xl font-bold">{order.id}</h1>
+          <h1 className="mt-1 break-all text-2xl font-bold">{order.orderCode}</h1>
 
           <p className="mt-2 text-sm text-stone-500">
             Đặt hàng vào ngày {new Date(order.createdAt).toLocaleString()}

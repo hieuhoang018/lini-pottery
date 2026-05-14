@@ -2,7 +2,6 @@ import { Link } from "react-router-dom"
 import type { Order } from "../../types/order"
 import { getStatusBadgeClass } from "../../utils/getStatusBadgeClass"
 
-
 export function OrdersList({ orders }: { orders: Order[] }) {
   return (
     <section className="mt-3 space-y-5">
@@ -14,7 +13,7 @@ export function OrdersList({ orders }: { orders: Order[] }) {
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
               <p className="text-sm text-stone-500">ID Đơn hàng</p>
-              <h2 className="font-semibold">{order.id}</h2>
+              <h2 className="font-semibold">{order.orderCode}</h2>
 
               <p className="mt-2 text-sm text-stone-500">
                 {new Date(order.createdAt).toLocaleString()}

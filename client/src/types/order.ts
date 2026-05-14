@@ -29,6 +29,7 @@ export type Order = {
   guestName?: string | null
   guestEmail?: string | null
   guestPhone?: string | null
+  orderCode: number
 
   status: OrderStatus
   paymentStatus: PaymentStatus

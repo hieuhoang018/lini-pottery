@@ -159,6 +159,7 @@ model WishlistItem {
 
 model Order {
   id             String           @id @default(uuid()) @db.Uuid
+  orderCode      String           @unique @map("order_code")
   userId         String?          @db.Uuid @map("user_id")
   guestName      String?          @map("guest_name")
   guestEmail     String?          @map("guest_email")
@@ -181,6 +182,7 @@ model Order {
   @@index([userId])
   @@index([status])
   @@index([paymentStatus])
+  @@index([orderCode])
   @@map("orders")
 }
 
@@ -234,4 +236,11 @@ model PaymentRecord {
   @@index([orderId])
   @@index([status])
   @@map("payment_records")
+}
+
+model Counter {
+  name  String @id
+  value Int
+
+  @@map("counters")
 }

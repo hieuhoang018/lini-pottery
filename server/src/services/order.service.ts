@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma"
-import { OrderStatus, PaymentStatus } from "@prisma/client"
+import { OrderStatus, PaymentStatus, Prisma } from "@prisma/client"
 import {
   CheckoutInput,
   GetMyOrdersInput,
@@ -7,6 +7,7 @@ import {
 } from "../types/order"
 import { isValidUuid } from "../utils/isValidUuid"
 import { buildPaginationMeta } from "../utils/pagination"
+import { formatOrderCode } from "../utils/orderCode"
 
 export const checkoutFromCart = async (data: CheckoutInput) => {
   return prisma.$transaction(async (tx) => {
@@ -47,9 +48,11 @@ export const checkoutFromCart = async (data: CheckoutInput) => {
 
     const shippingFee = 0
     const total = subtotal + shippingFee
+    const orderCode = await getNextOrderCode(tx)
 
     const order = await tx.order.create({
       data: {
+        orderCode,
         userId: data.userId,
         status: "PENDING",
         paymentStatus: "PENDING",
@@ -148,6 +151,13 @@ export const getMyOrders = async ({
                   },
                 ]
               : []),
+
+            {
+              orderCode: {
+                contains: trimmedSearch,
+                mode: "insensitive" as const,
+              },
+            },
 
             ...(orderStatusSearch
               ? [
@@ -318,9 +328,11 @@ export const guestCheckout = async (data: GuestCheckoutInput) => {
 
     const shippingFee = 0
     const total = subtotal + shippingFee
+    const orderCode = await getNextOrderCode(tx)
 
     const order = await tx.order.create({
       data: {
+        orderCode,
         userId: null,
         guestName: data.guestName,
         guestEmail: data.guestEmail,
@@ -410,4 +422,23 @@ const getPaymentStatusSearch = (search?: string): PaymentStatus | undefined => {
   }
 
   return undefined
+}
+
+const getNextOrderCode = async (tx: Prisma.TransactionClient) => {
+  const counter = await tx.counter.upsert({
+    where: {
+      name: "order",
+    },
+    update: {
+      value: {
+        increment: 1,
+      },
+    },
+    create: {
+      name: "order",
+      value: 1,
+    },
+  })
+
+  return formatOrderCode(counter.value)
 }

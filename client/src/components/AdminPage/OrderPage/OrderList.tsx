@@ -39,7 +39,7 @@ export function OrderList({
                 </h3>
 
                 <p className="mt-2 text-xs text-stone-500">
-                  ID Đơn hàng: {order.id}
+                  ID Đơn hàng: {order.orderCode}
                 </p>
 
                 <p className="mt-1 text-xs text-stone-500">

@@ -13,6 +13,7 @@ export type AdminOrder = {
   notes?: string | null
   createdAt: string
   updatedAt: string
+  orderCode: number
 
   user?: {
     id: string
