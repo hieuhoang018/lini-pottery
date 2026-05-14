@@ -3,6 +3,7 @@ import { prisma } from "../lib/prisma"
 import { AppError } from "../utils/AppError"
 import { createSlug } from "../utils/createSlug"
 import { CreateCategoryInput, UpdateCategoryInput } from "../types/category"
+import { buildProductSearchText } from "../utils/search"
 
 export const getAllCategories = async () => {
   return prisma.category.findMany({
@@ -133,14 +134,47 @@ export const updateCategory = async ({
   }
 
   try {
-    return await prisma.category.update({
-      where: { id },
-      data: {
-        name: finalName,
-        slug: finalSlug,
-        description:
-          description !== undefined ? description.trim() || null : undefined,
-      },
+    return await prisma.$transaction(async (tx) => {
+      const updatedCategory = await tx.category.update({
+        where: { id },
+        data: {
+          name: finalName,
+          slug: finalSlug,
+          description:
+            description !== undefined ? description.trim() || null : undefined,
+        },
+      })
+
+      const products = await tx.product.findMany({
+        where: {
+          categoryId: id,
+        },
+      })
+
+      await Promise.all(
+        products.map((product) =>
+          tx.product.update({
+            where: {
+              id: product.id,
+            },
+            data: {
+              searchText: buildProductSearchText({
+                name: product.name,
+                slug: product.slug,
+                description: product.description,
+                material: product.material,
+                color: product.color,
+                dimensionsText: product.dimensionsText,
+                weightText: product.weightText,
+                careInstructions: product.careInstructions,
+                categoryName: updatedCategory.name,
+              }),
+            },
+          }),
+        ),
+      )
+
+      return updatedCategory
     })
   } catch (error) {
     if (

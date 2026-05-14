@@ -5,6 +5,7 @@ import { UpdateProductInput } from "../types/product"
 import { buildPaginationMeta } from "../utils/pagination"
 import { buildProductSearchText, normalizeSearchText } from "../utils/search"
 import { deleteImageFromCloudinary } from "../utils/cloudinaryUpload"
+import { AppError } from "../utils/AppError"
 
 export const getAllProducts = async ({
   categorySlug,
@@ -124,6 +125,10 @@ export const createProduct = async (data: CreateProductInput) => {
       id: data.categoryId,
     },
   })
+
+  if (!category) {
+    throw new AppError("Category not found", 404, "CATEGORY_NOT_FOUND")
+  }
 
   const searchText = buildProductSearchText({
     name: data.name,

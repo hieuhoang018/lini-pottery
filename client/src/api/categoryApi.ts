@@ -6,7 +6,6 @@ import type {
 } from "../types/api-input"
 
 export async function getCategories() {
-  await new Promise((resolve) => setTimeout(resolve, 5000))
   const response = await apiClient.get<Category[]>("/categories")
   return response.data
 }
