@@ -12,6 +12,7 @@ export type GuestCheckoutInput = CheckoutAddress & {
 
 export type CreateProductImageInput = {
   imageUrl: string
+  publicId?: string
   altText?: string
   sortOrder?: number
 }
@@ -33,6 +34,7 @@ export type CreateProductInput = {
   weightText?: string
   careInstructions?: string
   featuredImageUrl?: string
+  featuredImagePublicId?: string
 }
 
 export type RegisterFormInput = {

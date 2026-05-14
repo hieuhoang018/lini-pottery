@@ -90,6 +90,7 @@ export const createProductHandler = asyncHandler(
       weightText,
       careInstructions,
       featuredImageUrl,
+      featuredImagePublicId,
     } = req.body
 
     if (!name || !slug || !description || price == null || !categoryId) {
@@ -123,6 +124,7 @@ export const createProductHandler = asyncHandler(
       weightText,
       careInstructions,
       featuredImageUrl,
+      featuredImagePublicId,
     })
 
     return res.status(201).json(product)

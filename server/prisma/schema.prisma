@@ -66,29 +66,30 @@ model Category {
 }
 
 model Product {
-  id               String        @id @default(uuid()) @db.Uuid
-  name             String
-  slug             String        @unique
-  description      String
-  price            Decimal       @db.Decimal(10, 2)
-  stockQuantity    Int           @default(1) @map("stock_quantity")
-  isActive         Boolean       @default(true) @map("is_active")
-  categoryId       String        @db.Uuid @map("category_id")
-  material         String?
-  color            String?
-  dimensionsText   String?       @map("dimensions_text")
-  weightText       String?       @map("weight_text")
-  careInstructions String?       @map("care_instructions")
-  featuredImageUrl String?       @map("featured_image_url")
-  searchText       String?       @map("search_text")
-  createdAt        DateTime      @default(now()) @map("created_at")
-  updatedAt        DateTime      @updatedAt @map("updated_at")
+  id                    String        @id @default(uuid()) @db.Uuid
+  name                  String
+  slug                  String        @unique
+  description           String
+  price                 Decimal       @db.Decimal(10, 2)
+  stockQuantity         Int           @default(1) @map("stock_quantity")
+  isActive              Boolean       @default(true) @map("is_active")
+  categoryId            String        @db.Uuid @map("category_id")
+  material              String?
+  color                 String?
+  dimensionsText        String?       @map("dimensions_text")
+  weightText            String?       @map("weight_text")
+  careInstructions      String?       @map("care_instructions")
+  featuredImageUrl      String?       @map("featured_image_url")
+  featuredImagePublicId String?       @map("featured_image_public_id")
+  searchText            String?       @map("search_text")
+  createdAt             DateTime      @default(now()) @map("created_at")
+  updatedAt             DateTime      @updatedAt @map("updated_at")
 
-  category         Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  images           ProductImage[]
-  cartItems        CartItem[]
-  wishlistItems    WishlistItem[]
-  orderItems       OrderItem[]
+  category              Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  images                ProductImage[]
+  cartItems             CartItem[]
+  wishlistItems         WishlistItem[]
+  orderItems            OrderItem[]
 
   @@index([categoryId])
   @@index([isActive])
@@ -101,6 +102,7 @@ model ProductImage {
   id        String   @id @default(uuid()) @db.Uuid
   productId String   @db.Uuid @map("product_id")
   imageUrl  String   @map("image_url")
+  publicId  String?  @map("public_id")
   altText   String?  @map("alt_text")
   sortOrder Int      @default(0) @map("sort_order")
   createdAt DateTime @default(now()) @map("created_at")

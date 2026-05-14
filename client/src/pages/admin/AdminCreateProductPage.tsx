@@ -1,8 +1,9 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { Link, useNavigate } from "react-router-dom"
 import { getCategories } from "../../api/categoryApi"
 import { createProduct } from "../../api/productApi"
+import { uploadProductImage } from "../../api/uploadApi"
 import type { CreateProductInput } from "../../types/api-input"
 import type { Category } from "../../types/category"
 import { createSlug } from "../../utils/createSlug"
@@ -24,10 +25,12 @@ const initialCreateProductForm: CreateProductInput = {
   weightText: "",
   careInstructions: "",
   featuredImageUrl: "",
+  featuredImagePublicId: "",
 }
 
 export function AdminCreateProductPage() {
   const navigate = useNavigate()
+  const [imageUploading, setImageUploading] = useState(false)
 
   const {
     formData,
@@ -47,6 +50,7 @@ export function AdminCreateProductPage() {
         weightText: data.weightText || undefined,
         careInstructions: data.careInstructions || undefined,
         featuredImageUrl: data.featuredImageUrl || undefined,
+        featuredImagePublicId: data.featuredImagePublicId || undefined,
       })
 
       toast.success("Đã tạo sản phẩm")
@@ -63,6 +67,44 @@ export function AdminCreateProductPage() {
   const { data: categories, loading: loadingCategories } = useApiFetch<
     Category[]
   >(() => getCategories(), [])
+
+  const setProductImageFields = (imageUrl: string, publicId: string) => {
+    handleChange({
+      target: {
+        name: "featuredImageUrl",
+        value: imageUrl,
+      },
+    } as React.ChangeEvent<HTMLInputElement>)
+
+    handleChange({
+      target: {
+        name: "featuredImagePublicId",
+        value: publicId,
+      },
+    } as React.ChangeEvent<HTMLInputElement>)
+  }
+
+  const handleProductImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0]
+
+    if (!file) return
+
+    try {
+      setImageUploading(true)
+
+      const uploadedImage = await uploadProductImage(file)
+
+      setProductImageFields(uploadedImage.imageUrl, uploadedImage.publicId)
+
+      toast.success("Đã tải ảnh lên")
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Không thể tải ảnh lên")
+    } finally {
+      setImageUploading(false)
+    }
+  }
 
   if (loadingCategories) {
     return <AdminCreateProductSkeleton />
@@ -94,6 +136,7 @@ export function AdminCreateProductPage() {
           isCompulsary
           value={formData.name}
         />
+
         <InputField
           name="slug"
           label="Slug"
@@ -130,6 +173,7 @@ export function AdminCreateProductPage() {
             isCompulsary
             value={formData.price}
           />
+
           <InputField
             name="stockQuantity"
             inputType="number"
@@ -139,6 +183,7 @@ export function AdminCreateProductPage() {
             value={formData.stockQuantity}
           />
         </div>
+
         <InputField
           name="description"
           label="Miêu tả"
@@ -146,13 +191,37 @@ export function AdminCreateProductPage() {
           isCompulsary
           value={formData.description}
         />
-        <InputField
-          name="featuredImageUrl"
-          label="URL ảnh"
-          onChange={handleChange}
-          isCompulsary
-          value={formData.featuredImageUrl}
-        />
+
+        <div>
+          <label className="block text-sm font-medium text-stone-700">
+            Ảnh sản phẩm *
+          </label>
+
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleProductImageUpload}
+            className="mt-2 block w-full rounded-xl border border-stone-300 px-4 py-3 text-sm"
+          />
+
+          {imageUploading && (
+            <p className="mt-2 text-sm text-stone-500">Đang tải ảnh lên...</p>
+          )}
+
+          {formData.featuredImageUrl && (
+            <div className="mt-4 rounded-2xl border border-stone-200 p-3">
+              <img
+                src={formData.featuredImageUrl}
+                alt="Xem trước ảnh sản phẩm"
+                className="h-48 w-48 rounded-xl object-cover"
+              />
+
+              <p className="mt-2 break-all text-xs text-stone-500">
+                {formData.featuredImageUrl}
+              </p>
+            </div>
+          )}
+        </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           <InputField
@@ -162,6 +231,7 @@ export function AdminCreateProductPage() {
             isCompulsary={false}
             value={formData.material}
           />
+
           <InputField
             name="color"
             label="Màu sắc"
@@ -170,6 +240,7 @@ export function AdminCreateProductPage() {
             value={formData.color}
           />
         </div>
+
         <InputField
           name="dimensionsText"
           label="Kích thước"
@@ -177,6 +248,7 @@ export function AdminCreateProductPage() {
           isCompulsary={false}
           value={formData.dimensionsText}
         />
+
         <InputField
           name="weightText"
           label="Cân nặng"
@@ -184,6 +256,7 @@ export function AdminCreateProductPage() {
           isCompulsary={false}
           value={formData.weightText}
         />
+
         <InputField
           name="careInstructions"
           label="Hướng dẫn bảo quản"
@@ -193,10 +266,14 @@ export function AdminCreateProductPage() {
         />
 
         <button
-          disabled={loadingProductCreate}
+          disabled={loadingProductCreate || imageUploading}
           className="w-full rounded-full bg-amber-800 px-6 py-3 font-semibold text-white hover:bg-amber-900 disabled:cursor-not-allowed disabled:bg-stone-300"
         >
-          {loadingProductCreate ? "Đang thêm..." : "Thêm sản phẩm"}
+          {loadingProductCreate
+            ? "Đang thêm..."
+            : imageUploading
+              ? "Đang tải ảnh..."
+              : "Thêm sản phẩm"}
         </button>
       </form>
     </section>

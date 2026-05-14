@@ -8,19 +8,24 @@ import {
 } from "../services/product-image.service"
 import { asyncHandler } from "../utils/asyncHandler"
 import { AppError } from "../utils/AppError"
-import { ProductIdParams, ProductImageIdParams } from "../types/params"
+import { ProductImageIdParams } from "../types/params"
+
+type ProductImagesParams = {
+  productId: string
+}
 
 type CreateProductImageBody = {
   imageUrl?: string
+  publicId?: string
   altText?: string
   sortOrder?: number | string
 }
 
 export const getProductImagesHandler = asyncHandler(
-  async (req: Request<ProductIdParams>, res: Response) => {
-    const { id } = req.params
+  async (req: Request<ProductImagesParams>, res: Response) => {
+    const { productId } = req.params
 
-    const images = await getImagesByProductId(id)
+    const images = await getImagesByProductId(productId)
 
     return res.status(200).json(images)
   },
@@ -28,10 +33,10 @@ export const getProductImagesHandler = asyncHandler(
 
 export const createProductImageHandler = asyncHandler(
   async (
-    req: Request<ProductIdParams, {}, CreateProductImageBody>,
+    req: Request<ProductImagesParams, {}, CreateProductImageBody>,
     res: Response,
   ) => {
-    const { id } = req.params
+    const { productId } = req.params
 
     if (!req.body || typeof req.body !== "object") {
       throw new AppError(
@@ -41,14 +46,14 @@ export const createProductImageHandler = asyncHandler(
       )
     }
 
-    const { imageUrl, altText, sortOrder } = req.body
+    const { imageUrl, publicId, altText, sortOrder } = req.body
 
     if (!imageUrl) {
       throw new AppError("imageUrl is required", 400, "IMAGE_URL_REQUIRED")
     }
 
     const productExists = await prisma.product.findUnique({
-      where: { id: id },
+      where: { id: productId },
     })
 
     if (!productExists) {
@@ -67,8 +72,9 @@ export const createProductImageHandler = asyncHandler(
     }
 
     const image = await createProductImage({
-      id,
+      productId,
       imageUrl,
+      publicId,
       altText,
       sortOrder: numericSortOrder,
     })

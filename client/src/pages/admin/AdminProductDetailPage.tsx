@@ -102,7 +102,7 @@ export function AdminProductDetailPage() {
           </p>
         </section>
 
-        <ProductImagesManager productId={product.id} />
+        <ProductImagesManager product={product} productId={product.id} />
       </aside>
     </div>
   )

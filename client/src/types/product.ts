@@ -4,6 +4,7 @@ export type ProductImage = {
   id: string
   productId: string
   imageUrl: string
+  publicId?: string | null
   altText?: string | null
   sortOrder: number
   createdAt: string
@@ -24,11 +25,9 @@ export type Product = {
   weightText?: string | null
   careInstructions?: string | null
   featuredImageUrl?: string | null
+  featuredImagePublicId?: string | null
   createdAt: string
   updatedAt: string
   category: Category
   images: ProductImage[]
 }
-
-
-
