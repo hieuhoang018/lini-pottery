@@ -4,6 +4,7 @@ import { CreateProductInput } from "../types/product"
 import { UpdateProductInput } from "../types/product"
 import { buildPaginationMeta } from "../utils/pagination"
 import { buildProductSearchText, normalizeSearchText } from "../utils/search"
+import { deleteImageFromCloudinary } from "../utils/cloudinaryUpload"
 
 export const getAllProducts = async ({
   categorySlug,
@@ -187,6 +188,8 @@ export const updateProduct = async (id: string, data: UpdateProductInput) => {
     return null
   }
 
+  const oldFeaturedImagePublicId = existingProduct.featuredImagePublicId
+
   const nextCategoryId = data.categoryId ?? existingProduct.categoryId
 
   const nextCategory =
@@ -210,7 +213,7 @@ export const updateProduct = async (id: string, data: UpdateProductInput) => {
     categoryName: nextCategory?.name,
   })
 
-  return prisma.product.update({
+  const updatedProduct = await prisma.product.update({
     where: { id },
     data: {
       ...data,
@@ -225,6 +228,23 @@ export const updateProduct = async (id: string, data: UpdateProductInput) => {
       },
     },
   })
+
+  const newFeaturedImagePublicId = updatedProduct.featuredImagePublicId
+
+  const imageWasReplaced =
+    oldFeaturedImagePublicId &&
+    newFeaturedImagePublicId &&
+    oldFeaturedImagePublicId !== newFeaturedImagePublicId
+
+  if (imageWasReplaced) {
+    try {
+      await deleteImageFromCloudinary(oldFeaturedImagePublicId)
+    } catch (error) {
+      console.error("Failed to delete old Cloudinary image:", error)
+    }
+  }
+
+  return updatedProduct
 }
 
 export const updateProductStock = async (id: string, stockQuantity: number) => {

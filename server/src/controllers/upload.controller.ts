@@ -1,7 +1,10 @@
 import { Request, Response } from "express"
 import { asyncHandler } from "../utils/asyncHandler"
 import { AppError } from "../utils/AppError"
-import { uploadBufferToCloudinary } from "../utils/cloudinaryUpload"
+import {
+  uploadBufferToCloudinary,
+  deleteImageFromCloudinary,
+} from "../utils/cloudinaryUpload"
 
 export const uploadProductImageHandler = asyncHandler(
   async (req: Request, res: Response) => {
@@ -17,6 +20,22 @@ export const uploadProductImageHandler = asyncHandler(
     return res.status(201).json({
       imageUrl: uploadedImage.secure_url,
       publicId: uploadedImage.public_id,
+    })
+  },
+)
+
+export const deleteUploadedImageHandler = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { publicId } = req.body
+
+    if (!publicId) {
+      throw new AppError("publicId is required", 400, "PUBLIC_ID_REQUIRED")
+    }
+
+    await deleteImageFromCloudinary(publicId)
+
+    return res.status(200).json({
+      message: "Image deleted",
     })
   },
 )

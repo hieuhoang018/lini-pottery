@@ -30,7 +30,6 @@ export function ProductEditForm({
     dimensionsText: product.dimensionsText || "",
     weightText: product.weightText || "",
     careInstructions: product.careInstructions || "",
-    featuredImageUrl: product.featuredImageUrl || "",
     isActive: product.isActive,
   }
 
@@ -45,7 +44,6 @@ export function ProductEditForm({
           dimensionsText: data.dimensionsText || undefined,
           weightText: data.weightText || undefined,
           careInstructions: data.careInstructions || undefined,
-          featuredImageUrl: data.featuredImageUrl || undefined,
         })
         toast.success("Đã cập nhật sản phẩm")
       },
@@ -117,14 +115,6 @@ export function ProductEditForm({
         isCompulsary
         value={formData.description}
       />
-
-      {/*  <InputField
-          name="featuredImageUrl"
-          label="URL ảnh"
-          onChange={handleChange}
-          isCompulsary
-          value={formData.featuredImageUrl}
-        /> */}
 
       <div className="grid gap-4 md:grid-cols-2">
         <InputField

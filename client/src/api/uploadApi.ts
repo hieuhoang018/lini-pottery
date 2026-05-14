@@ -13,3 +13,16 @@ export const uploadProductImage = async (file: File) => {
 
   return data
 }
+
+export const deleteUploadedImage = async (publicId: string) => {
+  const { data } = await apiClient.delete<{ message: string }>(
+    "/uploads/image",
+    {
+      data: {
+        publicId,
+      },
+    },
+  )
+
+  return data
+}

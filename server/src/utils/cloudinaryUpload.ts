@@ -29,3 +29,12 @@ export const uploadBufferToCloudinary = (
     uploadStream.end(buffer)
   })
 }
+
+export const deleteImageFromCloudinary = async (publicId?: string | null) => {
+  if (!publicId) return null
+
+  return cloudinary.uploader.destroy(publicId, {
+    resource_type: "image",
+    invalidate: true,
+  })
+}

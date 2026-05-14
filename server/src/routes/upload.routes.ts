@@ -1,5 +1,8 @@
 import { Router } from "express"
-import { uploadProductImageHandler } from "../controllers/upload.controller"
+import {
+  uploadProductImageHandler,
+  deleteUploadedImageHandler,
+} from "../controllers/upload.controller"
 import { uploadProductImage } from "../middlewares/upload.middleware"
 import { requireAuth, requireAdmin } from "../middlewares/auth.middleware"
 
@@ -12,5 +15,7 @@ router.post(
   uploadProductImage.single("image"),
   uploadProductImageHandler,
 )
+
+router.delete("/image", requireAuth, requireAdmin, deleteUploadedImageHandler)
 
 export default router
