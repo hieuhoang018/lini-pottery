@@ -44,7 +44,7 @@ export function ShopActionPanel({
 
           <input
             type="text"
-            placeholder="Search products..."
+            placeholder="TÌm sản phẩm..."
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             className="w-full rounded-xl border border-stone-300 py-3 pl-11 pr-4 text-sm outline-none focus:border-amber-800 focus:ring-2 focus:ring-amber-100"
@@ -56,9 +56,9 @@ export function ShopActionPanel({
           onChange={(event) => setSortOption(event.target.value as SortOption)}
           className="rounded-xl border border-stone-300 bg-white px-4 py-3 text-sm text-stone-700 outline-none focus:border-amber-800 focus:ring-2 focus:ring-amber-100"
         >
-          <option value="newest">Newest</option>
-          <option value="price_asc">Price: low to high</option>
-          <option value="price_desc">Price: high to low</option>
+          <option value="newest">Mới nhất</option>
+          <option value="price_asc">Giá: thấp đến cao</option>
+          <option value="price_desc">Giá: cao đến thấp</option>
         </select>
 
         <label className="flex items-center gap-2 rounded-xl border border-stone-300 px-4 py-3 text-sm font-medium text-stone-700">
@@ -68,7 +68,7 @@ export function ShopActionPanel({
             onChange={(event) => setAvailableOnly(event.target.checked)}
             className="h-4 w-4 accent-amber-800"
           />
-          Available only
+          Còn hàng
         </label>
 
         <button
@@ -76,7 +76,7 @@ export function ShopActionPanel({
           onClick={clearFilters}
           className="rounded-xl border border-stone-300 bg-white px-4 py-3 text-sm font-semibold text-stone-700 hover:bg-stone-100"
         >
-          Clear
+          Xóa bộ lọc
         </button>
       </div>
 

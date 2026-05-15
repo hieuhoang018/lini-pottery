@@ -66,7 +66,7 @@ export function MainWishlistSection() {
             type="text"
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
-            placeholder="Search wishlist products..."
+            placeholder="Tìm sản phẩm..."
             className="w-full rounded-xl border border-stone-300 py-3 pl-12 pr-4 text-sm outline-none focus:border-amber-800 focus:ring-2 focus:ring-amber-800/20"
           />
         </div>

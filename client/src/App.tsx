@@ -20,6 +20,7 @@ import { OrderSuccessPage } from "./pages/OrderSuccessPage"
 import { OrderDetailPage } from "./pages/OrderDetailPage"
 import { Footer } from "./components/layout/Footer"
 import { AdminCategoriesPage } from "./pages/admin/AdminCategoriesPage"
+import HomePage from "./pages/HomePage"
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
       <Navbar />
       <main className="min-h-screen bg-stone-50 px-6 py-10 text-stone-900">
         <Routes>
+          <Route path="/" element={<HomePage />} />
           <Route path="/shop" element={<ShopPage />} />
           <Route path="/products/:slug" element={<ProductDetailPage />} />
           <Route path="/cart" element={<CartPage />} />
