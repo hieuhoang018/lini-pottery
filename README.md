@@ -57,6 +57,8 @@ DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE"
 JWT_ACCESS_SECRET="replace-with-a-long-random-secret"
 JWT_REFRESH_SECRET="replace-with-a-different-long-random-secret"
 CLIENT_URL="http://localhost:5173"
+CLIENT_URLS="http://localhost:5173"
+COOKIE_SAME_SITE="strict"
 PORT=5000
 
 CLOUDINARY_CLOUD_NAME="your-cloud-name"

@@ -18,11 +18,16 @@ import { errorMiddleware } from "./middlewares/error.middleware"
 
 const app = express()
 
+const allowedOrigins = (process.env.CLIENT_URLS || process.env.CLIENT_URL || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean)
+
 app.use(morgan("dev"))
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: allowedOrigins.length > 0 ? allowedOrigins : "http://localhost:5173",
     credentials: true,
   }),
 )

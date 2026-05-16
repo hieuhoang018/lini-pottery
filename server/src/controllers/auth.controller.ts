@@ -11,11 +11,15 @@ import {
 
 const REFRESH_TOKEN_COOKIE_NAME = "refreshToken"
 
+const getRefreshCookieSameSite = (): "none" | "strict" => {
+  return process.env.COOKIE_SAME_SITE === "none" ? "none" : "strict"
+}
+
 const getRefreshCookieOptions = () => {
   return {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict" as const,
+    sameSite: getRefreshCookieSameSite(),
     maxAge: 7 * 24 * 60 * 60 * 1000,
   }
 }
@@ -139,7 +143,7 @@ export const logoutHandler = asyncHandler(
     res.clearCookie(REFRESH_TOKEN_COOKIE_NAME, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: getRefreshCookieSameSite(),
     })
 
     return res.status(200).json({
