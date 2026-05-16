@@ -31,7 +31,7 @@ export const getWishlist = async ({
       : {}),
   }
 
-  const [wishlistItems, totalItems] = await prisma.$transaction([
+  const [wishlistItems, totalItems] = await Promise.all([
     prisma.wishlistItem.findMany({
       where,
       include: {

@@ -234,7 +234,7 @@ export const getMyOrders = async ({
       : {}),
   }
 
-  const [orders, totalItems] = await prisma.$transaction([
+  const [orders, totalItems] = await Promise.all([
     prisma.order.findMany({
       where,
       include: {

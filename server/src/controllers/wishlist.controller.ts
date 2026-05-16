@@ -49,7 +49,11 @@ export const addWishlistItemHandler = asyncHandler(
 export const removeWishlistItemHandler = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const userId = req.user!.userId
-    const { productId } = req.params
+    const productId = req.params.productId
+
+    if (!productId || Array.isArray(productId)) {
+      throw new AppError("productId is required", 400, "PRODUCT_ID_REQUIRED")
+    }
 
     await removeWishlistItem(userId, productId)
 

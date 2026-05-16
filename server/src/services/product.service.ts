@@ -74,7 +74,7 @@ export const getAllProducts = async ({
         ? { price: "desc" as const }
         : { createdAt: "desc" as const }
 
-  const [products, totalItems] = await prisma.$transaction([
+  const [products, totalItems] = await Promise.all([
     prisma.product.findMany({
       where,
       include: {

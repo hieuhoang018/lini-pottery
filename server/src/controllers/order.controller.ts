@@ -88,7 +88,11 @@ export const getMyOrdersHandler = asyncHandler(
 export const getMyOrderByIdHandler = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const userId = req.user!.userId
-    const { id } = req.params
+    const id = req.params.id
+
+    if (!id || Array.isArray(id)) {
+      throw new AppError("Order id is required", 400, "ORDER_ID_REQUIRED")
+    }
 
     const order = await getOrderByIdForUser(id, userId)
 

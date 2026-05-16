@@ -52,8 +52,12 @@ export const addCartItemHandler = asyncHandler(
 export const updateCartItemHandler = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const userId = req.user!.userId
-    const { itemId } = req.params
+    const itemId = req.params.itemId
     const { quantity } = req.body
+
+    if (!itemId || Array.isArray(itemId)) {
+      throw new AppError("itemId is required", 400, "ITEM_ID_REQUIRED")
+    }
 
     if (quantity === undefined) {
       throw new AppError("quantity is required", 400, "QUANTITY_REQUIRED")
@@ -78,7 +82,11 @@ export const updateCartItemHandler = asyncHandler(
 export const removeCartItemHandler = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const userId = req.user!.userId
-    const { itemId } = req.params
+    const itemId = req.params.itemId
+
+    if (!itemId || Array.isArray(itemId)) {
+      throw new AppError("itemId is required", 400, "ITEM_ID_REQUIRED")
+    }
 
     await removeCartItem(itemId, userId)
 

@@ -36,26 +36,26 @@ export const getAllOrdersForAdmin = async ({
             {
               orderCode: {
                 contains: trimmedSearch,
-                mode: "insensitive",
+                mode: "insensitive" as const,
               },
             },
 
             {
               guestName: {
                 contains: trimmedSearch,
-                mode: "insensitive",
+                mode: "insensitive" as const,
               },
             },
             {
               guestEmail: {
                 contains: trimmedSearch,
-                mode: "insensitive",
+                mode: "insensitive" as const,
               },
             },
             {
               guestPhone: {
                 contains: trimmedSearch,
-                mode: "insensitive",
+                mode: "insensitive" as const,
               },
             },
             {
@@ -63,7 +63,7 @@ export const getAllOrdersForAdmin = async ({
                 is: {
                   name: {
                     contains: trimmedSearch,
-                    mode: "insensitive",
+                    mode: "insensitive" as const,
                   },
                 },
               },
@@ -73,7 +73,7 @@ export const getAllOrdersForAdmin = async ({
                 is: {
                   email: {
                     contains: trimmedSearch,
-                    mode: "insensitive",
+                    mode: "insensitive" as const,
                   },
                 },
               },
@@ -83,7 +83,7 @@ export const getAllOrdersForAdmin = async ({
                 is: {
                   recipientName: {
                     contains: trimmedSearch,
-                    mode: "insensitive",
+                    mode: "insensitive" as const,
                   },
                 },
               },
@@ -93,7 +93,7 @@ export const getAllOrdersForAdmin = async ({
                 is: {
                   phone: {
                     contains: trimmedSearch,
-                    mode: "insensitive",
+                    mode: "insensitive" as const,
                   },
                 },
               },
@@ -103,7 +103,7 @@ export const getAllOrdersForAdmin = async ({
                 is: {
                   city: {
                     contains: trimmedSearch,
-                    mode: "insensitive",
+                    mode: "insensitive" as const,
                   },
                 },
               },
@@ -113,7 +113,7 @@ export const getAllOrdersForAdmin = async ({
                 is: {
                   postalCode: {
                     contains: trimmedSearch,
-                    mode: "insensitive",
+                    mode: "insensitive" as const,
                   },
                 },
               },
@@ -123,7 +123,7 @@ export const getAllOrdersForAdmin = async ({
                 some: {
                   productName: {
                     contains: trimmedSearch,
-                    mode: "insensitive",
+                    mode: "insensitive" as const,
                   },
                 },
               },
@@ -133,7 +133,7 @@ export const getAllOrdersForAdmin = async ({
       : {}),
   }
 
-  const [orders, totalItems] = await prisma.$transaction([
+  const [orders, totalItems] = await Promise.all([
     prisma.order.findMany({
       where,
       include: {
