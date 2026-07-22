@@ -7,12 +7,13 @@ import {
   registerHandler,
 } from "../controllers/auth.controller"
 import { requireAuth } from "../middlewares/auth.middleware"
+import { authRateLimiter } from "../middlewares/rateLimit.middleware"
 
 const router = Router()
 
-router.post("/register", registerHandler)
-router.post("/login", loginHandler)
-router.post("/refresh", refreshHandler)
+router.post("/register", authRateLimiter, registerHandler)
+router.post("/login", authRateLimiter, loginHandler)
+router.post("/refresh", authRateLimiter, refreshHandler)
 router.post("/logout", logoutHandler)
 router.get("/me", requireAuth, meHandler)
 

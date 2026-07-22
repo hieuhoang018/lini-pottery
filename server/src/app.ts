@@ -2,6 +2,7 @@
 import express from "express"
 import cors from "cors"
 import morgan from "morgan"
+import helmet from "helmet"
 import cookieParser from "cookie-parser"
 import { prisma } from "./lib/prisma"
 import categoryRoutes from "./routes/category.routes"
@@ -23,6 +24,7 @@ const allowedOrigins = (process.env.CLIENT_URLS || process.env.CLIENT_URL || "")
   .map((origin) => origin.trim())
   .filter(Boolean)
 
+app.use(helmet())
 app.use(morgan("dev"))
 
 app.use(
