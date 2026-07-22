@@ -6,6 +6,7 @@ import {
   type ReactNode,
 } from "react"
 import { getCurrentUser, logoutApi, refreshToken } from "../api/authApi"
+import { setAccessToken } from "../api/tokenStore"
 import type { AuthContextType, User } from "../types/auth"
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -23,26 +24,19 @@ export function AuthProvider({ children }: Props) {
       const currentUser = await getCurrentUser()
       setUser(currentUser)
     } catch {
-      localStorage.removeItem("token")
+      setAccessToken(null)
       setUser(null)
     }
   }
 
   const restoreSession = async () => {
     try {
-      const storedToken = localStorage.getItem("token")
-
-      if (storedToken) {
-        await fetchUser()
-        return
-      }
-
       const result = await refreshToken()
 
-      localStorage.setItem("token", result.accessToken)
+      setAccessToken(result.accessToken)
       setUser(result.user)
     } catch {
-      localStorage.removeItem("token")
+      setAccessToken(null)
       setUser(null)
     } finally {
       setLoading(false)
@@ -54,7 +48,7 @@ export function AuthProvider({ children }: Props) {
   }, [])
 
   const login = async (accessToken: string, loggedInUser?: User) => {
-    localStorage.setItem("token", accessToken)
+    setAccessToken(accessToken)
 
     if (loggedInUser) {
       setUser(loggedInUser)
@@ -70,7 +64,7 @@ export function AuthProvider({ children }: Props) {
     } catch {
       // Even if backend logout fails, clear frontend auth state
     } finally {
-      localStorage.removeItem("token")
+      setAccessToken(null)
       setUser(null)
     }
   }

@@ -1,4 +1,5 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios"
+import { getAccessToken, setAccessToken } from "./tokenStore"
 
 const API_BASE_URL = import.meta.env.VITE_API_URL
 
@@ -12,7 +13,7 @@ export const apiClient = axios.create({
 })
 
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token")
+  const token = getAccessToken()
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
@@ -41,13 +42,13 @@ apiClient.interceptors.response.use(
 
         const newAccessToken = response.data.accessToken
 
-        localStorage.setItem("token", newAccessToken)
+        setAccessToken(newAccessToken)
 
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
 
         return apiClient(originalRequest)
       } catch (refreshError) {
-        localStorage.removeItem("token")
+        setAccessToken(null)
         return Promise.reject(refreshError)
       }
     }
