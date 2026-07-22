@@ -141,7 +141,86 @@ export const updateProductHandler = asyncHandler(
       throw new AppError("Product not found", 404, "PRODUCT_NOT_FOUND")
     }
 
-    const updatedProduct = await updateProduct(id, req.body)
+    const {
+      name,
+      slug,
+      description,
+      price,
+      stockQuantity,
+      isActive,
+      categoryId,
+      material,
+      color,
+      dimensionsText,
+      weightText,
+      careInstructions,
+      featuredImageUrl,
+      featuredImagePublicId,
+    } = req.body
+
+    if (price !== undefined) {
+      const numericPrice = Number(price)
+
+      if (Number.isNaN(numericPrice) || numericPrice < 0) {
+        throw new AppError(
+          "price must be a valid non-negative number",
+          400,
+          "INVALID_PRICE",
+        )
+      }
+    }
+
+    if (stockQuantity !== undefined) {
+      const numericStock = Number(stockQuantity)
+
+      if (
+        Number.isNaN(numericStock) ||
+        numericStock < 0 ||
+        !Number.isInteger(numericStock)
+      ) {
+        throw new AppError(
+          "stockQuantity must be a valid non-negative integer",
+          400,
+          "INVALID_STOCK_QUANTITY",
+        )
+      }
+    }
+
+    if (isActive !== undefined && typeof isActive !== "boolean") {
+      throw new AppError(
+        "isActive must be a boolean",
+        400,
+        "INVALID_ACTIVE_STATUS",
+      )
+    }
+
+    if (categoryId !== undefined) {
+      const categoryExists = await prisma.category.findUnique({
+        where: { id: categoryId },
+      })
+
+      if (!categoryExists) {
+        throw new AppError("Invalid categoryId", 400, "INVALID_CATEGORY_ID")
+      }
+    }
+
+    const updatedProduct = await updateProduct(id, {
+      name,
+      slug,
+      description,
+      price: price !== undefined ? Number(price) : undefined,
+      stockQuantity:
+        stockQuantity !== undefined ? Number(stockQuantity) : undefined,
+      isActive,
+      categoryId,
+      material,
+      color,
+      dimensionsText,
+      weightText,
+      careInstructions,
+      featuredImageUrl,
+      featuredImagePublicId,
+    })
 
     if (!updatedProduct) {
       throw new AppError("Product not found", 404, "PRODUCT_NOT_FOUND")
