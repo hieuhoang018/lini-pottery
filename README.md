@@ -140,6 +140,39 @@ npm run lint     # Run ESLint
 npm run preview  # Preview production build
 ```
 
+## Docker
+
+Run the whole app (client + server) with Docker Compose. This still uses `server/.env` and `client/.env` for app config (e.g. a Supabase `DATABASE_URL`), plus a root `.env` for Compose/build-time-only values:
+
+```bash
+cp .env.example .env
+```
+
+Build and start:
+
+```bash
+docker compose up --build
+```
+
+- Frontend: `http://localhost:8080` (served by Nginx; proxies `/api` to the server container)
+- Backend: `http://localhost:5050` (published as 5050 to avoid the common macOS AirPlay Receiver conflict on port 5000; the container listens on 5000 internally)
+
+The server container runs `prisma migrate deploy` automatically on startup before starting the app.
+
+### Optional local Postgres
+
+A Postgres service is included but not started by default, since the app currently points at Supabase. To spin it up for future local/offline use:
+
+```bash
+docker compose --profile local-db up --build
+```
+
+Then point `DATABASE_URL` in `server/.env` at it, e.g.:
+
+```env
+DATABASE_URL="postgresql://lini:change-me@postgres:5432/lini"
+```
+
 ## API overview
 
 Base API path: `/api`
