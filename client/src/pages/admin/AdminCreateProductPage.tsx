@@ -7,6 +7,7 @@ import { uploadProductImage } from "../../api/uploadApi"
 import type { CreateProductInput } from "../../types/api-input"
 import type { Category } from "../../types/category"
 import { createSlug } from "../../utils/createSlug"
+import { getErrorMessage } from "../../utils/getErrorMessage"
 import { useForm } from "../../hooks/useForm"
 import { useApiFetch } from "../../hooks/useApiFetch"
 import { InputField } from "../../components/InputField"
@@ -117,8 +118,8 @@ export function AdminCreateProductPage() {
 
       await refetchCategories()
       setCategoryField(category.id)
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Không thể thêm phân loại")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Không thể thêm phân loại"))
     } finally {
       setCreatingCategory(false)
     }
@@ -139,8 +140,8 @@ export function AdminCreateProductPage() {
       setProductImageFields(uploadedImage.imageUrl, uploadedImage.publicId)
 
       toast.success("Đã tải ảnh lên")
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Không thể tải ảnh lên")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Không thể tải ảnh lên"))
     } finally {
       setImageUploading(false)
     }

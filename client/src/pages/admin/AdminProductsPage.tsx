@@ -13,6 +13,7 @@ import { useDebounce } from "../../hooks/useDebounce"
 import { useApiFetch } from "../../hooks/useApiFetch"
 import { ProductList } from "../../components/AdminPage/ProductPage/ProductList"
 import type { ActiveFilter, SortOption, StockFilter } from "../../types/params"
+import { getErrorMessage } from "../../utils/getErrorMessage"
 import { ActionPanel } from "../../components/AdminPage/ProductPage/ActionPanel"
 import { PaginationButtons } from "../../components/PaginationButtons"
 import { AdminProductsSkeletonLoading } from "../../components/skeletons/AdminProductsSkeletonLoading"
@@ -89,8 +90,8 @@ export function AdminProductsPage() {
       await updateProductStock(productId, stockQuantity)
       toast.success("Đã cập nhật số hàng tồn kho")
       refetchProducts()
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to update stock")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to update stock"))
     }
   }
 
@@ -101,8 +102,8 @@ export function AdminProductsPage() {
         product.isActive ? "Đã vô hiệu hóa sản phẩm" : "Đã kích hoạt sản phẩm",
       )
       refetchProducts()
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to update product")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to update product"))
     }
   }
 

@@ -129,6 +129,10 @@ npm run dev                      # Start Express with ts-node-dev
 npm run build                    # Compile TypeScript
 npm start                        # Run compiled server
 npm run backfill:product-search  # Backfill product search text
+npm run lint                     # Run ESLint
+npm run typecheck                # Type-check without emitting
+npm run test:unit                # Run unit tests (Prisma mocked, no DB needed)
+npm run test:integration         # Run integration tests against a real Postgres
 ```
 
 Frontend scripts:
@@ -138,7 +142,29 @@ npm run dev      # Start Vite dev server
 npm run build    # Type-check and build production assets
 npm run lint     # Run ESLint
 npm run preview  # Preview production build
+npm test         # Run component/context tests (Vitest + Testing Library)
 ```
+
+## Testing
+
+Backend unit tests (`server/tests/unit`) mock Prisma and need no database. Integration tests (`server/tests/integration`) run real requests against the Express app with `supertest`, against a real Postgres. They read connection/JWT config from `server/.env.test` (dummy secrets, safe to commit).
+
+To run integration tests locally, start a disposable test database and apply migrations, then run the suite:
+
+```bash
+docker run -d --name lini-test-db \
+  -e POSTGRES_USER=lini -e POSTGRES_PASSWORD=lini -e POSTGRES_DB=lini_test \
+  -p 5432:5432 postgres:16-alpine
+
+cd server
+npx prisma generate   # first time only, or after pulling schema changes
+npx prisma migrate deploy
+npm run test:integration
+```
+
+This is a separate, disposable database from the optional `docker compose --profile local-db` Postgres used for local app development — don't point tests at your dev database, since integration tests truncate all tables between runs.
+
+Frontend tests live alongside the code they cover (e.g. `client/src/contexts/*.test.tsx`) and run with `npm test`.
 
 ## Docker
 

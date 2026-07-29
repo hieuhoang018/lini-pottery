@@ -11,6 +11,7 @@ import { useApiFetch } from "../../hooks/useApiFetch"
 import { useForm } from "../../hooks/useForm"
 import type { CreateCategoryInput } from "../../types/api-input"
 import { AdminCategoriesSkeleton } from "../../components/skeletons/AdminCategoriesPage"
+import { getErrorMessage } from "../../utils/getErrorMessage"
 
 const initialCreateCategoryForm: CreateCategoryInput = {
   name: "",
@@ -79,8 +80,8 @@ export function AdminCategoriesPage() {
       toast.success("Đã cập nhật phân loại")
       cancelEdit()
       await refetch()
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Không thể cập nhật phân loại")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Không thể cập nhật phân loại"))
     } finally {
       setSaving(false)
     }
@@ -100,8 +101,8 @@ export function AdminCategoriesPage() {
 
       toast.success("Đã xóa phân loại")
       await refetch()
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Không thể xóa phân loại")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Không thể xóa phân loại"))
     } finally {
       setSaving(false)
     }

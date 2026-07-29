@@ -7,6 +7,7 @@ import {
 } from "../../../api/productImageApi"
 import { updateProduct } from "../../../api/productApi"
 import { uploadProductImage } from "../../../api/uploadApi"
+import { getErrorMessage } from "../../../utils/getErrorMessage"
 import type { Product, ProductImage } from "../../../types/product"
 import { ProductImagesSkeleton } from "../../skeletons/AdminProductDetailSkeleton"
 
@@ -49,8 +50,8 @@ export function ProductImagesManager({
       setLoading(true)
       const data = await getProductImages(productId)
       setImages(data)
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to load images")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to load images"))
     } finally {
       setLoading(false)
     }
@@ -97,10 +98,8 @@ export function ProductImagesManager({
       })
 
       toast.success("Đã cập nhật ảnh đại diện sản phẩm")
-    } catch (err: any) {
-      toast.error(
-        err.response?.data?.message || "Không thể cập nhật ảnh đại diện",
-      )
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Không thể cập nhật ảnh đại diện"))
     } finally {
       setFeaturedUploading(false)
       event.target.value = ""
@@ -126,8 +125,8 @@ export function ProductImagesManager({
       }))
 
       toast.success("Đã tải ảnh thư viện lên")
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Không thể tải ảnh lên")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Không thể tải ảnh lên"))
     } finally {
       setGalleryUploading(false)
       event.target.value = ""
@@ -164,8 +163,8 @@ export function ProductImagesManager({
       })
 
       fetchImages()
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to add image")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to add image"))
     } finally {
       setAdding(false)
     }
@@ -180,8 +179,8 @@ export function ProductImagesManager({
 
       toast.success("Đã xóa ảnh")
       fetchImages()
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to delete image")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to delete image"))
     }
   }
 

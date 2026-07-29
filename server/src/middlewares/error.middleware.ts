@@ -3,6 +3,7 @@ import { AppError } from "../utils/AppError"
 import { serviceErrorMap } from "../constants/serviceError"
 
 export function errorMiddleware(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Express error middleware is untyped by convention
   err: any,
   req: Request,
   res: Response,
