@@ -13,6 +13,7 @@ import { OrderTitleCard } from "../../components/AdminPage/OrderPage/OrderTitleC
 import { CustomerTitleCard } from "../../components/AdminPage/OrderPage/CustomerTitleCard"
 import { OrderDetails } from "../../components/AdminPage/OrderPage/OrderDetails"
 import { ShippingAddressCard } from "../../components/AdminPage/OrderPage/ShippingAddressCard"
+import { getErrorMessage } from "../../utils/getErrorMessage"
 import { PaymentRecords } from "../../components/AdminPage/OrderPage/PaymentRecords"
 import { ActionPanel } from "../../components/AdminPage/OrderPage/ActionPanel"
 import { SummarySection } from "../../components/AdminPage/OrderPage/SummarySection"
@@ -43,8 +44,8 @@ export function AdminOrderDetailPage() {
       await updateAdminOrderStatus(order.id, status)
       toast.success("Order status updated")
       refetch()
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to update status")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to update status"))
     } finally {
       setUpdating(false)
     }
@@ -60,8 +61,8 @@ export function AdminOrderDetailPage() {
       await updateAdminPaymentStatus(order.id, paymentStatus)
       toast.success("Payment status updated")
       refetch()
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to update payment")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to update payment"))
     } finally {
       setUpdating(false)
     }
@@ -81,8 +82,8 @@ export function AdminOrderDetailPage() {
       await cancelAdminOrder(order.id)
       toast.success("Order cancelled and stock restored")
       refetch()
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to cancel order")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to cancel order"))
     } finally {
       setUpdating(false)
     }

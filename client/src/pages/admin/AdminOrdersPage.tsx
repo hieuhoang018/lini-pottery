@@ -13,6 +13,7 @@ import type {
 } from "../../types/admin"
 import { useDebounce } from "../../hooks/useDebounce"
 import { useApiFetch } from "../../hooks/useApiFetch"
+import { getErrorMessage } from "../../utils/getErrorMessage"
 import { OrderList } from "../../components/AdminPage/OrderPage/OrderList"
 import { PaginationButtons } from "../../components/PaginationButtons"
 import { AdminOrdersSkeletonLoading } from "../../components/skeletons/AdminOrdersSkeletonLoading"
@@ -56,8 +57,8 @@ export function AdminOrdersPage() {
       await updateAdminOrderStatus(orderId, status)
       toast.success("Order status updated")
       refetch()
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to update status")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to update status"))
     }
   }
 
@@ -69,8 +70,8 @@ export function AdminOrdersPage() {
       await updateAdminPaymentStatus(orderId, paymentStatus)
       toast.success("Payment status updated")
       refetch()
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to update payment")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to update payment"))
     }
   }
 

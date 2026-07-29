@@ -3,6 +3,7 @@ import { Search } from "lucide-react"
 import toast from "react-hot-toast"
 import type { WishlistItem } from "../../types/wishlist"
 import { getWishlist, removeWishlistItem } from "../../api/wishlistApi"
+import { getErrorMessage } from "../../utils/getErrorMessage"
 import { WishlistItemCard } from "./WishlistItemCard"
 import { Emptylist } from "../layout/EmptyList"
 import { useApiFetch } from "../../hooks/useApiFetch"
@@ -42,8 +43,8 @@ export function MainWishlistSection() {
       await removeWishlistItem(productId)
       toast.success("Removed from wishlist")
       refetch()
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to remove item")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to remove item"))
     }
   }
 

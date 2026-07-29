@@ -4,6 +4,7 @@ import type { Product } from "../../types/product"
 import { useState } from "react"
 import { useAuth } from "../../contexts/AuthContext"
 import { addWishlistItem } from "../../api/wishlistApi"
+import { getErrorMessage } from "../../utils/getErrorMessage"
 
 export function ActionPanel({ product }: { product: Product }) {
   const { addToCart } = useCart()
@@ -19,8 +20,8 @@ export function ActionPanel({ product }: { product: Product }) {
     try {
       setAddingToCart(true)
       await addToCart(product, 1)
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Không thể thêm vào giỏ hàng")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Không thể thêm vào giỏ hàng"))
     } finally {
       setAddingToCart(false)
     }
@@ -38,8 +39,8 @@ export function ActionPanel({ product }: { product: Product }) {
       setAddingToWishlist(true)
       await addWishlistItem(product.id)
       toast.success("Added to wishlist")
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to add to wishlist")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to add to wishlist"))
     } finally {
       setAddingToWishlist(false)
     }
