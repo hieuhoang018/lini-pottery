@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client"
 import { prisma } from "../lib/prisma"
 import { OrderStatus, PaymentStatus } from "../types/order"
 import { GetAllOrdersForAdminParams } from "../types/params"
