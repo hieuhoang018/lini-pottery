@@ -15,6 +15,7 @@ import {
   updateCartItem,
 } from "../api/cartApi"
 import { useAuth } from "./AuthContext"
+import { getErrorMessage } from "../utils/getErrorMessage"
 import type { Product } from "../types/product"
 import type { CartContextType, CartDisplayItem } from "../types/cart"
 
@@ -68,8 +69,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
 
       setItems(getGuestCartFromStorage())
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to load cart")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to load cart"))
     } finally {
       setLoading(false)
     }
@@ -115,8 +116,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       saveGuestCart(updatedItems)
       setItems(updatedItems)
       toast.success("Đã thêm vào giỏ hàng")
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Không thể thêm vào giỏ hàng")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Không thể thêm vào giỏ hàng"))
     }
   }
 
@@ -154,8 +155,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       saveGuestCart(updatedItems)
       setItems(updatedItems)
       toast.success("Đã cập nhật giỏ hàng")
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Không thể cập nhật giỏ hàng")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Không thể cập nhật giỏ hàng"))
     }
   }
 
@@ -188,8 +189,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       saveGuestCart(updatedItems)
       setItems(updatedItems)
       toast.success("Đã xóa sản phẩm")
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Không thể xóa sản phẩm")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Không thể xóa sản phẩm"))
     }
   }
 
@@ -210,8 +211,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem(GUEST_CART_KEY)
       setItems([])
       toast.success("Đã xóa giỏ hàng")
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Không thể xóa giỏ hàng")
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Không thể xóa giỏ hàng"))
     }
   }
 
