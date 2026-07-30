@@ -40,6 +40,7 @@ Lini is a full-stack ecommerce application for browsing products, managing a car
 - Customer order history and order detail pages
 - Admin product, category, image upload, and order management
 - Order, payment, and stock status handling
+- Admin new-order alerts via a Telegram bot
 
 ## Prerequisites
 
@@ -64,6 +65,13 @@ PORT=5000
 CLOUDINARY_CLOUD_NAME="your-cloud-name"
 CLOUDINARY_API_KEY="your-api-key"
 CLOUDINARY_API_SECRET="your-api-secret"
+
+# Optional: admin new-order alerts via a Telegram bot (no domain needed).
+# Unset in dev/CI is fine — the alert is skipped with a console warning, nothing breaks.
+# Create a bot with @BotFather, message it once, then read your chat id from
+# https://api.telegram.org/bot<token>/getUpdates
+TELEGRAM_BOT_TOKEN="123456789:your-bot-token"
+TELEGRAM_ADMIN_CHAT_ID="your-chat-id"
 ```
 
 Create `client/.env`:
