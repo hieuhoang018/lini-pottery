@@ -8,9 +8,10 @@ import {
 import { isValidUuid } from "../utils/isValidUuid"
 import { buildPaginationMeta } from "../utils/pagination"
 import { formatOrderCode } from "../utils/orderCode"
+import { sendAdminNewOrderNotification } from "./notification.service"
 
 export const checkoutFromCart = async (data: CheckoutInput) => {
-  return prisma.$transaction(async (tx) => {
+  const order = await prisma.$transaction(async (tx) => {
     const cart = await tx.cart.findUnique({
       where: { userId: data.userId },
       include: {
@@ -99,6 +100,7 @@ export const checkoutFromCart = async (data: CheckoutInput) => {
         items: true,
         address: true,
         paymentRecords: true,
+        user: { select: { id: true, name: true, email: true } },
       },
     })
 
@@ -121,6 +123,10 @@ export const checkoutFromCart = async (data: CheckoutInput) => {
 
     return order
   })
+
+  await sendAdminNewOrderNotification(order)
+
+  return order
 }
 
 export const getMyOrders = async ({
@@ -279,7 +285,7 @@ export const getOrderByIdForUser = async (orderId: string, userId: string) => {
 }
 
 export const guestCheckout = async (data: GuestCheckoutInput) => {
-  return prisma.$transaction(async (tx) => {
+  const order = await prisma.$transaction(async (tx) => {
     if (!data.items.length) {
       throw new Error("CART_EMPTY")
     }
@@ -382,6 +388,7 @@ export const guestCheckout = async (data: GuestCheckoutInput) => {
         items: true,
         address: true,
         paymentRecords: true,
+        user: { select: { id: true, name: true, email: true } },
       },
     })
 
@@ -398,6 +405,10 @@ export const guestCheckout = async (data: GuestCheckoutInput) => {
 
     return order
   })
+
+  await sendAdminNewOrderNotification(order)
+
+  return order
 }
 
 const getOrderStatusSearch = (search?: string): OrderStatus | undefined => {
