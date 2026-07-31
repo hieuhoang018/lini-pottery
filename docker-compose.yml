@@ -27,6 +27,10 @@ services:
       # Pin the in-container port regardless of PORT in server/.env (used for local non-Docker dev),
       # so it always matches the Dockerfile's EXPOSE/HEALTHCHECK and the ports mapping below.
       PORT: 5000
+      # Set SEED_DB=true in the root .env to auto-seed test data (categories, products,
+      # an admin user, a customer user) on every container start. Off by default so this
+      # never runs against a real database by accident. The seed is idempotent (upserts).
+      SEED_DB: ${SEED_DB:-false}
     ports:
       # Host port 5050 avoids the well-known macOS AirPlay Receiver conflict on port 5000.
       # The container itself still listens on 5000 (matches PORT above and the healthcheck).
