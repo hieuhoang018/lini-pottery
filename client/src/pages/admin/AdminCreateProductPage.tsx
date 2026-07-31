@@ -11,6 +11,10 @@ import { getErrorMessage } from "../../utils/getErrorMessage"
 import { useForm } from "../../hooks/useForm"
 import { useApiFetch } from "../../hooks/useApiFetch"
 import { InputField } from "../../components/InputField"
+import {
+  ProductDetailFields,
+  ProductPricingFields,
+} from "../../components/AdminPage/ProductPage/ProductCoreFields"
 import { AdminCreateProductSkeleton } from "../../components/skeletons/AdminCreateProductSkeleton"
 
 const initialCreateProductForm: CreateProductInput = {
@@ -236,33 +240,7 @@ export function AdminCreateProductPage() {
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <InputField
-            name="price"
-            inputType="number"
-            label="Giá tiền"
-            onChange={handleChange}
-            isCompulsary
-            value={formData.price}
-          />
-
-          <InputField
-            name="stockQuantity"
-            inputType="number"
-            label="Số lượng tồn kho"
-            onChange={handleChange}
-            isCompulsary
-            value={formData.stockQuantity}
-          />
-        </div>
-
-        <InputField
-          name="description"
-          label="Miêu tả"
-          onChange={handleChange}
-          isCompulsary
-          value={formData.description}
-        />
+        <ProductPricingFields formData={formData} onChange={handleChange} />
 
         <div>
           <label className="block text-sm font-medium text-stone-700">
@@ -295,47 +273,7 @@ export function AdminCreateProductPage() {
           )}
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <InputField
-            name="material"
-            label="Vật liệu"
-            onChange={handleChange}
-            isCompulsary={false}
-            value={formData.material}
-          />
-
-          <InputField
-            name="color"
-            label="Màu sắc"
-            onChange={handleChange}
-            isCompulsary={false}
-            value={formData.color}
-          />
-        </div>
-
-        <InputField
-          name="dimensionsText"
-          label="Kích thước"
-          onChange={handleChange}
-          isCompulsary={false}
-          value={formData.dimensionsText}
-        />
-
-        <InputField
-          name="weightText"
-          label="Cân nặng"
-          onChange={handleChange}
-          isCompulsary={false}
-          value={formData.weightText}
-        />
-
-        <InputField
-          name="careInstructions"
-          label="Hướng dẫn bảo quản"
-          onChange={handleChange}
-          isCompulsary={false}
-          value={formData.careInstructions}
-        />
+        <ProductDetailFields formData={formData} onChange={handleChange} />
 
         <button
           disabled={loadingProductCreate || imageUploading || creatingCategory}
