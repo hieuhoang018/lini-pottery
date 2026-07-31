@@ -1,11 +1,7 @@
 import type { User } from "../types/auth"
 import type { LoginParams, RegisterParams } from "../types/params"
+import type { AuthResponse } from "../types/response"
 import { apiClient } from "./apiClient"
-
-export type AuthResponse = {
-  user: User
-  accessToken: string
-}
 
 export const register = async (params: RegisterParams) => {
   const { data } = await apiClient.post<AuthResponse>("/auth/register", params)

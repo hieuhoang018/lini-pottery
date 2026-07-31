@@ -1,15 +1,7 @@
 import { sendTelegramMessage } from "../lib/telegram"
 import { escapeHtml } from "../utils/escapeHtml"
 import { formatCurrency } from "../utils/formatCurrency"
-
-export type NotificationOrder = {
-  orderCode: string
-  totalAmount: unknown
-  guestName?: string | null
-  guestEmail?: string | null
-  user: { name: string; email: string } | null
-  items: { productName: string; quantity: number; lineTotal: unknown }[]
-}
+import { NotificationOrder } from "../types/order"
 
 const buildAdminNewOrderMessage = (order: NotificationOrder): string => {
   const customerName = order.user?.name ?? order.guestName ?? "Khách"

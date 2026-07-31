@@ -1,11 +1,7 @@
 import { Request, Response } from "express"
-import { AuthRequest } from "../middlewares/auth.middleware"
-import {
-  checkoutFromCart,
-  getMyOrders,
-  getOrderByIdForUser,
-  guestCheckout,
-} from "../services/order.service"
+import { AuthRequest } from "../types/auth"
+import { getMyOrders, getOrderByIdForUser } from "../services/order.service"
+import { checkoutFromCart, guestCheckout } from "../services/checkout.service"
 import { asyncHandler } from "../utils/asyncHandler"
 import { AppError } from "../utils/AppError"
 import { MyOrdersQuery } from "../types/query"

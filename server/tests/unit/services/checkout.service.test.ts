@@ -8,7 +8,7 @@ const { prismaMock } = vi.hoisted(() => ({
 
 vi.mock("../../../src/lib/prisma", () => ({ prisma: prismaMock }))
 
-import { checkoutFromCart, guestCheckout } from "../../../src/services/order.service"
+import { checkoutFromCart, guestCheckout } from "../../../src/services/checkout.service"
 
 const activeProduct = (overrides = {}) => ({
   id: "p1",

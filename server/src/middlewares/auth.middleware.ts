@@ -1,11 +1,7 @@
-import { NextFunction, Request, Response } from "express"
-import { JwtPayload } from "../types/auth"
+import { NextFunction, Response } from "express"
+import { AuthRequest } from "../types/auth"
 import { AppError } from "../utils/AppError"
 import { verifyAccessToken } from "../utils/token"
-
-export type AuthRequest = Request & {
-  user?: JwtPayload
-}
 
 export const requireAuth = (
   req: AuthRequest,

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import toast from "react-hot-toast"
 import { Link } from "react-router-dom"
 import { getCategories } from "../../api/categoryApi"
@@ -11,6 +11,7 @@ import type { Product } from "../../types/product"
 import type { Category } from "../../types/category"
 import { useDebounce } from "../../hooks/useDebounce"
 import { useApiFetch } from "../../hooks/useApiFetch"
+import { usePaginatedFetch } from "../../hooks/usePaginatedFetch"
 import { ProductList } from "../../components/AdminPage/ProductPage/ProductList"
 import type { ActiveFilter, SortOption, StockFilter } from "../../types/params"
 import { getErrorMessage } from "../../utils/getErrorMessage"
@@ -25,7 +26,6 @@ export function AdminProductsPage() {
   const [activeFilter, setActiveFilter] = useState<ActiveFilter>("all")
   const [stockFilter, setStockFilter] = useState<StockFilter>("all")
 
-  const [page, setPage] = useState(1)
   const limit = 10
 
   const debouncedSearchTerm = useDebounce(searchTerm, 400)
@@ -36,39 +36,26 @@ export function AdminProductsPage() {
     return getCategories()
   }, [])
 
-  useEffect(() => {
-    setPage(1)
-  }, [
-    debouncedSearchTerm,
-    selectedCategory,
-    sortOption,
-    stockFilter,
-    activeFilter,
-  ])
-
   const {
     data: products,
     loading: loadingProducts,
     pagination,
     refetch: refetchProducts,
-  } = useApiFetch<Product[]>(async () => {
-    return getAdminProducts({
-      search: debouncedSearchTerm || undefined,
-      category: selectedCategory || undefined,
-      sort: sortOption,
-      stock: stockFilter,
-      active: activeFilter,
-      page,
-      limit,
-    })
-  }, [
-    debouncedSearchTerm,
-    selectedCategory,
-    sortOption,
-    activeFilter,
-    stockFilter,
-    page,
-  ])
+    setPage,
+  } = usePaginatedFetch<Product[]>(
+    async (page) => {
+      return getAdminProducts({
+        search: debouncedSearchTerm || undefined,
+        category: selectedCategory || undefined,
+        sort: sortOption,
+        stock: stockFilter,
+        active: activeFilter,
+        page,
+        limit,
+      })
+    },
+    [debouncedSearchTerm, selectedCategory, sortOption, activeFilter, stockFilter],
+  )
 
   const clearFilters = () => {
     setSearchTerm("")

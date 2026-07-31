@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { getUserById, loginUser, registerUser } from "../services/auth.service"
-import { AuthRequest } from "../middlewares/auth.middleware"
+import { AuthRequest } from "../types/auth"
 import { asyncHandler } from "../utils/asyncHandler"
 import { AppError } from "../utils/AppError"
 import {

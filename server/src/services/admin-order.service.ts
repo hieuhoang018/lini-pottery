@@ -1,8 +1,16 @@
+import { Prisma } from "@prisma/client"
 import { prisma } from "../lib/prisma"
 import { OrderStatus, PaymentStatus } from "../types/order"
 import { GetAllOrdersForAdminParams } from "../types/params"
 import { buildPaginationMeta } from "../utils/pagination"
 import { isValidUuid } from "../utils/isValidUuid"
+import { buildOrderAddressAndItemsConditions } from "../utils/orderSearch"
+import { ORDER_INCLUDE } from "./order.service"
+
+const ORDER_INCLUDE_WITH_ADMIN_USER = {
+  ...ORDER_INCLUDE,
+  user: { select: { id: true, name: true, email: true, phone: true } },
+} satisfies Prisma.OrderInclude
 
 export const getAllOrdersForAdmin = async ({
   search,
@@ -31,13 +39,6 @@ export const getAllOrdersForAdmin = async ({
                   },
                 ]
               : []),
-
-            {
-              orderCode: {
-                contains: trimmedSearch,
-                mode: "insensitive" as const,
-              },
-            },
 
             {
               guestName: {
@@ -77,56 +78,8 @@ export const getAllOrdersForAdmin = async ({
                 },
               },
             },
-            {
-              address: {
-                is: {
-                  recipientName: {
-                    contains: trimmedSearch,
-                    mode: "insensitive" as const,
-                  },
-                },
-              },
-            },
-            {
-              address: {
-                is: {
-                  phone: {
-                    contains: trimmedSearch,
-                    mode: "insensitive" as const,
-                  },
-                },
-              },
-            },
-            {
-              address: {
-                is: {
-                  city: {
-                    contains: trimmedSearch,
-                    mode: "insensitive" as const,
-                  },
-                },
-              },
-            },
-            {
-              address: {
-                is: {
-                  postalCode: {
-                    contains: trimmedSearch,
-                    mode: "insensitive" as const,
-                  },
-                },
-              },
-            },
-            {
-              items: {
-                some: {
-                  productName: {
-                    contains: trimmedSearch,
-                    mode: "insensitive" as const,
-                  },
-                },
-              },
-            },
+
+            ...buildOrderAddressAndItemsConditions(trimmedSearch),
           ],
         }
       : {}),
@@ -135,19 +88,7 @@ export const getAllOrdersForAdmin = async ({
   const [orders, totalItems] = await Promise.all([
     prisma.order.findMany({
       where,
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            phone: true,
-          },
-        },
-        items: true,
-        address: true,
-        paymentRecords: true,
-      },
+      include: ORDER_INCLUDE_WITH_ADMIN_USER,
       orderBy: {
         createdAt: "desc",
       },
@@ -173,19 +114,7 @@ export const getAllOrdersForAdmin = async ({
 export const getOrderByIdForAdmin = async (orderId: string) => {
   return prisma.order.findUnique({
     where: { id: orderId },
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          phone: true,
-        },
-      },
-      items: true,
-      address: true,
-      paymentRecords: true,
-    },
+    include: ORDER_INCLUDE_WITH_ADMIN_USER,
   })
 }
 
@@ -196,11 +125,7 @@ export const updateOrderStatusForAdmin = async (
   return prisma.order.update({
     where: { id: orderId },
     data: { status },
-    include: {
-      items: true,
-      address: true,
-      paymentRecords: true,
-    },
+    include: ORDER_INCLUDE,
   })
 }
 
@@ -237,11 +162,7 @@ export const updatePaymentStatusForAdmin = async (
 
     return tx.order.findUnique({
       where: { id: orderId },
-      include: {
-        items: true,
-        address: true,
-        paymentRecords: true,
-      },
+      include: ORDER_INCLUDE,
     })
   })
 }
@@ -282,11 +203,7 @@ export const cancelOrderForAdmin = async (orderId: string) => {
         status: "CANCELLED",
         paymentStatus: "CANCELLED",
       },
-      include: {
-        items: true,
-        address: true,
-        paymentRecords: true,
-      },
+      include: ORDER_INCLUDE,
     })
 
     await tx.paymentRecord.create({

@@ -207,6 +207,27 @@ Then point `DATABASE_URL` in `server/.env` at it, e.g.:
 DATABASE_URL="postgresql://lini:change-me@postgres:5432/lini"
 ```
 
+### Seeding test data
+
+The local Postgres starts empty. `server/src/scripts/seedDb.ts` populates it with 4 categories, 20 products, one admin, and one customer account — useful for testing admin flows the UI itself has no path to (there's no admin sign-up form). The seed is idempotent (upserts keyed on slug/email), so running it repeatedly is safe.
+
+To seed once, on demand:
+
+```bash
+docker compose exec server node dist/scripts/seedDb.js
+```
+
+To seed automatically on every `docker compose up`, set `SEED_DB=true` in the root `.env` before starting the stack. It's read by the server container's entrypoint, runs after migrations and before the app starts, and defaults to `false` so it never fires against a real (e.g. Supabase-backed) database by accident.
+
+Seeded accounts:
+
+| Role     | Email               | Password      |
+| -------- | -------------------- | ------------- |
+| Admin    | `admin@lini.dev`    | `Admin123!`   |
+| Customer | `customer@lini.dev` | `Customer123!` |
+
+Outside Docker (local dev against any Postgres your `server/.env` points at), run `cd server && npm run seed` instead.
+
 ## API overview
 
 Base API path: `/api`

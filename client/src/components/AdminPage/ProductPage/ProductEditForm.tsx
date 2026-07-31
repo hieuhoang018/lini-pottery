@@ -6,6 +6,7 @@ import type { Product } from "../../../types/product"
 import { useEffect } from "react"
 import type { Category } from "../../../types/category"
 import { InputField } from "../../InputField"
+import { ProductCoreFields } from "./ProductCoreFields"
 
 type ProductEditFormProps = {
   product: Product
@@ -88,75 +89,7 @@ export function ProductEditForm({
         </select>
       </label>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <InputField
-          name="price"
-          inputType="number"
-          label="Giá tiền"
-          onChange={handleChange}
-          isCompulsary
-          value={formData.price}
-        />
-
-        <InputField
-          name="stockQuantity"
-          inputType="number"
-          label="Số lượng tồn kho"
-          onChange={handleChange}
-          isCompulsary
-          value={formData.stockQuantity}
-        />
-      </div>
-
-      <InputField
-        name="description"
-        label="Miêu tả"
-        onChange={handleChange}
-        isCompulsary
-        value={formData.description}
-      />
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <InputField
-          name="material"
-          label="Vật liệu"
-          onChange={handleChange}
-          isCompulsary={false}
-          value={formData.material}
-        />
-
-        <InputField
-          name="color"
-          label="Màu sắc"
-          onChange={handleChange}
-          isCompulsary={false}
-          value={formData.color}
-        />
-      </div>
-
-      <InputField
-        name="dimensionsText"
-        label="Kích thước"
-        onChange={handleChange}
-        isCompulsary={false}
-        value={formData.dimensionsText}
-      />
-
-      <InputField
-        name="weightText"
-        label="Cân nặng"
-        onChange={handleChange}
-        isCompulsary={false}
-        value={formData.weightText}
-      />
-
-      <InputField
-        name="careInstructions"
-        label="Hướng dẫn bảo quản"
-        onChange={handleChange}
-        isCompulsary={false}
-        value={formData.careInstructions}
-      />
+      <ProductCoreFields formData={formData} onChange={handleChange} />
 
       <button
         disabled={loading}

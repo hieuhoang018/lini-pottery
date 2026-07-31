@@ -1,4 +1,5 @@
 import type { AdminOrder } from "../../../types/admin"
+import { getPaymentRecordStatusBadgeClass } from "../../../utils/getStatusBadgeClass"
 
 export function PaymentRecords({ order }: { order: AdminOrder }) {
   return (
@@ -8,13 +9,9 @@ export function PaymentRecords({ order }: { order: AdminOrder }) {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="font-medium">{record.method}</p>
             <span
-              className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                record.status === "CONFIRMED"
-                  ? "bg-green-50 text-green-700"
-                  : record.status === "REJECTED"
-                    ? "bg-red-50 text-red-700"
-                    : "bg-amber-50 text-amber-700"
-              }`}
+              className={`rounded-full px-3 py-1 text-xs font-semibold ${getPaymentRecordStatusBadgeClass(
+                record.status,
+              )}`}
             >
               {record.status}
             </span>

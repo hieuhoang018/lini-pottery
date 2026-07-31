@@ -1,3 +1,5 @@
+import { Prisma } from "@prisma/client"
+
 export type CheckoutInput = {
   userId: string
   recipientName: string
@@ -37,6 +39,31 @@ export type GetMyOrdersInput = {
   limit?: number
 }
 
+export type OrderIdentity =
+  | { userId: string; guestName?: undefined; guestEmail?: undefined; guestPhone?: undefined }
+  | { userId: null; guestName: string; guestEmail?: string; guestPhone: string }
+
+export type OrderAddressInput = {
+  recipientName: string
+  phone: string
+  streetAddress: string
+  city: string
+  postalCode: string
+  country: string
+  additionalInfo?: string
+}
+
+export type OrderItemWithProduct = {
+  productId: string
+  quantity: number
+  product: {
+    name: string
+    price: Prisma.Decimal
+    featuredImageUrl: string | null
+    images: { imageUrl: string }[]
+  }
+}
+
 export type OrderStatus =
   | "PENDING"
   | "CONFIRMED"
@@ -45,3 +72,12 @@ export type OrderStatus =
   | "CANCELLED"
 
 export type PaymentStatus = "PENDING" | "PAID" | "CANCELLED"
+
+export type NotificationOrder = {
+  orderCode: string
+  totalAmount: unknown
+  guestName?: string | null
+  guestEmail?: string | null
+  user: { name: string; email: string } | null
+  items: { productName: string; quantity: number; lineTotal: unknown }[]
+}

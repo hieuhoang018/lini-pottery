@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { ShopActionPanel } from "./ActionPanel"
 import type { SortOption } from "../../types/params"
 import { useDebounce } from "../../hooks/useDebounce"
 import { useApiFetch } from "../../hooks/useApiFetch"
+import { usePaginatedFetch } from "../../hooks/usePaginatedFetch"
 import type { Category } from "../../types/category"
 import { getCategories } from "../../api/categoryApi"
 import type { Product } from "../../types/product"
@@ -16,7 +17,6 @@ export function MainShopSection() {
   const [searchTerm, setSearchTerm] = useState("")
   const [sortOption, setSortOption] = useState<SortOption>("newest")
   const [availableOnly, setAvailableOnly] = useState(false)
-  const [page, setPage] = useState(1)
   const limit = 10
 
   const debouncedSearchTerm = useDebounce(searchTerm.trim(), 400)
@@ -27,17 +27,14 @@ export function MainShopSection() {
     error: categoriesError,
   } = useApiFetch<Category[]>(() => getCategories(), [])
 
-  useEffect(() => {
-    setPage(1)
-  }, [debouncedSearchTerm, selectedCategory, sortOption, availableOnly])
-
   const {
     data: products,
     pagination,
     loading: productsLoading,
     error: productsError,
-  } = useApiFetch<Product[]>(
-    () =>
+    setPage,
+  } = usePaginatedFetch<Product[]>(
+    (page) =>
       getProducts({
         search: debouncedSearchTerm || undefined,
         category: selectedCategory || undefined,
@@ -46,7 +43,7 @@ export function MainShopSection() {
         page,
         limit,
       }),
-    [debouncedSearchTerm, selectedCategory, sortOption, availableOnly, page],
+    [debouncedSearchTerm, selectedCategory, sortOption, availableOnly],
   )
 
   const clearFilters = () => {

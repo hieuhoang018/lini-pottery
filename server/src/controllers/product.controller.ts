@@ -15,6 +15,16 @@ import { ProductIdParams, ProductSlugParams } from "../types/params"
 import { ProductQuery } from "../types/query"
 import { getPaginationParams } from "../utils/pagination"
 
+const assertCategoryExists = async (categoryId: string) => {
+  const categoryExists = await prisma.category.findUnique({
+    where: { id: categoryId },
+  })
+
+  if (!categoryExists) {
+    throw new AppError("Invalid categoryId", 400, "INVALID_CATEGORY_ID")
+  }
+}
+
 export const getProductsHandler = asyncHandler(
   async (req: Request<{}, {}, {}, ProductQuery>, res: Response) => {
     const categorySlug = req.query.category
@@ -40,25 +50,19 @@ export const getProductsHandler = asyncHandler(
   },
 )
 
-export const getProductByIdHandler = async (
-  req: Request<ProductIdParams>,
-  res: Response,
-) => {
-  try {
+export const getProductByIdHandler = asyncHandler(
+  async (req: Request<ProductIdParams>, res: Response) => {
     const { id } = req.params
 
     const product = await getProductById(id)
 
     if (!product) {
-      return res.status(404).json({ message: "Product not found" })
+      throw new AppError("Product not found", 404, "PRODUCT_NOT_FOUND")
     }
 
     return res.status(200).json(product)
-  } catch (error) {
-    console.error("Failed to fetch product:", error)
-    return res.status(500).json({ message: "Failed to fetch product" })
-  }
-}
+  },
+)
 
 export const getProductBySlugHandler = asyncHandler(
   async (req: Request<ProductSlugParams>, res: Response) => {
@@ -101,13 +105,7 @@ export const createProductHandler = asyncHandler(
       )
     }
 
-    const categoryExists = await prisma.category.findUnique({
-      where: { id: categoryId },
-    })
-
-    if (!categoryExists) {
-      throw new AppError("Invalid categoryId", 400, "INVALID_CATEGORY_ID")
-    }
+    await assertCategoryExists(categoryId)
 
     const product = await createProduct({
       name,
@@ -195,13 +193,7 @@ export const updateProductHandler = asyncHandler(
     }
 
     if (categoryId !== undefined) {
-      const categoryExists = await prisma.category.findUnique({
-        where: { id: categoryId },
-      })
-
-      if (!categoryExists) {
-        throw new AppError("Invalid categoryId", 400, "INVALID_CATEGORY_ID")
-      }
+      await assertCategoryExists(categoryId)
     }
 
     const updatedProduct = await updateProduct(id, {

@@ -1,19 +1,22 @@
+import { Prisma } from "@prisma/client"
 import { prisma } from "../lib/prisma"
+
+const CART_ITEM_PRODUCT_INCLUDE = {
+  product: {
+    include: {
+      images: {
+        orderBy: { sortOrder: "asc" as const },
+      },
+    },
+  },
+} satisfies Prisma.CartItemInclude
 
 const createCart = async (userId: string) => {
   const cart = await prisma.cart.create({
     data: { userId },
     include: {
       items: {
-        include: {
-          product: {
-            include: {
-              images: {
-                orderBy: { sortOrder: "asc" },
-              },
-            },
-          },
-        },
+        include: CART_ITEM_PRODUCT_INCLUDE,
       },
     },
   })
@@ -26,15 +29,7 @@ export const getCart = async (userId: string) => {
     where: { userId },
     include: {
       items: {
-        include: {
-          product: {
-            include: {
-              images: {
-                orderBy: { sortOrder: "asc" },
-              },
-            },
-          },
-        },
+        include: CART_ITEM_PRODUCT_INCLUDE,
         orderBy: { createdAt: "desc" },
       },
     },

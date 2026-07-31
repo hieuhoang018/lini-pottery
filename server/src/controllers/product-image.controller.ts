@@ -8,18 +8,8 @@ import {
 } from "../services/product-image.service"
 import { asyncHandler } from "../utils/asyncHandler"
 import { AppError } from "../utils/AppError"
-import { ProductImageIdParams } from "../types/params"
-
-type ProductImagesParams = {
-  productId: string
-}
-
-type CreateProductImageBody = {
-  imageUrl?: string
-  publicId?: string
-  altText?: string
-  sortOrder?: number | string
-}
+import { ProductImageIdParams, ProductImagesParams } from "../types/params"
+import { CreateProductImageBody } from "../types/product-image"
 
 export const getProductImagesHandler = asyncHandler(
   async (req: Request<ProductImagesParams>, res: Response) => {

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { NotificationOrder } from "../../../src/services/notification.service"
+import type { NotificationOrder } from "../../../src/types/order"
 
 const { sendTelegramMessageMock } = vi.hoisted(() => ({
   sendTelegramMessageMock: vi.fn(),

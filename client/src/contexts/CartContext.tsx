@@ -17,7 +17,7 @@ import {
 import { useAuth } from "./AuthContext"
 import { getErrorMessage } from "../utils/getErrorMessage"
 import type { Product } from "../types/product"
-import type { CartContextType, CartDisplayItem } from "../types/cart"
+import type { Cart, CartContextType, CartDisplayItem } from "../types/cart"
 
 const CartContext = createContext<CartContextType | null>(null)
 
@@ -36,6 +36,25 @@ function getGuestCartFromStorage(): CartDisplayItem[] {
 
 function saveGuestCart(items: CartDisplayItem[]) {
   localStorage.setItem(GUEST_CART_KEY, JSON.stringify(items))
+}
+
+function assertNotAuthLoading(authLoading: boolean): boolean {
+  if (authLoading) {
+    toast.error("Xin hãy đợi một lúc rồi thử lại")
+    return false
+  }
+
+  return true
+}
+
+function findCartItemOrWarn(cart: Cart, productId: string) {
+  const cartItem = cart.items.find((item) => item.productId === productId)
+
+  if (!cartItem) {
+    toast.error("Không tìm thấy sản phẩm")
+  }
+
+  return cartItem
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
@@ -87,10 +106,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items])
 
   const addToCart = async (product: Product, quantity = 1) => {
-    if (authLoading) {
-      toast.error("Xin hãy đợi một lúc rồi thử lại")
-      return
-    }
+    if (!assertNotAuthLoading(authLoading)) return
 
     try {
       if (isLoggedIn) {
@@ -122,10 +138,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }
 
   const updateQuantity = async (productId: string, quantity: number) => {
-    if (authLoading) {
-      toast.error("Xin hãy đợi một lúc rồi thử lại")
-      return
-    }
+    if (!assertNotAuthLoading(authLoading)) return
 
     try {
       if (quantity <= 0) {
@@ -135,12 +148,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
       if (isLoggedIn) {
         const cart = await getCart()
-        const cartItem = cart.items.find((item) => item.productId === productId)
+        const cartItem = findCartItemOrWarn(cart, productId)
 
-        if (!cartItem) {
-          toast.error("Không tìm thấy sản phẩm")
-          return
-        }
+        if (!cartItem) return
 
         await updateCartItem(cartItem.id, quantity)
         await loadCart()
@@ -161,20 +171,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }
 
   const removeFromCart = async (productId: string) => {
-    if (authLoading) {
-      toast.error("Xin hãy đợi một lúc rồi thử lại")
-      return
-    }
+    if (!assertNotAuthLoading(authLoading)) return
 
     try {
       if (isLoggedIn) {
         const cart = await getCart()
-        const cartItem = cart.items.find((item) => item.productId === productId)
+        const cartItem = findCartItemOrWarn(cart, productId)
 
-        if (!cartItem) {
-          toast.error("Không tìm thấy sản phẩm")
-          return
-        }
+        if (!cartItem) return
 
         await removeCartItem(cartItem.id)
         await loadCart()
@@ -195,10 +199,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }
 
   const clearCart = async () => {
-    if (authLoading) {
-      toast.error("Xin hãy đợi một lúc rồi thử lại")
-      return
-    }
+    if (!assertNotAuthLoading(authLoading)) return
 
     try {
       if (isLoggedIn) {

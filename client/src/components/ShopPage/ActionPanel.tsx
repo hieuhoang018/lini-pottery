@@ -1,7 +1,6 @@
-import { Search } from "lucide-react"
 import type { Category } from "../../types/category"
-
-type SortOption = "newest" | "price_asc" | "price_desc"
+import type { SortOption } from "../../types/params"
+import { SearchInput } from "../SearchInput"
 
 type ShopActionPanelProps = {
   searchTerm: string
@@ -36,20 +35,11 @@ export function ShopActionPanel({
   return (
     <section className="mb-8 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
       <div className="grid gap-4 lg:grid-cols-[1fr_auto_auto_auto]">
-        <div className="relative">
-          <Search
-            size={18}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"
-          />
-
-          <input
-            type="text"
-            placeholder="TÌm sản phẩm..."
-            value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
-            className="w-full rounded-xl border border-stone-300 py-3 pl-11 pr-4 text-sm outline-none focus:border-amber-800 focus:ring-2 focus:ring-amber-100"
-          />
-        </div>
+        <SearchInput
+          value={searchTerm}
+          onChange={setSearchTerm}
+          placeholder="Tìm sản phẩm..."
+        />
 
         <select
           value={sortOption}

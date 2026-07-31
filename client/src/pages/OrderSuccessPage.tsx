@@ -4,7 +4,7 @@ import { useAuth } from "../contexts/AuthContext"
 import { OrderStatusCard } from "../components/OrderSuccessPage/OrderStatusCard"
 import { PaymentInstructions } from "../components/OrderSuccessPage/PaymentInstruction"
 import { OrderInformationSection } from "../components/OrderSuccessPage/OrderInformationSection"
-import { OrderAddressSection } from "../components/OrderSuccessPage/OrderAddressSection"
+import { AddressCard } from "../components/AddressCard"
 
 export function OrderSuccessPage() {
   const location = useLocation()
@@ -69,7 +69,13 @@ export function OrderSuccessPage() {
           <OrderInformationSection order={order} />
         )}
 
-        {order.address && <OrderAddressSection order={order} />}
+        {order.address && (
+          <AddressCard
+            address={order.address}
+            title="Thông tin giao hàng"
+            variant="plain"
+          />
+        )}
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link

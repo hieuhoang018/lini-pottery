@@ -9,20 +9,7 @@ import {
 import { asyncHandler } from "../utils/asyncHandler"
 import { AppError } from "../utils/AppError"
 import { CategoryIdParams, CategoryParams } from "../types/params"
-
-type CreateCategoryBody = {
-  name?: string
-  slug?: string
-  description?: string
-}
-
-type UpdateCategoryBody = {
-  name?: string
-  slug?: string
-  description?: string
-}
-
-
+import { CreateCategoryBody, UpdateCategoryBody } from "../types/category"
 
 export const getCategoriesHandler = asyncHandler(
   async (_req: Request, res: Response) => {
