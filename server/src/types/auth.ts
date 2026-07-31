@@ -1,3 +1,5 @@
+import type { Request } from "express"
+
 export type RegisterInput = {
   name: string
   email: string
@@ -13,4 +15,8 @@ export type LoginInput = {
 export type JwtPayload = {
   userId: string
   role: "CUSTOMER" | "ADMIN"
+}
+
+export type AuthRequest = Request & {
+  user?: JwtPayload
 }

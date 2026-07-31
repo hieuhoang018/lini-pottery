@@ -1,10 +1,10 @@
-import { Search } from "lucide-react"
 import type { Category } from "../../../types/category"
 import type {
   ActiveFilter,
   SortOption,
   StockFilter,
 } from "../../../types/params"
+import { SearchInput } from "../../SearchInput"
 
 type ActionPanelProps = {
   searchTerm: string
@@ -38,20 +38,11 @@ export function ActionPanel({
   return (
     <section className="mb-5 rounded-2xl border border-stone-200 bg-stone-50 p-4">
       <div className="grid gap-4 lg:grid-cols-[1fr_auto_auto_auto_auto_auto]">
-        <div className="relative">
-          <Search
-            size={18}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"
-          />
-
-          <input
-            type="text"
-            placeholder="Tìm sản phẩm..."
-            value={searchTerm}
-            onChange={(event) => onSearchChange(event.target.value)}
-            className="w-full rounded-xl border border-stone-300 py-3 pl-11 pr-4 text-sm outline-none focus:border-amber-800 focus:ring-2 focus:ring-amber-100"
-          />
-        </div>
+        <SearchInput
+          value={searchTerm}
+          onChange={onSearchChange}
+          placeholder="Tìm sản phẩm..."
+        />
 
         <select
           value={selectedCategory}

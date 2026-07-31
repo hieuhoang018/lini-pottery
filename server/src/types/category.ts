@@ -10,3 +10,15 @@ export type UpdateCategoryInput = {
   slug?: string
   description?: string
 }
+
+export type CreateCategoryBody = {
+  name?: string
+  slug?: string
+  description?: string
+}
+
+export type UpdateCategoryBody = {
+  name?: string
+  slug?: string
+  description?: string
+}

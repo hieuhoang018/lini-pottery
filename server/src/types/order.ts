@@ -45,3 +45,12 @@ export type OrderStatus =
   | "CANCELLED"
 
 export type PaymentStatus = "PENDING" | "PAID" | "CANCELLED"
+
+export type NotificationOrder = {
+  orderCode: string
+  totalAmount: unknown
+  guestName?: string | null
+  guestEmail?: string | null
+  user: { name: string; email: string } | null
+  items: { productName: string; quantity: number; lineTotal: unknown }[]
+}

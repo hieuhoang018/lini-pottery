@@ -1,26 +1,21 @@
-import { useEffect, useState } from "react"
-import { Search } from "lucide-react"
+import { useState } from "react"
 import toast from "react-hot-toast"
 import type { WishlistItem } from "../../types/wishlist"
 import { getWishlist, removeWishlistItem } from "../../api/wishlistApi"
 import { getErrorMessage } from "../../utils/getErrorMessage"
 import { WishlistItemCard } from "./WishlistItemCard"
 import { Emptylist } from "../layout/EmptyList"
-import { useApiFetch } from "../../hooks/useApiFetch"
+import { usePaginatedFetch } from "../../hooks/usePaginatedFetch"
 import { useDebounce } from "../../hooks/useDebounce"
 import { PaginationButtons } from "../PaginationButtons"
+import { SearchInput } from "../SearchInput"
 import { WishlistSkeletonLoading } from "../skeletons/WishlistSkeletonLoading"
 
 export function MainWishlistSection() {
   const [searchTerm, setSearchTerm] = useState("")
-  const [page, setPage] = useState(1)
 
   const limit = 10
   const debouncedSearchTerm = useDebounce(searchTerm.trim(), 400)
-
-  useEffect(() => {
-    setPage(1)
-  }, [debouncedSearchTerm])
 
   const {
     data: items,
@@ -28,14 +23,15 @@ export function MainWishlistSection() {
     loading,
     error,
     refetch,
-  } = useApiFetch<WishlistItem[]>(
-    () =>
+    setPage,
+  } = usePaginatedFetch<WishlistItem[]>(
+    (page) =>
       getWishlist({
         search: debouncedSearchTerm || undefined,
         page,
         limit,
       }),
-    [debouncedSearchTerm, page],
+    [debouncedSearchTerm],
   )
 
   const handleRemove = async (productId: string) => {
@@ -60,17 +56,11 @@ export function MainWishlistSection() {
   return (
     <>
       <div className="mb-8 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-stone-400" />
-
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
-            placeholder="Tìm sản phẩm..."
-            className="w-full rounded-xl border border-stone-300 py-3 pl-12 pr-4 text-sm outline-none focus:border-amber-800 focus:ring-2 focus:ring-amber-800/20"
-          />
-        </div>
+        <SearchInput
+          value={searchTerm}
+          onChange={setSearchTerm}
+          placeholder="Tìm sản phẩm..."
+        />
       </div>
 
       {error && (

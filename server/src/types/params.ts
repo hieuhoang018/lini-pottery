@@ -13,6 +13,10 @@ export type ProductImageIdParams = {
   id: string
 }
 
+export type ProductImagesParams = {
+  productId: string
+}
+
 export type ProductSlugParams = {
   slug: string
 }

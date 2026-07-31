@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { getMyOrders } from "../../api/orderApi"
-import { useApiFetch } from "../../hooks/useApiFetch"
+import { usePaginatedFetch } from "../../hooks/usePaginatedFetch"
 import type { Order } from "../../types/order"
 import { Link } from "react-router-dom"
-import { RefreshCw, Search } from "lucide-react"
+import { RefreshCw } from "lucide-react"
 import { OrdersList } from "./OrdersList"
 import { useDebounce } from "../../hooks/useDebounce"
 import { PaginationButtons } from "../PaginationButtons"
+import { SearchInput } from "../SearchInput"
 import { OrdersSkeletonLoading } from "../skeletons/OrdersSkeletonLoading"
 
 export function MainOrdersSection() {
   const [searchTerm, setSearchTerm] = useState("")
-  const [page, setPage] = useState(1)
   const limit = 10
 
   const debouncedSearchTerm = useDebounce(searchTerm.trim(), 400)
@@ -21,14 +21,11 @@ export function MainOrdersSection() {
     pagination,
     loading,
     refetch,
-  } = useApiFetch<Order[]>(
-    () => getMyOrders({ search: debouncedSearchTerm, page, limit }),
-    [debouncedSearchTerm, page],
+    setPage,
+  } = usePaginatedFetch<Order[]>(
+    (page) => getMyOrders({ search: debouncedSearchTerm, page, limit }),
+    [debouncedSearchTerm],
   )
-
-  useEffect(() => {
-    setPage(1)
-  }, [debouncedSearchTerm])
 
   return (
     <>
@@ -36,18 +33,11 @@ export function MainOrdersSection() {
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-stretch">
           <section className="flex-1 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
-              <div className="relative flex-1">
-                <Search
-                  size={18}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"
-                />
-
-                <input
-                  type="text"
-                  placeholder="Tìm đơn hàng của bạn..."
+              <div className="flex-1">
+                <SearchInput
                   value={searchTerm}
-                  onChange={(event) => setSearchTerm(event.target.value)}
-                  className="w-full rounded-xl border border-stone-300 py-3 pl-11 pr-4 text-sm outline-none focus:border-amber-800 focus:ring-2 focus:ring-amber-100"
+                  onChange={setSearchTerm}
+                  placeholder="Tìm đơn hàng của bạn..."
                 />
               </div>
 

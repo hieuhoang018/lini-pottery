@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import toast from "react-hot-toast"
-import { Search } from "lucide-react"
 import {
   getAdminOrders,
   updateAdminOrderStatus,
@@ -12,10 +11,11 @@ import type {
   PaymentStatusFilter,
 } from "../../types/admin"
 import { useDebounce } from "../../hooks/useDebounce"
-import { useApiFetch } from "../../hooks/useApiFetch"
+import { usePaginatedFetch } from "../../hooks/usePaginatedFetch"
 import { getErrorMessage } from "../../utils/getErrorMessage"
 import { OrderList } from "../../components/AdminPage/OrderPage/OrderList"
 import { PaginationButtons } from "../../components/PaginationButtons"
+import { SearchInput } from "../../components/SearchInput"
 import { AdminOrdersSkeletonLoading } from "../../components/skeletons/AdminOrdersSkeletonLoading"
 
 export function AdminOrdersPage() {
@@ -23,7 +23,6 @@ export function AdminOrdersPage() {
   const [statusFilter, setStatusFilter] = useState<OrderStatusFilter>("")
   const [paymentStatusFilter, setPaymentStatusFilter] =
     useState<PaymentStatusFilter>("")
-  const [page, setPage] = useState(1)
   const limit = 20
 
   const debouncedSearchTerm = useDebounce(searchTerm.trim(), 400)
@@ -33,8 +32,9 @@ export function AdminOrdersPage() {
     pagination,
     loading,
     refetch,
-  } = useApiFetch<AdminOrder[]>(
-    () =>
+    setPage,
+  } = usePaginatedFetch<AdminOrder[]>(
+    (page) =>
       getAdminOrders({
         search: debouncedSearchTerm || undefined,
         status: statusFilter || undefined,
@@ -42,12 +42,8 @@ export function AdminOrdersPage() {
         page,
         limit,
       }),
-    [debouncedSearchTerm, statusFilter, paymentStatusFilter, page],
+    [debouncedSearchTerm, statusFilter, paymentStatusFilter],
   )
-
-  useEffect(() => {
-    setPage(1)
-  }, [debouncedSearchTerm, statusFilter, paymentStatusFilter])
 
   const handleStatusChange = async (
     orderId: string,
@@ -103,20 +99,11 @@ export function AdminOrdersPage() {
 
       <section className="mb-5 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
         <div className="grid gap-4 lg:grid-cols-[1fr_auto_auto_auto]">
-          <div className="relative">
-            <Search
-              size={18}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"
-            />
-
-            <input
-              type="text"
-              placeholder="Tìm kiếm đơn hàng theo khách hàng, sản phẩm, thành phố, số điện thoại..."
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              className="w-full rounded-xl border border-stone-300 py-3 pl-11 pr-4 text-sm outline-none focus:border-amber-800 focus:ring-2 focus:ring-amber-100"
-            />
-          </div>
+          <SearchInput
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Tìm kiếm đơn hàng theo khách hàng, sản phẩm, thành phố, số điện thoại..."
+          />
 
           <select
             value={statusFilter}

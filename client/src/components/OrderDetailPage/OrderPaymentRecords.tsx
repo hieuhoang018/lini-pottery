@@ -1,5 +1,5 @@
 import type { Order } from "../../types/order"
-import { getStatusBadgeClass } from "../../utils/getStatusBadgeClass"
+import { getPaymentRecordStatusBadgeClass } from "../../utils/getStatusBadgeClass"
 
 export function OrderPaymentRecords({ order }: { order: Order }) {
   return (
@@ -15,7 +15,7 @@ export function OrderPaymentRecords({ order }: { order: Order }) {
             <div className="flex flex-wrap justify-between gap-2">
               <span className="font-medium">{record.method}</span>
               <span
-                className={`rounded-full px-3 py-1 text-xs font-semibold ${getStatusBadgeClass(
+                className={`rounded-full px-3 py-1 text-xs font-semibold ${getPaymentRecordStatusBadgeClass(
                   record.status,
                 )}`}
               >

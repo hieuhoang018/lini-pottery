@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client"
 import { prisma } from "../lib/prisma"
 import { GetProductsParams } from "../types/params"
 import { CreateProductInput } from "../types/product"
@@ -6,6 +7,11 @@ import { buildPaginationMeta } from "../utils/pagination"
 import { buildProductSearchText, normalizeSearchText } from "../utils/search"
 import { deleteImageFromCloudinary } from "../utils/cloudinaryUpload"
 import { AppError } from "../utils/AppError"
+
+const PRODUCT_INCLUDE = {
+  category: true,
+  images: { orderBy: { sortOrder: "asc" as const } },
+} satisfies Prisma.ProductInclude
 
 export const getAllProducts = async ({
   categorySlug,
@@ -77,14 +83,7 @@ export const getAllProducts = async ({
   const [products, totalItems] = await Promise.all([
     prisma.product.findMany({
       where,
-      include: {
-        category: true,
-        images: {
-          orderBy: {
-            sortOrder: "asc",
-          },
-        },
-      },
+      include: PRODUCT_INCLUDE,
       orderBy,
       skip,
       take: limit,
@@ -108,14 +107,7 @@ export const getAllProducts = async ({
 export const getProductBySlug = async (slug: string) => {
   return prisma.product.findUnique({
     where: { slug },
-    include: {
-      category: true,
-      images: {
-        orderBy: {
-          sortOrder: "asc",
-        },
-      },
-    },
+    include: PRODUCT_INCLUDE,
   })
 }
 
@@ -170,14 +162,7 @@ export const createProduct = async (data: CreateProductInput) => {
 export const getProductById = async (id: string) => {
   return prisma.product.findUnique({
     where: { id },
-    include: {
-      category: true,
-      images: {
-        orderBy: {
-          sortOrder: "asc",
-        },
-      },
-    },
+    include: PRODUCT_INCLUDE,
   })
 }
 
@@ -224,14 +209,7 @@ export const updateProduct = async (id: string, data: UpdateProductInput) => {
       ...data,
       searchText,
     },
-    include: {
-      category: true,
-      images: {
-        orderBy: {
-          sortOrder: "asc",
-        },
-      },
-    },
+    include: PRODUCT_INCLUDE,
   })
 
   const newFeaturedImagePublicId = updatedProduct.featuredImagePublicId

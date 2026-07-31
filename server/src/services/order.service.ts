@@ -10,6 +10,17 @@ import { buildPaginationMeta } from "../utils/pagination"
 import { formatOrderCode } from "../utils/orderCode"
 import { sendAdminNewOrderNotification } from "./notification.service"
 
+export const ORDER_INCLUDE = {
+  items: true,
+  address: true,
+  paymentRecords: true,
+} satisfies Prisma.OrderInclude
+
+export const ORDER_INCLUDE_WITH_USER = {
+  ...ORDER_INCLUDE,
+  user: { select: { id: true, name: true, email: true } },
+} satisfies Prisma.OrderInclude
+
 export const checkoutFromCart = async (data: CheckoutInput) => {
   const order = await prisma.$transaction(async (tx) => {
     const cart = await tx.cart.findUnique({
@@ -96,12 +107,7 @@ export const checkoutFromCart = async (data: CheckoutInput) => {
           },
         },
       },
-      include: {
-        items: true,
-        address: true,
-        paymentRecords: true,
-        user: { select: { id: true, name: true, email: true } },
-      },
+      include: ORDER_INCLUDE_WITH_USER,
     })
 
     for (const item of cart.items) {
@@ -243,11 +249,7 @@ export const getMyOrders = async ({
   const [orders, totalItems] = await Promise.all([
     prisma.order.findMany({
       where,
-      include: {
-        items: true,
-        address: true,
-        paymentRecords: true,
-      },
+      include: ORDER_INCLUDE,
       orderBy: {
         createdAt: "desc",
       },
@@ -276,11 +278,7 @@ export const getOrderByIdForUser = async (orderId: string, userId: string) => {
       id: orderId,
       userId,
     },
-    include: {
-      items: true,
-      address: true,
-      paymentRecords: true,
-    },
+    include: ORDER_INCLUDE,
   })
 }
 
@@ -384,12 +382,7 @@ export const guestCheckout = async (data: GuestCheckoutInput) => {
           },
         },
       },
-      include: {
-        items: true,
-        address: true,
-        paymentRecords: true,
-        user: { select: { id: true, name: true, email: true } },
-      },
+      include: ORDER_INCLUDE_WITH_USER,
     })
 
     for (const item of itemsWithProducts) {
