@@ -5,6 +5,17 @@ import { createSlug } from "../utils/createSlug"
 import { CreateCategoryInput, UpdateCategoryInput } from "../types/category"
 import { buildProductSearchText } from "../utils/search"
 
+const rethrowAsCategoryConflict = (error: unknown, message: string): never => {
+  if (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === "P2002"
+  ) {
+    throw new AppError(message, 409, "CATEGORY_ALREADY_EXISTS")
+  }
+
+  throw error
+}
+
 export const getAllCategories = async () => {
   return prisma.category.findMany({
     orderBy: {
@@ -64,18 +75,7 @@ export const createCategory = async ({
       },
     })
   } catch (error) {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002"
-    ) {
-      throw new AppError(
-        "Category already exists",
-        409,
-        "CATEGORY_ALREADY_EXISTS",
-      )
-    }
-
-    throw error
+    rethrowAsCategoryConflict(error, "Category already exists")
   }
 }
 
@@ -177,18 +177,10 @@ export const updateCategory = async ({
       return updatedCategory
     })
   } catch (error) {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002"
-    ) {
-      throw new AppError(
-        "Another category with this name or slug already exists",
-        409,
-        "CATEGORY_ALREADY_EXISTS",
-      )
-    }
-
-    throw error
+    rethrowAsCategoryConflict(
+      error,
+      "Another category with this name or slug already exists",
+    )
   }
 }
 

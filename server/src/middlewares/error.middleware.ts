@@ -25,7 +25,7 @@ export function errorMiddleware(
     })
   }
 
-  if (err.code === "P2023") {
+  if (err.code === "P2023" || err.code === "P2007") {
     return res.status(400).json({
       message: "Invalid ID format",
       code: "INVALID_ID_FORMAT",
