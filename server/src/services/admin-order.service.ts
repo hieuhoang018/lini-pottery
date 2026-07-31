@@ -4,6 +4,7 @@ import { OrderStatus, PaymentStatus } from "../types/order"
 import { GetAllOrdersForAdminParams } from "../types/params"
 import { buildPaginationMeta } from "../utils/pagination"
 import { isValidUuid } from "../utils/isValidUuid"
+import { buildOrderAddressAndItemsConditions } from "../utils/orderSearch"
 import { ORDER_INCLUDE } from "./order.service"
 
 const ORDER_INCLUDE_WITH_ADMIN_USER = {
@@ -38,13 +39,6 @@ export const getAllOrdersForAdmin = async ({
                   },
                 ]
               : []),
-
-            {
-              orderCode: {
-                contains: trimmedSearch,
-                mode: "insensitive" as const,
-              },
-            },
 
             {
               guestName: {
@@ -84,56 +78,8 @@ export const getAllOrdersForAdmin = async ({
                 },
               },
             },
-            {
-              address: {
-                is: {
-                  recipientName: {
-                    contains: trimmedSearch,
-                    mode: "insensitive" as const,
-                  },
-                },
-              },
-            },
-            {
-              address: {
-                is: {
-                  phone: {
-                    contains: trimmedSearch,
-                    mode: "insensitive" as const,
-                  },
-                },
-              },
-            },
-            {
-              address: {
-                is: {
-                  city: {
-                    contains: trimmedSearch,
-                    mode: "insensitive" as const,
-                  },
-                },
-              },
-            },
-            {
-              address: {
-                is: {
-                  postalCode: {
-                    contains: trimmedSearch,
-                    mode: "insensitive" as const,
-                  },
-                },
-              },
-            },
-            {
-              items: {
-                some: {
-                  productName: {
-                    contains: trimmedSearch,
-                    mode: "insensitive" as const,
-                  },
-                },
-              },
-            },
+
+            ...buildOrderAddressAndItemsConditions(trimmedSearch),
           ],
         }
       : {}),

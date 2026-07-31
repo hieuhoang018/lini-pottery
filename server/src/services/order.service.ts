@@ -8,6 +8,7 @@ import {
 import { isValidUuid } from "../utils/isValidUuid"
 import { buildPaginationMeta } from "../utils/pagination"
 import { formatOrderCode } from "../utils/orderCode"
+import { buildOrderAddressAndItemsConditions } from "../utils/orderSearch"
 import { sendAdminNewOrderNotification } from "./notification.service"
 
 export const ORDER_INCLUDE = {
@@ -164,13 +165,6 @@ export const getMyOrders = async ({
                 ]
               : []),
 
-            {
-              orderCode: {
-                contains: trimmedSearch,
-                mode: "insensitive" as const,
-              },
-            },
-
             ...(orderStatusSearch
               ? [
                   {
@@ -191,56 +185,7 @@ export const getMyOrders = async ({
                 ]
               : []),
 
-            {
-              address: {
-                is: {
-                  recipientName: {
-                    contains: trimmedSearch,
-                    mode: "insensitive" as const,
-                  },
-                },
-              },
-            },
-            {
-              address: {
-                is: {
-                  phone: {
-                    contains: trimmedSearch,
-                    mode: "insensitive" as const,
-                  },
-                },
-              },
-            },
-            {
-              address: {
-                is: {
-                  city: {
-                    contains: trimmedSearch,
-                    mode: "insensitive" as const,
-                  },
-                },
-              },
-            },
-            {
-              address: {
-                is: {
-                  postalCode: {
-                    contains: trimmedSearch,
-                    mode: "insensitive" as const,
-                  },
-                },
-              },
-            },
-            {
-              items: {
-                some: {
-                  productName: {
-                    contains: trimmedSearch,
-                    mode: "insensitive" as const,
-                  },
-                },
-              },
-            },
+            ...buildOrderAddressAndItemsConditions(trimmedSearch),
           ],
         }
       : {}),

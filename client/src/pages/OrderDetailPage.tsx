@@ -4,7 +4,7 @@ import { getMyOrderById } from "../api/orderApi"
 import type { Order } from "../types/order"
 import { OrderTitleCard } from "../components/OrderDetailPage/OrderTitleCard"
 import { OrderInformationSection } from "../components/OrderDetailPage/OrderInformationSection"
-import { OrderAddressSection } from "../components/OrderDetailPage/OrderAddressSection"
+import { AddressCard } from "../components/AddressCard"
 import { OrderSummarySection } from "../components/OrderDetailPage/OrderSummarySection"
 import { OrderPaymentRecords } from "../components/OrderDetailPage/OrderPaymentRecords"
 import { useApiFetch } from "../hooks/useApiFetch"
@@ -62,7 +62,11 @@ if (loading) {
       <OrderInformationSection order={order} />
 
       <section className="mt-6 grid gap-6 md:grid-cols-2">
-        <OrderAddressSection order={order} />
+        <AddressCard
+          address={order.address}
+          title="Địa chỉ giao hàng"
+          emptyMessage="Không có địa chỉ giao hàng."
+        />
 
         <OrderSummarySection order={order} />
       </section>

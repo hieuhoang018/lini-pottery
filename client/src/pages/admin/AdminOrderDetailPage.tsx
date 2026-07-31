@@ -12,7 +12,7 @@ import { useApiFetch } from "../../hooks/useApiFetch"
 import { OrderTitleCard } from "../../components/AdminPage/OrderPage/OrderTitleCard"
 import { CustomerTitleCard } from "../../components/AdminPage/OrderPage/CustomerTitleCard"
 import { OrderDetails } from "../../components/AdminPage/OrderPage/OrderDetails"
-import { ShippingAddressCard } from "../../components/AdminPage/OrderPage/ShippingAddressCard"
+import { AddressCard } from "../../components/AddressCard"
 import { getErrorMessage } from "../../utils/getErrorMessage"
 import { PaymentRecords } from "../../components/AdminPage/OrderPage/PaymentRecords"
 import { ActionPanel } from "../../components/AdminPage/OrderPage/ActionPanel"
@@ -116,7 +116,13 @@ export function AdminOrderDetailPage() {
 
         <OrderDetails order={order} />
 
-        {order.address && <ShippingAddressCard order={order} />}
+        {order.address && (
+          <AddressCard
+            address={order.address}
+            title="Thông tin giao hàng"
+            headingLevel="h3"
+          />
+        )}
 
         {order.notes && (
           <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-stone-200">
