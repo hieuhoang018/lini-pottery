@@ -1,18 +1,20 @@
 import { InputField } from "../../InputField"
-
-type ProductCoreFieldsData = {
-  price?: number
-  stockQuantity?: number
-  description?: string
-  material?: string
-  color?: string
-  dimensionsText?: string
-  weightText?: string
-  careInstructions?: string
-}
+import type { CreateProductInput } from "../../../types/api-input"
 
 type ProductCoreFieldsProps = {
-  formData: ProductCoreFieldsData
+  formData: Partial<
+    Pick<
+      CreateProductInput,
+      | "price"
+      | "stockQuantity"
+      | "description"
+      | "material"
+      | "color"
+      | "dimensionsText"
+      | "weightText"
+      | "careInstructions"
+    >
+  >
   onChange: (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void
