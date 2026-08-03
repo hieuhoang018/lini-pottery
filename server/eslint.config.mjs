@@ -28,4 +28,12 @@ export default defineConfig([
       "@typescript-eslint/no-explicit-any": "off",
     },
   },
+  {
+    files: ["src/**/*.ts"],
+    ignores: ["src/scripts/**"],
+    rules: {
+      // Request-serving code must go through the pino logger so Loki can scrape it as JSON.
+      "no-console": "error",
+    },
+  },
 ])

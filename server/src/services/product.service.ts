@@ -7,6 +7,7 @@ import { buildPaginationMeta } from "../utils/pagination"
 import { buildProductSearchText, normalizeSearchText } from "../utils/search"
 import { deleteImageFromCloudinary } from "../utils/cloudinaryUpload"
 import { AppError } from "../utils/AppError"
+import { logger } from "../lib/logger"
 
 const PRODUCT_INCLUDE = {
   category: true,
@@ -223,7 +224,7 @@ export const updateProduct = async (id: string, data: UpdateProductInput) => {
     try {
       await deleteImageFromCloudinary(oldFeaturedImagePublicId)
     } catch (error) {
-      console.error("Failed to delete old Cloudinary image:", error)
+      logger.error({ err: error }, "Failed to delete old Cloudinary image")
     }
   }
 

@@ -8,6 +8,7 @@ import {
 } from "../services/category.service"
 import { asyncHandler } from "../utils/asyncHandler"
 import { AppError } from "../utils/AppError"
+import { AuthRequest } from "../types/auth"
 import { CategoryIdParams, CategoryParams } from "../types/params"
 import { CreateCategoryBody, UpdateCategoryBody } from "../types/category"
 
@@ -34,7 +35,10 @@ export const getCategoryBySlugHandler = asyncHandler(
 )
 
 export const createCategoryHandler = asyncHandler(
-  async (req: Request<{}, {}, CreateCategoryBody>, res: Response) => {
+  async (
+    req: AuthRequest & Request<{}, {}, CreateCategoryBody>,
+    res: Response,
+  ) => {
     const { name, slug, description } = req.body
 
     if (!name?.trim()) {
@@ -51,13 +55,18 @@ export const createCategoryHandler = asyncHandler(
       description,
     })
 
+    req.log.info(
+      { categoryId: category.id, name: category.name, adminId: req.user?.userId },
+      "Category created",
+    )
+
     return res.status(201).json(category)
   },
 )
 
 export const updateCategoryHandler = asyncHandler(
   async (
-    req: Request<CategoryIdParams, {}, UpdateCategoryBody>,
+    req: AuthRequest & Request<CategoryIdParams, {}, UpdateCategoryBody>,
     res: Response,
   ) => {
     const { id } = req.params
@@ -78,15 +87,22 @@ export const updateCategoryHandler = asyncHandler(
       description,
     })
 
+    req.log.info(
+      { categoryId: id, changes: { name, slug, description }, adminId: req.user?.userId },
+      "Category updated",
+    )
+
     return res.status(200).json(category)
   },
 )
 
 export const deleteCategoryHandler = asyncHandler(
-  async (req: Request<CategoryIdParams>, res: Response) => {
+  async (req: AuthRequest & Request<CategoryIdParams>, res: Response) => {
     const { id } = req.params
 
     await deleteCategory(id)
+
+    req.log.info({ categoryId: id, adminId: req.user?.userId }, "Category deleted")
 
     return res.status(204).send()
   },

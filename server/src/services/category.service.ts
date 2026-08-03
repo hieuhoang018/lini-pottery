@@ -75,7 +75,7 @@ export const createCategory = async ({
       },
     })
   } catch (error) {
-    rethrowAsCategoryConflict(error, "Category already exists")
+    return rethrowAsCategoryConflict(error, "Category already exists")
   }
 }
 
@@ -177,7 +177,7 @@ export const updateCategory = async ({
       return updatedCategory
     })
   } catch (error) {
-    rethrowAsCategoryConflict(
+    return rethrowAsCategoryConflict(
       error,
       "Another category with this name or slug already exists",
     )

@@ -62,6 +62,10 @@ CLIENT_URLS="http://localhost:5173"
 COOKIE_SAME_SITE="strict"
 PORT=5000
 
+# Optional: pino log level (trace|debug|info|warn|error|fatal). Defaults to
+# "debug" in dev, "info" when NODE_ENV=production.
+LOG_LEVEL="debug"
+
 CLOUDINARY_CLOUD_NAME="your-cloud-name"
 CLOUDINARY_API_KEY="your-api-key"
 CLOUDINARY_API_SECRET="your-api-secret"

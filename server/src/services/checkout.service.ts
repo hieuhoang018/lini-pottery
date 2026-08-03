@@ -1,4 +1,4 @@
-import { prisma } from "../lib/prisma"
+import { prisma, PrismaTransactionClient } from "../lib/prisma"
 import { Prisma } from "@prisma/client"
 import {
   CheckoutInput,
@@ -10,6 +10,7 @@ import {
 import { formatOrderCode } from "../utils/orderCode"
 import { sendAdminNewOrderNotification } from "./notification.service"
 import { ORDER_INCLUDE } from "./order.service"
+import { logger } from "../lib/logger"
 
 const ORDER_INCLUDE_WITH_USER = {
   ...ORDER_INCLUDE,
@@ -74,6 +75,11 @@ export const checkoutFromCart = async (data: CheckoutInput) => {
   })
 
   await sendAdminNewOrderNotification(order)
+
+  logger.info(
+    { orderId: order.id, orderCode: order.orderCode, userId: data.userId },
+    "Checkout completed",
+  )
 
   return order
 }
@@ -147,10 +153,19 @@ export const guestCheckout = async (data: GuestCheckoutInput) => {
 
   await sendAdminNewOrderNotification(order)
 
+  logger.info(
+    {
+      orderId: order.id,
+      orderCode: order.orderCode,
+      guestEmail: data.guestEmail,
+    },
+    "Guest checkout completed",
+  )
+
   return order
 }
 
-const getNextOrderCode = async (tx: Prisma.TransactionClient) => {
+const getNextOrderCode = async (tx: PrismaTransactionClient) => {
   const counter = await tx.counter.upsert({
     where: {
       name: "order",
@@ -170,7 +185,7 @@ const getNextOrderCode = async (tx: Prisma.TransactionClient) => {
 }
 
 const createOrderFromItems = async (
-  tx: Prisma.TransactionClient,
+  tx: PrismaTransactionClient,
   params: {
     identity: OrderIdentity
     items: OrderItemWithProduct[]
@@ -225,6 +240,16 @@ const createOrderFromItems = async (
     },
     include: ORDER_INCLUDE_WITH_USER,
   })
+
+  logger.info(
+    {
+      orderId: order.id,
+      orderCode: order.orderCode,
+      itemCount: params.items.length,
+      totalAmount: total,
+    },
+    "Order placed",
+  )
 
   for (const item of params.items) {
     await tx.product.update({

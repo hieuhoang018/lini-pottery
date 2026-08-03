@@ -1,10 +1,13 @@
 // src/app.ts
 import express from "express"
 import cors from "cors"
-import morgan from "morgan"
+import pinoHttp from "pino-http"
 import helmet from "helmet"
 import cookieParser from "cookie-parser"
 import { prisma } from "./lib/prisma"
+import { logger } from "./lib/logger"
+import { register } from "./lib/metrics"
+import { metricsMiddleware } from "./middlewares/metrics.middleware"
 import categoryRoutes from "./routes/category.routes"
 import productRoutes from "./routes/product.routes"
 import productImageRoutes from "./routes/product-image.routes"
@@ -25,7 +28,17 @@ const allowedOrigins = (process.env.CLIENT_URLS || process.env.CLIENT_URL || "")
   .filter(Boolean)
 
 app.use(helmet())
-app.use(morgan("dev"))
+app.use(
+  pinoHttp({
+    logger,
+    customLogLevel: (_req, res, err) => {
+      if (err || res.statusCode >= 500) return "error"
+      if (res.statusCode >= 400) return "warn"
+      return "info"
+    },
+  }),
+)
+app.use(metricsMiddleware)
 
 app.use(
   cors({
@@ -41,14 +54,19 @@ app.get("/", (_req, res) => {
   res.json({ message: "API is running" })
 })
 
-app.get("/health/db", async (_req, res) => {
+app.get("/health/db", async (req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`
     res.json({ ok: true, message: "Database connected" })
   } catch (error) {
-    console.error("Database health check failed:", error)
+    req.log.error({ err: error }, "Database health check failed")
     res.status(500).json({ ok: false, message: "Database connection failed" })
   }
+})
+
+app.get("/metrics", async (_req, res) => {
+  res.set("Content-Type", register.contentType)
+  res.end(await register.metrics())
 })
 
 app.use("/api/categories", categoryRoutes)
