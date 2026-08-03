@@ -232,6 +232,16 @@ Seeded accounts:
 
 Outside Docker (local dev against any Postgres your `server/.env` points at), run `cd server && npm run seed` instead.
 
+### Observability (optional)
+
+A self-hosted Prometheus + Grafana + Loki + Promtail stack is included but not started by default:
+
+```bash
+docker compose --profile observability up --build
+```
+
+See [`observability/README.md`](observability/README.md) for URLs, credentials, and what's on the starter dashboard.
+
 ## API overview
 
 Base API path: `/api`
