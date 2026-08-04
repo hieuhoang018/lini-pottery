@@ -62,6 +62,10 @@ CLIENT_URLS="http://localhost:5173"
 COOKIE_SAME_SITE="strict"
 PORT=5000
 
+# Optional: pino log level (trace|debug|info|warn|error|fatal). Defaults to
+# "debug" in dev, "info" when NODE_ENV=production.
+LOG_LEVEL="debug"
+
 CLOUDINARY_CLOUD_NAME="your-cloud-name"
 CLOUDINARY_API_KEY="your-api-key"
 CLOUDINARY_API_SECRET="your-api-secret"
@@ -227,6 +231,16 @@ Seeded accounts:
 | Customer | `customer@lini.dev` | `Customer123!` |
 
 Outside Docker (local dev against any Postgres your `server/.env` points at), run `cd server && npm run seed` instead.
+
+### Observability (optional)
+
+A self-hosted Prometheus + Grafana + Loki + Promtail stack is included but not started by default:
+
+```bash
+docker compose --profile observability up --build
+```
+
+See [`observability/README.md`](observability/README.md) for URLs, credentials, and what's on the starter dashboard.
 
 ## API overview
 

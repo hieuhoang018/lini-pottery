@@ -1,3 +1,5 @@
+import { logger } from "./logger"
+
 const TELEGRAM_API_BASE = "https://api.telegram.org"
 
 export const sendTelegramMessage = async (text: string): Promise<void> => {
@@ -5,7 +7,7 @@ export const sendTelegramMessage = async (text: string): Promise<void> => {
   const chatId = process.env.TELEGRAM_ADMIN_CHAT_ID
 
   if (!token || !chatId) {
-    console.warn(
+    logger.warn(
       "[telegram] TELEGRAM_BOT_TOKEN or TELEGRAM_ADMIN_CHAT_ID not configured, skipping message",
     )
     return
@@ -25,9 +27,9 @@ export const sendTelegramMessage = async (text: string): Promise<void> => {
     const data = await response.json()
 
     if (!response.ok || !data.ok) {
-      console.error("[telegram] Telegram API returned an error:", data)
+      logger.error({ data }, "[telegram] Telegram API returned an error")
     }
   } catch (err) {
-    console.error("[telegram] Failed to send message:", err)
+    logger.error({ err }, "[telegram] Failed to send message")
   }
 }

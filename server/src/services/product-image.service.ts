@@ -1,6 +1,7 @@
 import { prisma } from "../lib/prisma"
 import { CreateProductImageInput } from "../types/product-image"
 import { deleteImageFromCloudinary } from "../utils/cloudinaryUpload"
+import { logger } from "../lib/logger"
 
 export const getImagesByProductId = async (productId: string) => {
   return prisma.productImage.findMany({
@@ -42,7 +43,7 @@ export const deleteProductImage = async (id: string) => {
     try {
       await deleteImageFromCloudinary(existingImage.publicId)
     } catch (error) {
-      console.error("Failed to delete gallery image from Cloudinary:", error)
+      logger.error({ err: error }, "Failed to delete gallery image from Cloudinary")
     }
   }
 

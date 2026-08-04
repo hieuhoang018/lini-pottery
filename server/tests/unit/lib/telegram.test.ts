@@ -1,12 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { sendTelegramMessage } from "../../../src/lib/telegram"
+import { logger } from "../../../src/lib/logger"
 
 const originalToken = process.env.TELEGRAM_BOT_TOKEN
 const originalChatId = process.env.TELEGRAM_ADMIN_CHAT_ID
 
 beforeEach(() => {
-  vi.spyOn(console, "warn").mockImplementation(() => {})
-  vi.spyOn(console, "error").mockImplementation(() => {})
+  vi.spyOn(logger, "warn").mockImplementation(() => undefined as never)
+  vi.spyOn(logger, "error").mockImplementation(() => undefined as never)
 })
 
 afterEach(() => {
@@ -26,7 +27,7 @@ describe("sendTelegramMessage", () => {
     await sendTelegramMessage("hello")
 
     expect(fetchMock).not.toHaveBeenCalled()
-    expect(console.warn).toHaveBeenCalled()
+    expect(logger.warn).toHaveBeenCalled()
   })
 
   it("posts to the Telegram API with the configured token and chat id", async () => {
@@ -63,7 +64,7 @@ describe("sendTelegramMessage", () => {
     vi.stubGlobal("fetch", fetchMock)
 
     await expect(sendTelegramMessage("hello")).resolves.toBeUndefined()
-    expect(console.error).toHaveBeenCalled()
+    expect(logger.error).toHaveBeenCalled()
   })
 
   it("logs without throwing when fetch rejects", async () => {
@@ -73,6 +74,6 @@ describe("sendTelegramMessage", () => {
     vi.stubGlobal("fetch", fetchMock)
 
     await expect(sendTelegramMessage("hello")).resolves.toBeUndefined()
-    expect(console.error).toHaveBeenCalled()
+    expect(logger.error).toHaveBeenCalled()
   })
 })

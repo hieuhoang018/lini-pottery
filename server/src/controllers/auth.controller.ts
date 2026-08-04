@@ -60,6 +60,11 @@ export const registerHandler = asyncHandler(
       getRefreshCookieOptions(),
     )
 
+    req.log.info(
+      { userId: result.user.id, email: result.user.email },
+      "User registered",
+    )
+
     return res.status(201).json({
       user: result.user,
       accessToken,
@@ -79,7 +84,13 @@ export const loginHandler = asyncHandler(
       )
     }
 
-    const result = await loginUser({ email, password })
+    let result
+    try {
+      result = await loginUser({ email, password })
+    } catch (err) {
+      req.log.warn({ email }, "Login failed")
+      throw err
+    }
 
     const payload = {
       userId: result.user.id,
@@ -93,6 +104,11 @@ export const loginHandler = asyncHandler(
       REFRESH_TOKEN_COOKIE_NAME,
       refreshToken,
       getRefreshCookieOptions(),
+    )
+
+    req.log.info(
+      { userId: result.user.id, email: result.user.email },
+      "User logged in",
     )
 
     return res.status(200).json({
@@ -128,7 +144,9 @@ export const refreshHandler = asyncHandler(
         accessToken,
         user,
       })
-    } catch {
+    } catch (err) {
+      req.log.warn({ err }, "Refresh token validation failed")
+
       throw new AppError(
         "Invalid or expired refresh token",
         401,

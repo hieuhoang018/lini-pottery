@@ -11,6 +11,7 @@ import {
 import { prisma } from "../lib/prisma"
 import { asyncHandler } from "../utils/asyncHandler"
 import { AppError } from "../utils/AppError"
+import { AuthRequest } from "../types/auth"
 import { ProductIdParams, ProductSlugParams } from "../types/params"
 import { ProductQuery } from "../types/query"
 import { getPaginationParams } from "../utils/pagination"
@@ -79,7 +80,7 @@ export const getProductBySlugHandler = asyncHandler(
 )
 
 export const createProductHandler = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     const {
       name,
       slug,
@@ -125,12 +126,17 @@ export const createProductHandler = asyncHandler(
       featuredImagePublicId,
     })
 
+    req.log.info(
+      { productId: product.id, name: product.name, adminId: req.user?.userId },
+      "Product created",
+    )
+
     return res.status(201).json(product)
   },
 )
 
 export const updateProductHandler = asyncHandler(
-  async (req: Request<ProductIdParams>, res: Response) => {
+  async (req: AuthRequest & Request<ProductIdParams>, res: Response) => {
     const { id } = req.params
 
     const existingProduct = await getProductById(id)
@@ -218,12 +224,14 @@ export const updateProductHandler = asyncHandler(
       throw new AppError("Product not found", 404, "PRODUCT_NOT_FOUND")
     }
 
+    req.log.info({ productId: id, adminId: req.user?.userId }, "Product updated")
+
     return res.status(200).json(updatedProduct)
   },
 )
 
 export const updateProductStockHandler = asyncHandler(
-  async (req: Request<ProductIdParams>, res: Response) => {
+  async (req: AuthRequest & Request<ProductIdParams>, res: Response) => {
     const { id } = req.params
     const { stockQuantity } = req.body
 
@@ -253,12 +261,17 @@ export const updateProductStockHandler = asyncHandler(
 
     const product = await updateProductStock(id, numericStock)
 
+    req.log.info(
+      { productId: id, stockQuantity: numericStock, adminId: req.user?.userId },
+      "Product stock updated",
+    )
+
     return res.status(200).json(product)
   },
 )
 
 export const updateProductActiveStatusHandler = asyncHandler(
-  async (req: Request<ProductIdParams>, res: Response) => {
+  async (req: AuthRequest & Request<ProductIdParams>, res: Response) => {
     const { id } = req.params
     const { isActive } = req.body
 
@@ -277,6 +290,11 @@ export const updateProductActiveStatusHandler = asyncHandler(
     }
 
     const product = await updateProductActiveStatus(id, isActive)
+
+    req.log.info(
+      { productId: id, isActive, adminId: req.user?.userId },
+      "Product active status updated",
+    )
 
     return res.status(200).json(product)
   },

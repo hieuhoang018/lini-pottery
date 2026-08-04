@@ -9,7 +9,7 @@ export function errorMiddleware(
   res: Response,
   _next: NextFunction,
 ) {
-  console.error(err)
+  req.log.error({ err }, "Unhandled request error")
 
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
