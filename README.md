@@ -232,6 +232,8 @@ Seeded accounts:
 
 Outside Docker (local dev against any Postgres your `server/.env` points at), run `cd server && npm run seed` instead.
 
+To generate bulk data for perf/load testing, set `SEED_SCALE` to the number of extra products to generate, e.g. `SEED_SCALE=500 npm run seed` (or as a `docker compose exec` env var). These land alongside the 20 hand-authored products with deterministic `perf-product-{n}` slugs, round-robin across the 4 real categories — unset or `0` leaves the base seed exactly as-is.
+
 ### Observability (optional)
 
 A self-hosted Prometheus + Grafana + Loki + Promtail stack is included but not started by default:

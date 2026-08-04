@@ -56,3 +56,6 @@ temp/
 claude-plans/
 
 dev-dist/
+
+# k6 perf test run artifacts (point-in-time, not committed)
+perf/results/

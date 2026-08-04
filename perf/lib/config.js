@@ -1,0 +1,1 @@
+export const BASE_URL = __ENV.K6_BASE_URL || "http://localhost:8080"

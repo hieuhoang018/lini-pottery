@@ -24,6 +24,9 @@ type SeedProduct = {
   dimensionsText: string
   weightText: string
   careInstructions: string
+  // Fixed slug for generated perf-test rows, so they stay idempotent and
+  // greppable/deletable regardless of any future name tweaks.
+  slug?: string
 }
 
 const categories: SeedCategory[] = [
@@ -297,6 +300,59 @@ const products: SeedProduct[] = [
   },
 ]
 
+const SCALE_MATERIALS = [
+  "Stoneware",
+  "Porcelain",
+  "Ceramic",
+  "Terracotta",
+  "Speckled clay",
+]
+const SCALE_COLORS = [
+  "Cream",
+  "Charcoal",
+  "Sage green",
+  "Matte black",
+  "Warm white",
+  "Terracotta",
+  "Oatmeal speckle",
+]
+const SCALE_CARE_INSTRUCTIONS = [
+  "Dishwasher safe.",
+  "Hand wash only.",
+  "Dishwasher and microwave safe.",
+  "Wipe clean with a damp cloth.",
+  "Hand wash recommended.",
+]
+
+function buildScaleProducts(
+  count: number,
+  categoryList: { slug: string; name: string }[],
+): SeedProduct[] {
+  const scaleProducts: SeedProduct[] = []
+
+  for (let i = 1; i <= count; i++) {
+    const category = categoryList[(i - 1) % categoryList.length]
+    const material = SCALE_MATERIALS[i % SCALE_MATERIALS.length]
+    const color = SCALE_COLORS[i % SCALE_COLORS.length]
+
+    scaleProducts.push({
+      name: `Perf Product ${i} (${category.name})`,
+      slug: `perf-product-${i}`,
+      categorySlug: category.slug,
+      description: `Generated perf-test ${material.toLowerCase()} piece in the ${category.name} line (item ${i}).`,
+      price: 10 + ((i * 7) % 90) + 0.5,
+      stockQuantity: i % 11 === 0 ? 0 : ((i * 3) % 40) + 1,
+      material,
+      color,
+      dimensionsText: `${10 + (i % 20)}cm x ${5 + (i % 10)}cm`,
+      weightText: `${200 + (i % 500)}g`,
+      careInstructions: SCALE_CARE_INSTRUCTIONS[i % SCALE_CARE_INSTRUCTIONS.length],
+    })
+  }
+
+  return scaleProducts
+}
+
 async function main() {
   console.log("Seeding categories...")
 
@@ -323,16 +379,29 @@ async function main() {
 
   console.log(`Seeded ${categoryBySlug.size} categories.`)
 
+  const seedScale = Number(process.env.SEED_SCALE) || 0
+  const scaleProducts =
+    seedScale > 0
+      ? buildScaleProducts(
+          seedScale,
+          Array.from(categoryBySlug.entries()).map(([slug, category]) => ({
+            slug,
+            name: category.name,
+          })),
+        )
+      : []
+  const allProducts = [...products, ...scaleProducts]
+
   console.log("Seeding products...")
 
-  for (const product of products) {
+  for (const product of allProducts) {
     const category = categoryBySlug.get(product.categorySlug)
 
     if (!category) {
       throw new Error(`Unknown category slug: ${product.categorySlug}`)
     }
 
-    const slug = createSlug(product.name)
+    const slug = product.slug ?? createSlug(product.name)
 
     const searchText = buildProductSearchText({
       name: product.name,
@@ -381,6 +450,12 @@ async function main() {
   }
 
   console.log(`Seeded ${products.length} products.`)
+
+  if (scaleProducts.length > 0) {
+    console.log(
+      `Seeded ${scaleProducts.length} additional perf-test products (SEED_SCALE=${seedScale}).`,
+    )
+  }
 
   console.log("Seeding users...")
 
