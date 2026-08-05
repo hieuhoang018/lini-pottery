@@ -7,7 +7,6 @@ import {
   ShoppingCart,
   Store,
   User,
-  UserStar,
 } from "lucide-react"
 import { useAuth } from "../../contexts/AuthContext"
 import toast from "react-hot-toast"
@@ -96,17 +95,6 @@ export function NavLinks({ setMobileMenuOpen }: NavLinksProps) {
           <span className="flex items-center gap-2 rounded-lg px-3 py-2 font-medium text-stone-700">
             Xin chào, {user.name}
           </span>
-
-          {user.role === "ADMIN" && (
-            <NavLink
-              to="/admin/orders"
-              className={linkClass}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <UserStar size={20} />
-              <span>Quản trị</span>
-            </NavLink>
-          )}
 
           <button
             onClick={handleLogout}
