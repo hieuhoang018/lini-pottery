@@ -46,6 +46,16 @@ services:
     depends_on:
       - server
 
+  admin:
+    build:
+      context: ./admin
+      args:
+        VITE_API_URL: ${VITE_API_URL:-/api}
+    ports:
+      - "8081:80"
+    depends_on:
+      - server
+
   # Self-hosted observability stack — not started by default.
   # Enable with: docker compose --profile observability up
   prometheus:

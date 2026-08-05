@@ -13,13 +13,19 @@ Lini is a full-stack ecommerce application for browsing products, managing a car
 
 ```text
 .
-|-- client/                 # React/Vite frontend
+|-- client/                 # React/Vite storefront frontend
 |   |-- src/api/            # Axios API clients
 |   |-- src/components/     # Shared and page-specific UI
 |   |-- src/contexts/       # Auth and cart state
-|   |-- src/pages/          # Customer and admin routes
+|   |-- src/pages/          # Customer-facing routes
 |   `-- src/types/          # Frontend TypeScript types
-|-- server/                 # Express/Prisma backend
+|-- admin/                  # React/Vite admin frontend (separate app, deployed independently)
+|   |-- src/api/            # Axios API clients
+|   |-- src/components/     # Shared and page-specific admin UI
+|   |-- src/contexts/       # Auth state
+|   |-- src/pages/          # Admin routes (dashboard, orders, products, categories)
+|   `-- src/types/          # Frontend TypeScript types
+|-- server/                 # Express/Prisma backend (shared by both frontends)
 |   |-- prisma/             # Prisma schema and migrations
 |   `-- src/
 |       |-- controllers/    # Request handlers
@@ -30,6 +36,8 @@ Lini is a full-stack ecommerce application for browsing products, managing a car
 |       `-- utils/          # Shared backend helpers
 `-- diagram/                # Project diagrams/assets
 ```
+
+`client/` and `admin/` are independent npm projects (their own `package.json`/lockfile) that both call the same `server/` API. Nothing is shared between them at the build/tooling level — common pieces (auth handling, API client, a few hooks/UI atoms) are intentionally duplicated in each app rather than extracted into a shared package.
 
 ## Features
 
@@ -58,7 +66,14 @@ DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE"
 JWT_ACCESS_SECRET="replace-with-a-long-random-secret"
 JWT_REFRESH_SECRET="replace-with-a-different-long-random-secret"
 CLIENT_URL="http://localhost:5173"
-CLIENT_URLS="http://localhost:5173"
+# Comma-separated list of allowed CORS origins. Include both frontends' dev
+# ports locally (client defaults to 5173, admin to 5174); in production,
+# include both apps' deployed domains.
+CLIENT_URLS="http://localhost:5173,http://localhost:5174"
+# Set to "none" (with HTTPS) if a deployed frontend calls the API from a
+# different origin, e.g. the admin app deployed on Vercel — see "Deploying
+# the admin app" below. Defaults to "strict", which is fine when frontend
+# and API share a reverse proxy / origin.
 COOKIE_SAME_SITE="strict"
 PORT=5000
 
@@ -84,15 +99,24 @@ Create `client/.env`:
 VITE_API_URL="http://localhost:5000/api"
 ```
 
+Create `admin/.env`:
+
+```env
+VITE_API_URL="http://localhost:5000/api"
+```
+
 ## Installation
 
-Install dependencies for both apps:
+Install dependencies for all three apps:
 
 ```bash
 cd server
 npm install
 
 cd ../client
+npm install
+
+cd ../admin
 npm install
 ```
 
@@ -123,14 +147,23 @@ npm run dev
 
 The backend runs on `http://localhost:5000` by default.
 
-Start the frontend in another terminal:
+Start the storefront in another terminal:
 
 ```bash
 cd client
 npm run dev
 ```
 
-The frontend runs on `http://localhost:5173` by default.
+The storefront runs on `http://localhost:5173` by default.
+
+Start the admin app in a third terminal:
+
+```bash
+cd admin
+npm run dev
+```
+
+The admin app runs on `http://localhost:5174` by default (Vite auto-increments past 5173 if the storefront is already running; confirm the port `vite` prints, and make sure it's included in the server's `CLIENT_URLS`).
 
 ## Scripts
 
@@ -180,7 +213,7 @@ Frontend tests live alongside the code they cover (e.g. `client/src/contexts/*.t
 
 ## Docker
 
-Run the whole app (client + server) with Docker Compose. This still uses `server/.env` and `client/.env` for app config (e.g. a Supabase `DATABASE_URL`), plus a root `.env` for Compose/build-time-only values:
+Run the whole app (client + admin + server) with Docker Compose. This still uses `server/.env`, `client/.env`, and `admin/.env` for app config (e.g. a Supabase `DATABASE_URL`), plus a root `.env` for Compose/build-time-only values:
 
 ```bash
 cp .env.example .env
@@ -192,7 +225,8 @@ Build and start:
 docker compose up --build
 ```
 
-- Frontend: `http://localhost:8080` (served by Nginx; proxies `/api` to the server container)
+- Storefront: `http://localhost:8080` (served by Nginx; proxies `/api` to the server container)
+- Admin: `http://localhost:8081` (same setup — its own Nginx container proxying `/api` to the server container)
 - Backend: `http://localhost:5050` (published as 5050 to avoid the common macOS AirPlay Receiver conflict on port 5000; the container listens on 5000 internally)
 
 The server container runs `prisma migrate deploy` automatically on startup before starting the app.
@@ -243,6 +277,19 @@ docker compose --profile observability up --build
 ```
 
 See [`observability/README.md`](observability/README.md) for URLs, credentials, and what's on the starter dashboard.
+
+## Deploying the admin app
+
+`admin/` can run either self-hosted via the Docker Compose stack above, or as its own Vercel project — same two options `client/` supports.
+
+### Vercel (current production setup)
+
+This deploys the same way `client/` does today: as its own Vercel project pointed at the `admin` directory (Vercel auto-detects the Vite build), independent of the Docker Compose stack above.
+
+1. Create a new Vercel project from this repo with **Root Directory** set to `admin`.
+2. Set the `VITE_API_URL` environment variable on that project to the deployed API's full URL (e.g. `https://api.yourdomain.com/api`) — not a relative path, since there's no reverse proxy in front of it.
+3. Add the admin project's domain(s) to `CLIENT_URLS` in the server's production environment, alongside the storefront's existing entry.
+4. Confirm `COOKIE_SAME_SITE` and `secure` are set correctly for cross-origin cookies in production (see the `Environment variables` section above) — this is already required for the storefront's Vercel deployment today, so admin rides the same configuration.
 
 ## API overview
 
@@ -320,6 +367,8 @@ Base API path: `/api`
 
 ## Frontend routes
 
+### Storefront (`client/`)
+
 - `/` - Home
 - `/shop` - Product catalog
 - `/products/:slug` - Product detail
@@ -331,12 +380,17 @@ Base API path: `/api`
 - `/wishlist` - Protected wishlist
 - `/orders` - Protected customer orders
 - `/orders/:id` - Protected customer order detail
-- `/admin/orders` - Admin orders
-- `/admin/orders/:id` - Admin order detail
-- `/admin/products` - Admin products
-- `/admin/products/new` - Create product
-- `/admin/products/:id` - Admin product detail/edit
-- `/admin/categories` - Admin categories
+
+### Admin (`admin/`, separate app)
+
+- `/login` - Admin login
+- `/` - Dashboard
+- `/orders` - Admin orders
+- `/orders/:id` - Admin order detail
+- `/products` - Admin products
+- `/products/new` - Create product
+- `/products/:id` - Admin product detail/edit
+- `/categories` - Admin categories
 
 ## Health check
 

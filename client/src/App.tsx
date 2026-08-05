@@ -8,18 +8,10 @@ import { RegisterPage } from "./pages/RegisterPage"
 import { CheckoutPage } from "./pages/CheckoutPage"
 import { WishlistPage } from "./pages/WishlistPage"
 import { ProtectedRoute } from "./components/auth/ProtectedRoute"
-import { AdminRoute } from "./components/auth/AdminRoute"
-import { AdminLayout } from "./components/AdminPage/AdminLayout"
-import { AdminOrdersPage } from "./pages/admin/AdminOrdersPage"
-import { AdminProductsPage } from "./pages/admin/AdminProductsPage"
-import { AdminProductDetailPage } from "./pages/admin/AdminProductDetailPage"
-import { AdminCreateProductPage } from "./pages/admin/AdminCreateProductPage"
-import { AdminOrderDetailPage } from "./pages/admin/AdminOrderDetailPage"
 import { MyOrdersPage } from "./pages/MyOrdersPage"
 import { OrderSuccessPage } from "./pages/OrderSuccessPage"
 import { OrderDetailPage } from "./pages/OrderDetailPage"
 import { Footer } from "./components/layout/Footer"
-import { AdminCategoriesPage } from "./pages/admin/AdminCategoriesPage"
 import HomePage from "./pages/HomePage"
 
 function App() {
@@ -60,21 +52,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/admin"
-            element={
-              <AdminRoute>
-                <AdminLayout />
-              </AdminRoute>
-            }
-          >
-            <Route path="orders" element={<AdminOrdersPage />} />
-            <Route path="orders/:id" element={<AdminOrderDetailPage />} />
-            <Route path="products" element={<AdminProductsPage />} />
-            <Route path="products/new" element={<AdminCreateProductPage />} />
-            <Route path="products/:id" element={<AdminProductDetailPage />} />
-            <Route path="categories" element={<AdminCategoriesPage />} />
-          </Route>
         </Routes>
       </main>
       <Footer />
