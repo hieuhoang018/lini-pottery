@@ -1,0 +1,43 @@
+/// <reference types="vitest/config" />
+import { defineConfig } from "vite"
+import react from "@vitejs/plugin-react"
+import tailwindcss from "@tailwindcss/vite"
+import { VitePWA } from "vite-plugin-pwa"
+
+export default defineConfig({
+  test: {
+    environment: "jsdom",
+    setupFiles: ["./src/tests/setup.ts"],
+    include: ["src/**/*.test.{ts,tsx}"],
+    globals: false,
+  },
+  plugins: [
+    react(),
+    tailwindcss(),
+    VitePWA({
+      registerType: "autoUpdate",
+      includeAssets: ["icons/favicon-32.png"],
+      manifest: {
+        name: "Lini Admin",
+        short_name: "Lini Admin",
+        description: "Lini Admin — manage products, orders, and categories",
+        start_url: "/",
+        scope: "/",
+        display: "standalone",
+        background_color: "#1c1917",
+        theme_color: "#1c1917",
+        icons: [
+          { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+          { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+          {
+            src: "/icons/maskable-512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
+        ],
+      },
+      devOptions: { enabled: true },
+    }),
+  ],
+})
