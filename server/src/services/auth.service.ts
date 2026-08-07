@@ -3,12 +3,13 @@ import { prisma } from "../lib/prisma"
 import { LoginInput, RegisterInput } from "../types/auth"
 import { AppError } from "../utils/AppError"
 
-const safeUserSelect = {
+export const safeUserSelect = {
   id: true,
   name: true,
   email: true,
   role: true,
   phone: true,
+  pendingEmail: true,
   createdAt: true,
 } as const
 

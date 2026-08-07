@@ -91,6 +91,24 @@ CLOUDINARY_API_SECRET="your-api-secret"
 # https://api.telegram.org/bot<token>/getUpdates
 TELEGRAM_BOT_TOKEN="123456789:your-bot-token"
 TELEGRAM_ADMIN_CHAT_ID="your-chat-id"
+
+# Optional: transactional email (account email-change verification, and future
+# order notifications) via Resend. Unset in dev/CI is fine — emails are skipped
+# with a warning, nothing breaks. Resend's sandbox key + the onboarding@resend.dev
+# sender work without domain verification, BUT until you verify a sending
+# domain, Resend only delivers to the email address on your own Resend
+# account — sends to any other address are silently accepted by our code
+# (mailer.ts logs the API error, doesn't throw) but never arrive. To manually
+# test the email-change flow end-to-end, either verify a domain in Resend or
+# use your Resend account's own email as the "new email" during testing.
+#
+# KNOWN LIMITATION (as of this writing, no domain owned yet): this means the
+# email-change feature is dev/self-test only right now — in production it
+# would only ever reach the Resend account owner's inbox, not real customers.
+# Buy + verify a domain in Resend (or switch to a provider with single-sender
+# verification, e.g. SendGrid) before relying on this for real users.
+RESEND_API_KEY="your-resend-api-key"
+EMAIL_FROM="no-reply@yourdomain.com"
 ```
 
 Create `client/.env`:
