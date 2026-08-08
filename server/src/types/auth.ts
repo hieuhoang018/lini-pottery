@@ -17,6 +17,12 @@ export type JwtPayload = {
   role: "CUSTOMER" | "ADMIN"
 }
 
+export type EmailChangeTokenPayload = {
+  userId: string
+  newEmail: string
+  purpose: "email-change"
+}
+
 export type AuthRequest = Request & {
   user?: JwtPayload
 }

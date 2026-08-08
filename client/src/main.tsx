@@ -6,12 +6,14 @@ import App from "./App"
 import "./index.css"
 import { AuthProvider } from "./contexts/AuthContext"
 import { CartProvider } from "./contexts/CartContext"
+import { ScrollToTop } from "./components/layout/ScrollToTop"
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
         <CartProvider>
+          <ScrollToTop />
           <App />
 
           <Toaster position="bottom-right" toastOptions={{ duration: 3000 }} />

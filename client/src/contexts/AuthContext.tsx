@@ -76,6 +76,7 @@ export function AuthProvider({ children }: Props) {
         loading,
         login,
         logout,
+        refreshUser: fetchUser,
       }}
     >
       {children}

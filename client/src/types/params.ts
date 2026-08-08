@@ -31,3 +31,18 @@ export type GetWishlistParams = {
   page?: number
   limit?: number
 }
+
+export type UpdateProfileParams = {
+  name?: string
+  phone?: string
+}
+
+export type ChangePasswordParams = {
+  currentPassword: string
+  newPassword: string
+}
+
+export type RequestEmailChangeParams = {
+  newEmail: string
+  currentPassword: string
+}

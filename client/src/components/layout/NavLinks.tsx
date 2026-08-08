@@ -4,6 +4,7 @@ import {
   Heart,
   LogOut,
   ReceiptText,
+  Settings,
   ShoppingCart,
   Store,
   User,
@@ -90,6 +91,15 @@ export function NavLinks({ setMobileMenuOpen }: NavLinksProps) {
           >
             <ReceiptText size={20} />
             <span>Đơn hàng</span>
+          </NavLink>
+
+          <NavLink
+            to="/account"
+            className={linkClass}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <Settings size={20} />
+            <span>Tài khoản</span>
           </NavLink>
 
           <span className="flex items-center gap-2 rounded-lg px-3 py-2 font-medium text-stone-700">
