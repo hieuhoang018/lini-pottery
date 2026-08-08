@@ -16,3 +16,8 @@ export type RegisterFormInput = {
   password: string
   phone: string
 }
+
+export type UpdateProfileFormInput = {
+  name: string
+  phone: string
+}

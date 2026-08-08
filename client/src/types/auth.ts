@@ -4,6 +4,7 @@ export type User = {
   email: string
   role: "CUSTOMER" | "ADMIN"
   phone?: string | null
+  pendingEmail?: string | null
   createdAt: string
 }
 
@@ -12,4 +13,5 @@ export type AuthContextType = {
   loading: boolean
   login: (accessToken: string, user?: User) => Promise<void>
   logout: () => Promise<void>
+  refreshUser: () => Promise<void>
 }

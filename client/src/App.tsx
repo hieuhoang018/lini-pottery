@@ -11,6 +11,8 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute"
 import { MyOrdersPage } from "./pages/MyOrdersPage"
 import { OrderSuccessPage } from "./pages/OrderSuccessPage"
 import { OrderDetailPage } from "./pages/OrderDetailPage"
+import { AccountSettingsPage } from "./pages/AccountSettingsPage"
+import { VerifyEmailChangePage } from "./pages/VerifyEmailChangePage"
 import { Footer } from "./components/layout/Footer"
 import HomePage from "./pages/HomePage"
 
@@ -51,6 +53,18 @@ function App() {
                 <OrderDetailPage />
               </ProtectedRoute>
             }
+          />
+          <Route
+            path="/account"
+            element={
+              <ProtectedRoute>
+                <AccountSettingsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/account/verify-email"
+            element={<VerifyEmailChangePage />}
           />
         </Routes>
       </main>
